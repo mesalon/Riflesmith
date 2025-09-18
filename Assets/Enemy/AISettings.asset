@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c050873e9b6dbeb0854bb84fe89b697, type: 3}
+  m_Name: AISettings
+  m_EditorClassIdentifier: 
+  burst:
+    Min: 1
+    Max: 12
+  delay:
+    Min: 0.2
+    Max: 1.5
+  rangeBurstWeight: -2
+  skillBurstWeight: -1.5
+  ammoBurstWeight: -1
+  intentBurstWeight: 2.5
+  recoilBurstWeight: 0
+  panicBurstWeight: 3
+  rangeDelayWeight: 2
+  skillDelayWeight: -2
+  ammoDelayWeight: 0.5
+  intentDelayWeight: -0.5
+  recoilDelayWeight: 0
+  panicDelayWeight: -1
+  burstWeightBase: 0.5
+  delayWeightBase: -0.2
+  inconsistencyBase: 0.5

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{e447b8a0-34e1-4706-9205-a749591bf714}">
+		<property name="assetPath">
+			<value>Mag/magin5.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.37285714285714283</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{1e192095-a7d4-4368-8673-652723922ffa}</destination>
+		</relationship>
+	</object>
+</objects>

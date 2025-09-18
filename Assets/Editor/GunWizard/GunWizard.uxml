@@ -1,0 +1,9 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/Editor/GunWizard/GunWizard.uss?fileID=7433441132597879392&amp;guid=5085711d006e7cb4cb3425dbc59f698c&amp;type=3#GunWizard" />
+    <engine:DropdownField label="Mode" choices="Firearm,Attachment" name="mode" index="0" />
+    <editor:ObjectField label="Body" name="body" binding-path="body" />
+    <editor:ObjectField label="Magazine" name="magazine" binding-path="magazine" />
+    <editor:PropertyField binding-path="attachments" label="Attachments" name="attachments" />
+    <engine:Button text="Initialize" name="init" style="position: absolute; bottom: 10px; top: auto; left: 10px; right: auto; width: 98px;" />
+    <engine:Button text="Build" name="build" style="position: absolute; bottom: 10px; top: auto; left: auto; right: 10px; width: 98px;" />
+</engine:UXML>

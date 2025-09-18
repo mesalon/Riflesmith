@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{fb627671-3ce4-4acc-b14b-3534f6f1ce72}">
+		<property name="assetPath">
+			<value>AWCK ADD Tails Indoor Hallway 01.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>192</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>4.578114583333333</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{1e192095-a7d4-4368-8673-652723922ffa}</destination>
+		</relationship>
+	</object>
+</objects>

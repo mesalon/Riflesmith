@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!72 &7200000
+ComputeShader:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: lightlistbuild-clearatomic
+  variants:
+  - serializedVersion: 2
+    targetRenderer: 2
+    targetLevel: 0
+    kernels:
+    - serializedVersion: 2
+      name: ClearAtomic
+      variantMap:
+        :
+          serializedVersion: 2
+          cbVariantIndices:
+          cbs: []
+          textures: []
+          builtinSamplers: []
+          inBuffers: []
+          outBuffers:
+          - name: g_LayeredSingleIdxBuffer
+            generatedName:
+            bindPoint: 2
+            samplerBindPoint: -1
+            texDimension: -1
+          code: 4458424392570c785d8ebc8cab60a8f5eb9e285e01000000a8000000030000002c0000003c0000004c0000004953474e0800000000000000080000004f53474e080000000000000008000000534845585400000050000500150000006a0800019e00000400e0110002000000040000009b000004010000000100000001000000a800000912e01100020000000140000000000000014000000000000001400000000000003e000001
+          threadGroupSize: 010000000100000001000000
+          requirements: 16385
+          keywords: []
+          isCompiled: 0
+      globalKeywords: []
+      localKeywords: []
+    constantBuffers: []
+    resourcesResolved: 1
+    compilerPlatform: 0
+    needsReflectionData: 0
+  m_CompilationContext:
+    buildTarget:
+      platform: 0
+      subTarget: 0
+      extendedPlatform: 0
+      isEditor: 0
+    platformGroup: 0
+    sourceFileName:
+    source:
+    sourceFile:
+    kernels: []
+    kernelMacros: []
+    compilationFlags: 0
+    supportedAPIs: 0
+    useDxcAPIs: 0
+    neverUseDxcAPIs: 0
+    includeHash0: 0
+    includeHash1: 0
+    includeHash2: 0
+    includeHash3: 0
+  errors: []
+  m_PreprocessorOverride: 0

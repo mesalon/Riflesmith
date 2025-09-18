@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!72 &7200000
+ComputeShader:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ClearUIntTextureArray
+  variants:
+  - serializedVersion: 2
+    targetRenderer: 2
+    targetLevel: 0
+    kernels:
+    - serializedVersion: 2
+      name: ClearUIntTexture
+      variantMap:
+        :
+          serializedVersion: 2
+          cbVariantIndices:
+          cbs: []
+          textures: []
+          builtinSamplers: []
+          inBuffers: []
+          outBuffers:
+          - name: _Target
+            generatedName:
+            bindPoint: 0
+            samplerBindPoint: -1
+            texDimension: 2
+          code: 445842435b14ae2aa2a9fda092e01cfdfed836d001000000b0000000030000002c0000003c0000004c0000004953474e0800000000000000080000004f53474e080000000000000008000000534845585c00000050000500170000006a0800019c18000400e0110000000000444400005f000002320002009b000004010000000100000001000000a4000009f2e01100000000004605020002400000000000000000000000000000000000003e000001
+          threadGroupSize: 010000000100000001000000
+          requirements: 16385
+          keywords: []
+          isCompiled: 0
+      globalKeywords: []
+      localKeywords: []
+    - serializedVersion: 2
+      name: ClearUIntTextureArray
+      variantMap:
+        :
+          serializedVersion: 2
+          cbVariantIndices:
+          cbs: []
+          textures: []
+          builtinSamplers: []
+          inBuffers: []
+          outBuffers:
+          - name: _TargetArray
+            generatedName:
+            bindPoint: 0
+            samplerBindPoint: -1
+            texDimension: 5
+          code: 4458424320a9708e74e9002509bdf2d889753f9601000000b0000000030000002c0000003c0000004c0000004953474e0800000000000000080000004f53474e080000000000000008000000534845585c00000050000500170000006a0800019c40000400e0110000000000444400005f000002720002009b000004010000000100000001000000a4000009f2e0110000000000460a020002400000000000000000000000000000000000003e000001
+          threadGroupSize: 010000000100000001000000
+          requirements: 16385
+          keywords: []
+          isCompiled: 0
+      globalKeywords: []
+      localKeywords: []
+    constantBuffers: []
+    resourcesResolved: 1
+    compilerPlatform: 0
+    needsReflectionData: 0
+  m_CompilationContext:
+    buildTarget:
+      platform: 0
+      subTarget: 0
+      extendedPlatform: 0
+      isEditor: 0
+    platformGroup: 0
+    sourceFileName:
+    source:
+    sourceFile:
+    kernels: []
+    kernelMacros: []
+    compilationFlags: 0
+    supportedAPIs: 0
+    useDxcAPIs: 0
+    neverUseDxcAPIs: 0
+    includeHash0: 0
+    includeHash1: 0
+    includeHash2: 0
+    includeHash3: 0
+  errors: []
+  m_PreprocessorOverride: 0

@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf7df83a328c7c14ebdd896c69db65a1, type: 3}
+  m_Name: 7.62x39 FMJ
+  m_EditorClassIdentifier: 
+  tracer: {fileID: 4300000, guid: 3eb0c8c8f87208765a50527cf0b6c999, type: 2}
+  tracerMat: {fileID: 2100000, guid: 41191d4edc15e8a4bb1775bcba669553, type: 2}
+  minSpeed: 150
+  maxSpeed: 800
+  damage: 35
+  force: 2000
+  maxBarrelLength: 750
+  shotSound:
+    Guid:
+      Data1: 679212201
+      Data2: 1137652143
+      Data3: -714651507
+      Data4: -2077748880
+    Path: event:/AR-15
+  caliber: 7.62x39
+  casing: {fileID: 1100388793237404221, guid: 4ed2d1c7be4b55b4392d10034f8646a8, type: 3}
+  mesh: {fileID: -3379648951054740847, guid: 5b6c8a1217a9fb94cb69f6bae64081b3, type: 3}
+  mat: {fileID: 2100000, guid: fa73a780274ae3c43b40884e20da07f1, type: 2}
+  scale: {x: 0.004224793, y: 0.004224793, z: 0.00688345}
+  isExplosive: 0
+  explosiveForce: 0
+  explosiveDamage: 0
+  explosiveRange: 0
+  boom: {fileID: 0}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{26630372-5484-451b-9867-4bab61fdaac5}">
+		<property name="assetPath">
+			<value>AWCK ADD Tails Indoor Shooting Range 02.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>96</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>1.9636666666666667</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{1e192095-a7d4-4368-8673-652723922ffa}</destination>
+		</relationship>
+	</object>
+</objects>

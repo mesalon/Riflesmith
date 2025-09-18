@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="EncodableAsset" id="{2f4c3d2b-3918-4d79-9e43-ce121487b979}">
+		<property name="assetPath">
+			<value>Mag/</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{1e192095-a7d4-4368-8673-652723922ffa}</destination>
+		</relationship>
+	</object>
+</objects>
