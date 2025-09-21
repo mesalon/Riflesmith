@@ -1,9 +1,40 @@
-// Priorities: Further from target? Closer?
 using Debug = UnityEngine.Debug;
 using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
+
+[System.Serializable] public struct CoverParams {
+	public float range;
+	public float navRange;
+	public float minDot;
+	public float bodyWidth;
+	public float bodyHeight;
+	public bool doDebugs;
+	public int maxPoints;
+	public int maxSplats;
+	public int navBatch;
+	public int splatBatch;
+	public int threatBreadth;
+	public int skepticism;
+	public LayerMask envLayer;
+
+	public static readonly CoverParams Default = new() {
+		range = 10,
+		navRange = 15,
+		minDot = 0.5f,
+		bodyWidth = 0.3f,
+		bodyHeight = 1.8f,
+		doDebugs = true,
+		maxPoints = 20,
+		maxSplats = 30,
+		navBatch = 1,
+		splatBatch = 20,
+		threatBreadth = 3,
+		skepticism = 10,
+		envLayer = ~0,
+	};
+}
 
 public class CoverQuery {
 	private readonly CoverParams cfg;
@@ -118,34 +149,3 @@ public class CoverQuery {
 	}
 }
 
-public struct CoverParams {
-	public float range;
-	public float navRange;
-	public float minDot;
-	public float bodyWidth;
-	public float bodyHeight;
-	public bool doDebugs;
-	public int maxPoints;
-	public int maxSplats;
-	public int navBatch;
-	public int splatBatch;
-	public int threatBreadth;
-	public int skepticism;
-	public LayerMask envLayer;
-
-	public static readonly CoverParams Default = new() {
-		range = 10,
-		navRange = 15,
-		minDot = 0.5f,
-		bodyWidth = 0.3f,
-		bodyHeight = 1.8f,
-		doDebugs = true,
-		maxPoints = 20,
-		maxSplats = 30,
-		navBatch = 1,
-		splatBatch = 20,
-		threatBreadth = 3,
-		skepticism = 10,
-		envLayer = LayerMask.NameToLayer("Environment"),
-	};
-}

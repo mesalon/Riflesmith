@@ -19,7 +19,10 @@ public class CoverTask {
 		this.cfg = cfg;
 	}
 
-	// Consider the amount of safety hits that didn't pass, meaning, you can shoot from there too.
+	// CONSIDER THE "LEVERAGE" OF THE COVER POINT. LIKE, HOW MUCH WILL YOU EXPOSE YOURSELF IF YOU LEAN OUT
+	// OKAY LIKE WHEN THE PLAYER WOULD LEAN OUT, CHECK IF YOU'D BE EXPOSED. THAT'S BAD
+	// CONVERSELY, CHECK IF YOU LEAN OUT, CHECK IF HE WOULD BE EXPOSED
+	// RIGHT NOW IT'S ONLY CONSIDERING A FLAT OFFSET TO THE SIDE. NOT TAKING INTO CONSIDERATION THE RELATIONSHIP OF THESE TWO DIFFERENT SITUATIONS
 	public void RunSplat(Vector3 threat, float bodyWidth, float bodyHeight) {
 		Quaternion rot = Quaternion.LookRotation((threat - cover.position).FlattenXZ(), Vector3.up);
 		Vector3 myPosSplat = (cover.position + rot * new Vector3(Random.Range(-bodyWidth, bodyWidth), UnityEngine.Random.Range(0, bodyHeight), 0));

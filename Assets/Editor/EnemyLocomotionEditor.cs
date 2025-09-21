@@ -1,3 +1,4 @@
+/*
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -10,3 +11,4 @@ public class EnemyLocomotionEditor : Editor {
         Ext.DrawPath(ctx.path.corners, Color.green, Color.red);
     }
 }
+*/

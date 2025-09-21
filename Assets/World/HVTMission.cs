@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 
 // todo: HVT guards bring HVT to a safe location after taking fire
@@ -11,7 +10,7 @@ public class HVTMission : Mission {
         get => point.transform.position;
     }
 
-    public override bool IsComplete => HVT.isDead;
+    public override bool IsComplete => false;
 
     public HVTMission(MissionPoint point) {
         this.point = point;

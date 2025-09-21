@@ -1,18 +1,18 @@
+/*
 using UnityEngine;
-using System.Collections;
 using UnityEditor;
 
-[CustomEditor(typeof (EnemyAI))]
+[CustomEditor(typeof (EnemyBrain))]
 public class EnemyAIEditor : Editor {
     private Color arcColorMax = new Color(0, 1, 0, 0.25f);
     private Color arcColorMin = new(1, 1, 1, 0.1f);
     
     void OnSceneGUI() {
-        EnemyAI ai = (EnemyAI)target;
+        EnemyBrain ai = (EnemyBrain)target;
         Vector3 drawPos = ai.transform.position;
         if(ai.eyes) drawPos = ai.eyes.transform.position;
         Handles.color = arcColorMax;
-        Handles.DrawWireArc(drawPos, Vector3.up, Vector3.forward, 360, ai.sightRange);
+        Handles.DrawWireArc(drawPos, Vector3.up, Vector3.forward, 360, ai.vision.cfg.sightRange);
 
         LayerMask mask = LayerMask.GetMask("Environment");
 
@@ -38,15 +38,16 @@ public class EnemyAIEditor : Editor {
     }
     
     public Vector3 DirFromAngle(float angleInDegrees) {
-        angleInDegrees += ((EnemyAI)target).transform.eulerAngles.y;
+        angleInDegrees += ((EnemyBrain)target).transform.eulerAngles.y;
         return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad),0,Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
 
 		public override void OnInspectorGUI() {
 			if (GUILayout.Button("Find cover")) {
-				EnemyAI ai = (EnemyAI)target;
+				EnemyBrain ai = (EnemyBrain)target;
 				ai.ResetCover();
 			}
 			base.OnInspectorGUI();
 		}
 }
+*/

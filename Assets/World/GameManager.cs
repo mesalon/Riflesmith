@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using UnityEditor;
 using Random = UnityEngine.Random;
 using UnityEngine;
+using System.Linq;
 
 public class GameManager : MonoBehaviour {
-	[Range(0, 20)]
-	public int var1;
+	public static Camera Camera => Camera.allCameras
+		.Where(c => c.targetTexture == null)
+		.OrderByDescending(c => c.depth)
+		.FirstOrDefault();
+	[Range(0, 20)] public int var1;
 	public static GameManager I { get; private set; }
 	public WorldSettings settings;
 	public float enemyTier;
@@ -59,7 +63,7 @@ public class GameManager : MonoBehaviour {
 		}
 		if(Input.GetKeyDown(KeyCode.K)) {
 			foreach (Enemy enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None)) {
-				enemy.Damage(100, 0);
+				enemy.body.Damage(100, 0);
 			}
 		}
 	}

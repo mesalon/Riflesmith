@@ -171,3 +171,16 @@ public struct LabelRequest {
 	public GUIStyle style;
 	public Color color;
 }
+
+[System.Serializable] public struct FloatRange { public float Min, Max; }
+[System.Serializable] public struct IntRange { public int Min, Max; }
+
+public class NamedRangeAttribute : PropertyAttribute {
+    public readonly string MinLabel;
+    public readonly string MaxLabel;
+
+    public NamedRangeAttribute(string minLabel, string maxLabel) {
+        this.MinLabel = minLabel;
+        this.MaxLabel = maxLabel;
+    }
+}

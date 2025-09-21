@@ -46,7 +46,7 @@ public class Projectile {
 			// 	gearsHit.Add(gear);
 			// 	//Debug.Log($"{hit.transform.name} was hit at a normal of {Vector3.Dot(end.normalized, hit.normal)}. New damage is {damage}");
 			// }
-			if (hit.transform.TryGetComponent(out Limb limb)) { limb.enemy.Damage(damage * limb.damageMultiplier, damage * limb.damageMultiplier * 2); }
+			if (hit.transform.TryGetComponent(out Limb limb)) { limb.enemy.body.Damage(damage * limb.damageMultiplier, damage * limb.damageMultiplier * 2); }
 			if (hit.transform.TryGetComponent(out Rigidbody rb)) { rb.AddForceAtPosition(velocity.normalized * data.force, hit.point); }
 			break;
 		}
@@ -58,7 +58,7 @@ public class Projectile {
 					if (col.TryGetComponent(out Rigidbody rb)) { rb.AddForceAtPosition(hits[0].normal * data.explosiveForce, hits[0].point); }
 
 					if (col.TryGetComponent(out Limb limb)) {
-						limb.enemy.Damage(data.explosiveDamage * Mathf.Lerp(data.explosiveDamage, 0, Vector3.Distance(hits[0].point, limb.transform.position) / data.explosiveRange), 500);
+						limb.enemy.body.Damage(data.explosiveDamage * Mathf.Lerp(data.explosiveDamage, 0, Vector3.Distance(hits[0].point, limb.transform.position) / data.explosiveRange), 500);
 						Debug.Log($"{limb.name}: {Mathf.Lerp(data.explosiveDamage, 0, Vector3.Distance(hits[0].point, limb.transform.position) / data.explosiveRange)}");
 					}
 					
