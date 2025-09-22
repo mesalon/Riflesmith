@@ -13,7 +13,6 @@ public class EnemyFirearm : MonoBehaviour {
     [SerializeField] ProjectileData projectile;
     public int rounds;
     private float fireTime;
-
     
     private void Awake() {
         rounds = capacity;

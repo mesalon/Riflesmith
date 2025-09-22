@@ -15,13 +15,11 @@ public class Blackboard {
 	public List<ConfigurableJoint> joints;
 	public UnityEngine.Animations.Rigging.Rig gunRestRig;
 	public Transform ikTarget;
-}
 
-[CreateAssetMenu(menuName = "Enemy/Config")]
-public class EnemyConfig : ScriptableObject {
-	public BurstCfg enemy;
-	public VisionCfg vision;
-	public LocomotionCfg locomotion;
-	public BodyCfg health;
-	public CoverParams cover = CoverParams.Default;
+	public Player target;
+	public Vector3? aimFocus;
+	public Vector3 targetLKP;
+	public Transform dingle;
+	public Transform focus;
+	public Vector3? cover;
 }

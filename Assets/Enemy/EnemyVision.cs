@@ -19,8 +19,7 @@ using static UnityEngine.Vector3;
 
 public class EnemyVision {
 	private readonly Blackboard ctx;
-	private readonly VisionCfg cfg;
-	private readonly Transform eyes;
+	private VisionCfg cfg => ctx.cfg.vision;
 	private readonly float maxAngleCos;
 
 	private PositionBuffer playerPositions;
@@ -29,28 +28,33 @@ public class EnemyVision {
 
 	public EnemyVision(Blackboard ctx) {
 		this.ctx = ctx;
-		cfg = ctx.cfg.vision;
 		playerPositions = new(RoundToInt(1 / Time.fixedDeltaTime * cfg.movementWindow));
 		maxAngleCos = Cos(Deg2Rad * cfg.viewAngleMax);
 	}
 
 	public struct DebugInfo {
 		public Player detectedPlayer;
-		public float angleChance, distanceChance, movementChance, totalChance, spotTime, dot, angle, angleChanceUnscaled, distanceChanceUnscaled;
+		public Vector3 a, b;
+		public float angleChance, distanceChance, movementChance, totalChance, spotTime, dot, angle, angleChanceUnscaled, distanceChanceUnscaled, distance;
 		public bool hasLoS;
 	}
-	public DebugInfo info;
+	public DebugInfo? info;
 
+	// todo:
+	// Vision should be impaired when moving
+	// Right now it's actually better when moving because it sets off the movement detection
 	public Player Tick() {
-		info = default;
 		Player p = null;
+		info = null;
+		DebugInfo newInfo = default;
 		float chance = 0;
 		foreach (Collider col in Physics.OverlapSphere(ctx.transform.position, cfg.sightRange, cfg.playerMask)) { // todo non alloc
-			if (col.TryGetComponent(out Player player)) {
+			if (col.gameObject.activeInHierarchy && col.TryGetComponent(out Player player)) {
+				UnityEngine.Debug.Log("Saw active player");
 				p = player;
-				info.detectedPlayer = p;
-				Vector3 eyePos = eyes.position, playerPos = player.rig.head.position;
-				Vector3 a = eyes.forward, b = (playerPos - eyePos).normalized;
+				newInfo.detectedPlayer = p;
+				Vector3 eyePos = ctx.eyes.position, playerPos = player.rig.head.position;
+				Vector3 a = ctx.eyes.forward, b = (playerPos - eyePos).normalized;
 				if (Physics.Linecast(eyePos, playerPos, out RaycastHit hit, cfg.visionMask)) {
 					if(hit.transform.root == player.transform) {
 						float angleChanceUnscaled = Clamp01((Dot(a, b) - maxAngleCos) / (1 - maxAngleCos));
@@ -64,16 +68,18 @@ public class EnemyVision {
 						float movementChance = movementAngle; // todo: enemy movement will set this off too, fix
 						chance = angleChance * distanceChance * cfg.overallVisionFactor * Time.fixedDeltaTime * cfg.consistencyFactor;
 						lastPlayerPos = p.rig.head.position;
-						info.angleChance = angleChance;
-						info.distanceChance = distanceChance;
-						info.movementChance = movementChance;
-						info.totalChance = chance;
-						info.angle = Angle(a, b);
-						info.angleChanceUnscaled = angleChanceUnscaled;
-						info.distanceChanceUnscaled = distanceChanceUnscaled;
-						info.hasLoS = true;
+						newInfo.distance = Distance(eyePos, playerPos);
+						newInfo.angleChance = angleChance;
+						newInfo.distanceChance = distanceChance;
+						newInfo.movementChance = movementChance;
+						newInfo.totalChance = chance;
+						newInfo.angle = Angle(a, b);
+						newInfo.angleChanceUnscaled = angleChanceUnscaled;
+						newInfo.distanceChanceUnscaled = distanceChanceUnscaled;
+						newInfo.hasLoS = true;
 					}
 				}
+				info = newInfo;
 				break;
 			}
 		}
@@ -86,18 +92,18 @@ public class EnemyVision {
 	}
 
 	public void Debug() {
-		if (Application.isPlaying && eyes && info.detectedPlayer) {
-			Vector3 start = eyes.position, end = info.detectedPlayer.rig.head.position;
+		string label = "No information.";
+		if (info is DebugInfo i) {
 			bool detected = hits > 0 && hits % cfg.consistencyFactor == 0;
-			Color color = detected ? Color.white : Color.Lerp(new(0, 1, 0, 0.25f), new Color(1, 0, 0, 0.25f), info.spotTime.Remap(10, 0, 0, 1));
-			Ext.DrawCubeLine(start, end, info.hasLoS ? color : new(0, 0, 0, 0.3f));
-			string label =
-				$"AngleChance: {info.angleChance:F3}, DistanceChance: {info.distanceChance:F3}, Movement Chance: {info.movementChance:F3}\n" +
-				//$"AngleChanceUnweighed: {info.angleChanceUnscaled:F4}, DistanceChanceUnweighed: {info.distanceChanceUnscaled:F4}\n" +
-				$"Distance: {Distance(start, end):F2}, Angle: {info.angle:F2}\n" +
-				$"Chance: {info.totalChance:F3}, Average Spot Time: {info.spotTime:F3}{(detected ? ", Detected!" : "")}, Hits: {hits}\n";
-			Handles.Label((start + end) / 2 + up * 0.15f, label);
-		}	
+			Color color = detected ? Color.white : Color.Lerp(new(0, 1, 0, 0.25f), new Color(1, 0, 0, 0.25f), i.spotTime.Remap(10, 0, 0, 1));
+			Ext.DrawCubeLine(i.a, i.b, i.hasLoS ? color : new(0, 0, 0, 0.3f));
+			label =
+				$"AngleChance: {i.angleChance:F3}, DistanceChance: {i.distanceChance:F3}, Movement Chance: {i.movementChance:F3}\n" +
+				//$"AngleChanceUnweighed: {i.angleChanceUnscaled:F4}, DistanceChanceUnweighed: {i.distanceChanceUnscaled:F4}\n" +
+				$"Distance: {i.distance:F2}, Angle: {i.angle:F2}\n" +
+				$"Chance: {i.totalChance:F3}, Average Spot Time: {i.spotTime:F3}{(detected ? ", Detected!" : "")}, Hits: {hits}\n";
+		}
+		Ext.Label(ctx.transform.position + 2 * Vector3.up, label);
 	}
 }
 

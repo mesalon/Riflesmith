@@ -38,8 +38,8 @@ public class PatrolTask : Node {
 
 	public override NodeState Evaluate(out Node active) {
 		active = this;
-		locomotion.MoveTo(patrolPath[currentPoint]);
-		if (locomotion.didArrive) { currentPoint++; }
+		//locomotion.Move(patrolPath[currentPoint]);
+		//if (locomotion.didArrive) { currentPoint++; }
 		return NodeState.Running;
 	}
 

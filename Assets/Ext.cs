@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEditor;
@@ -21,13 +22,16 @@ public static class Ext {
 		if (message) Debug.Log($"Execution of {(msg == String.Empty ? "method" : msg)} took {ms} ms");
 		return ms;
 	}
-	
-	public static void DrawPath(Vector3[] path, Color startCol = default, Color endCol = default, float offset = 0) {
-		for (int i = 0; i < path.Length - 1; i++) {
-			Debug.DrawLine(path[i] + Vector3.up * offset, path[i + 1] + Vector3.up * offset,
-				Color.Lerp(startCol == default ? Color.green : startCol, endCol == default ? Color.red : endCol,
-					i / ((float)path.Length - 1)));
+
+	public static string DebugFields(object data) {
+		string str = "";
+		str += $"--- Data of: {data.GetType().Name} ---";
+		BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+		foreach (FieldInfo field in data.GetType().GetFields(flags)) {
+			object value = field.GetValue(data);
+			str += $"\n{field.Name} ({field.FieldType.Name}): {value ?? "null"}";
 		}
+		return str;
 	}
 
 	public static float GetPathLength(this Vector3[] path) {
@@ -35,9 +39,9 @@ public static class Ext {
 		for (int i = 0; i < path.Length - 1; i++) { length += Vector3.Distance(path[i], path[i + 1]); }
 		return length;
 	}
-	
+
 	public static float Remap(this float value, float min, float max, float newMin, float newMax) => Mathf.Lerp(newMin, newMax, Mathf.InverseLerp(min, max, value));
-	
+
 	public static void SetPose(this Transform transform, Vector3 pos, Quaternion rot, bool isLocal = false) {
 		if (isLocal) { transform.SetLocalPositionAndRotation(pos, rot); }
 		else { transform.SetPositionAndRotation(pos, rot); }
@@ -46,7 +50,7 @@ public static class Ext {
 		if (isLocal) { transform.SetLocalPositionAndRotation(pose.position, pose.rotation); }
 		else { transform.SetPositionAndRotation(pose.position, pose.rotation); }
 	} 
-	
+
 	public static void SetLayerRecursive(this GameObject gameObject, int layer) {
 		foreach (Transform child in gameObject.transform) { child.gameObject.SetLayerRecursive(layer); }
 		gameObject.layer = layer;
@@ -57,28 +61,10 @@ public static class Ext {
 			foreach (Collider other in second) { Physics.IgnoreCollision(col, other, ignore); }
 		}
 	}
-	
-	public static T Random<T>(this List<T> list) {
-		int r = UnityEngine.Random.Range(0, list.Count);
-		return list.Count > UnityEngine.Random.Range(0, list.Count) ? list[r] : default;
-	}
 
-	public static Rigidbody AddRigidBody(this GameObject go) {
-		Rigidbody rb = go.AddComponent<Rigidbody>();
-		rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-		rb.interpolation = RigidbodyInterpolation.Interpolate;
-		return rb;
-	}
-	
 	public static void AddToPropertyList(this SerializedProperty list, Object value) {
 		list.arraySize++;
 		list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = value;
-	}
-	
-	public static void DrawAxis(Vector3 position, float size = 0.1f) {
-		Debug.DrawRay(position, Vector3.right * size, Color.red);
-		Debug.DrawRay(position, Vector3.up * size, Color.green);
-		Debug.DrawRay(position, Vector3.forward * size, Color.blue);
 	}
 
 	public static void Label(Vector3 position, string text, GUIStyle style = null, Color color = default) {
@@ -86,7 +72,7 @@ public static class Ext {
 	}
 
 	public static float NormalizeAngle(this float angle) => angle % 360 <= 180 ? angle % 360 : angle % 360 - 360;
-	
+
 	public static Vector3 Midpoint(this IEnumerable<Vector3> points) {
 		Vector3 all = default;
 		int count = 0;
@@ -98,35 +84,17 @@ public static class Ext {
 	}
 
 	public static void PrintAll<T>(this IEnumerable<T> objects) { Debug.Log(String.Join(", ", objects)); }
-	
-	public static void Draw(Action action) { drawQueue.Add(action); }
 
-	// todo: refactor this to use Draw()
-	public static void DrawCubeLine(Vector3 start, Vector3 end, Color color, float thickness = 0.05f) {
-		Quaternion rotation = Quaternion.LookRotation((end - start).normalized, Vector3.up);
-		Gizmos.matrix = Matrix4x4.TRS((start + end) / 2f, rotation, Vector3.one);
-		Gizmos.color = color;
-		Gizmos.DrawCube(Vector3.zero, new Vector3(thickness, thickness, (end - start).magnitude));
-		Gizmos.matrix = Matrix4x4.identity;
-	}
-
-	public static void DrawCubeRay(Vector3 start, Vector3 direction, float length, Color color, float thickness = 0.05f) {
-		Vector3 end = start + direction.normalized * length;
-		DrawCubeLine(start, end, color, thickness);
-	}
-
-	public static Vector3 FlattenXZ(this Vector3 vector) => new(vector.x, 0, vector.z);
-
-	public static void Shuffle<T>(this IList<T> list, System.Random rng) {
-		int n = list.Count;
-		while (n > 1) {
-			n--;
-			int k = rng.Next(n + 1);
-			T value = list[k];
-			list[k] = list[n];
-			list[n] = value;
+	public static void DrawPath(Vector3[] path, Color startCol = default, Color endCol = default, float offset = 0) {
+		for (int i = 0; i < path.Length - 1; i++) {
+			Debug.DrawLine(path[i] + Vector3.up * offset, path[i + 1] + Vector3.up * offset,
+					Color.Lerp(startCol == default ? Color.green : startCol, endCol == default ? Color.red : endCol,
+						i / ((float)path.Length - 1)));
 		}
 	}
+
+	public static void Draw(Action action) { drawQueue.Add(action); }
+
 	public static void DrawCube(Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
 		Draw(() => {
 				Gizmos.color = color;
@@ -136,33 +104,66 @@ public static class Ext {
 				});
 	}
 
-		public static Color GetColor(bool condition) => (condition ? Color.green : Color.red) * (new Color(1, 1, 1, 0.5f));
-		public static Color GetColor(bool condition, Color a, Color b) => (condition ? a : b) * (new Color(1, 1, 1, 0.5f));
+	public static void DrawCubeLine(Vector3 start, Vector3 end, Color color, float thickness = 0.05f) {
+		Draw(() => {
+				Quaternion rotation = Quaternion.LookRotation((end - start).normalized, Vector3.up);
+				Gizmos.matrix = Matrix4x4.TRS((start + end) / 2f, rotation, Vector3.one);
+				Gizmos.color = color;
+				Gizmos.DrawCube(Vector3.zero, new Vector3(thickness, thickness, (end - start).magnitude));
+				Gizmos.matrix = Matrix4x4.identity;
+				});
+	}
 
-		public static IEnumerable<T> GetRandomSubset<T>(this IEnumerable<T> source, int size) {            
-			List<T> list = new List<T>();            
-			foreach (T item in source) { list.Add(item); }
-			if (size >= list.Count) { return new List<T>(list); }            
-			List<T> copy = new List<T>(list);            
-			int n = copy.Count;            
-			// Partial Fisher Yates shuffle            
-			for (int i = 0; i < size; i++) {                
-				int randIndex = UnityEngine.Random.Range(i, n);                
-				T temp = copy[i];                
-				copy[i] = copy[randIndex];                
-				copy[randIndex] = temp;            
-			}            
-			return copy.GetRange(0, size);        
-		}
+	public static void DrawCubeRay(Vector3 start, Vector3 direction, float length, Color color, float thickness = 0.05f) {
+		Vector3 end = start + direction.normalized * length;
+		DrawCubeLine(start, end, color, thickness);
+	}
 
-		public static T PopRandom<T>(this List<T> list) {
-			if (list == null || list.Count == 0) { return default(T); }
-			int randI = UnityEngine.Random.Range(0, list.Count);
-			T chosenItem = list[randI];
-			list[randI] = list[list.Count - 1];
-			list.RemoveAt(list.Count - 1);
-			return chosenItem;
+	public static Vector3 FlattenY(this Vector3 vector) => new(vector.x, 0, vector.z);
+
+	public static Color GetColor(bool condition) => (condition ? Color.green : Color.red) * (new Color(1, 1, 1, 0.5f));
+	public static Color GetColor(bool condition, Color a, Color b) => (condition ? a : b) * (new Color(1, 1, 1, 0.5f));
+
+	public static T GetRandom<T>(this List<T> list) {
+		if (list == null || list.Count == 0) { return default(T); }
+		return list[UnityEngine.Random.Range(0, list.Count)];
+	}
+
+	public static T PopRandom<T>(this List<T> list) {
+		if (list == null || list.Count == 0) { return default(T); }
+		int randI = UnityEngine.Random.Range(0, list.Count);
+		T chosenItem = list[randI];
+		list[randI] = list[list.Count - 1];
+		list.RemoveAt(list.Count - 1);
+		return chosenItem;
+	}
+
+	public static IEnumerable<T> GetRandomSubset<T>(this IEnumerable<T> source, int size) {            
+		List<T> list = new List<T>();            
+		foreach (T item in source) { list.Add(item); }
+		if (size >= list.Count) { return new List<T>(list); }            
+		List<T> copy = new List<T>(list);            
+		int n = copy.Count;            
+		// Partial Fisher Yates shuffle            
+		for (int i = 0; i < size; i++) {                
+			int randIndex = UnityEngine.Random.Range(i, n);                
+			T temp = copy[i];                
+			copy[i] = copy[randIndex];                
+			copy[randIndex] = temp;            
+		}            
+		return copy.GetRange(0, size);        
+	}
+
+	public static void Shuffle<T>(this IList<T> list) {
+		int n = list.Count;
+		while (n > 1) {
+			n--;
+			int k = UnityEngine.Random.Range(0, n + 1);
+			T value = list[k];
+			list[k] = list[n];
+			list[n] = value;
 		}
+	}
 }
 
 public struct LabelRequest {
@@ -176,11 +177,11 @@ public struct LabelRequest {
 [System.Serializable] public struct IntRange { public int Min, Max; }
 
 public class NamedRangeAttribute : PropertyAttribute {
-    public readonly string MinLabel;
-    public readonly string MaxLabel;
+	public readonly string MinLabel;
+	public readonly string MaxLabel;
 
-    public NamedRangeAttribute(string minLabel, string maxLabel) {
-        this.MinLabel = minLabel;
-        this.MaxLabel = maxLabel;
-    }
+	public NamedRangeAttribute(string minLabel, string maxLabel) {
+		this.MinLabel = minLabel;
+		this.MaxLabel = maxLabel;
+	}
 }

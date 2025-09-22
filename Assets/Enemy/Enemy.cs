@@ -11,23 +11,46 @@ public class Enemy : MonoBehaviour {
 		locomotion = new(blackboard);
 		vision = new(blackboard);
 		body = new(blackboard);
-		brain = new SelectorNode(new() {
-				new SelectorNode(new() {
-						new GTFOTask(this),
-						new MoveToCoverTask(this),
-						new EngageEnemyTask(this),
-						}),
-				new PatrolTask(this),
-				});
+		try {
+			brain = new SelectorNode(new() {
+					new SelectorNode(new() {
+							// Survive
+							new SequenceNode(new() {
+									new IsPlayerVisible(this),
+									new FindCover(this),
+									new MoveToCoverTask(this),
+									}),
+							// Engage
+							new SequenceNode(new() {
+									new HasLOS(this),
+									new HasAmmo(this),
+									new EngageEnemyTask(this),
+									}),
+							// Hunt
+							// Patrol
+							//new MoveToCoverTask(this),
+							}),
+					new PatrolTask(this),
+					});
+		} catch (System.Exception e) {
+			Debug.Log($"Error in creation of brain.\n{e}");
+		}
 	}
 
 	private void Update() {
+		Node active = null;
 		if (body.isUp) {
 			locomotion.Tick();
 			vision.Tick();
+			vision.Debug();
 			body.Tick();
-			brain.Evaluate(out Node active);
+			try {
+				brain.Evaluate(out active);
+			} catch (System.Exception e) {
+				Debug.Log($"Error in execution of brain.\n{e}");
+			}
 		}
+		Ext.Label(transform.position + 2 * Vector3.up, $"node: {active}");
 	}
 }
 

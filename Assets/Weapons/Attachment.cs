@@ -93,7 +93,9 @@ public class Attachment : GrabInteractable {
 	}
 	
 	public void Detach() {
-		rb = gameObject.AddRigidBody();
+		rb = gameObject.AddComponent<Rigidbody>();
+		rb.interpolation = RigidbodyInterpolation.Interpolate;
+		rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 		transform.SetParent(null);
 		PreventInteraction = false;
 		mount.attachment = null;

@@ -2208,6 +2208,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 109617013}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &143034988
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 143034989}
+  m_Layer: 0
+  m_Name: Destination.1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &143034989
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143034988}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -39.74, y: 1.47, z: 23.81}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &150888258
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3128,12 +3159,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 340471549}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!54 &341126849 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 6577009602016897973, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &343234591
 GameObject:
   m_ObjectHideFlags: 0
@@ -3534,7 +3559,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mask:
     serializedVersion: 2
-    m_Bits: 8127
+    m_Bits: 16319
   showDebugTracers: 1
   debugTracerTime: 1
   debugTracerColor: {r: 1, g: 0, b: 0, a: 1}
@@ -11086,7 +11111,7 @@ Transform:
   m_GameObject: {fileID: 437424007}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.17, y: 0, z: 1.37}
+  m_LocalPosition: {x: -51.64, y: 0, z: 22.22}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11941,12 +11966,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a749d4565c20a1542bd59ccd87825880, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!54 &559411406 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 2800882670237694079, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &561630663
 GameObject:
   m_ObjectHideFlags: 0
@@ -14262,7 +14281,7 @@ MonoBehaviour:
   lookSpeed: 2
   boostMultiplier: 2
   smoothTime: 0.1
-  data: {fileID: 0}
+  data: {fileID: 11400000, guid: 79736add3c50d8c42b0edd235aff7785, type: 2}
 --- !u!1 &924119122
 GameObject:
   m_ObjectHideFlags: 0
@@ -14349,12 +14368,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 924119122}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!54 &930843054 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 6472737270802924551, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &931790182
 GameObject:
   m_ObjectHideFlags: 0
@@ -15046,12 +15059,6 @@ MonoBehaviour:
   anisotropy: 0.25
   scattering: 0.05
   radius: 1
---- !u!54 &1060662168 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 3383377571803449662, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1064679785
 GameObject:
   m_ObjectHideFlags: 0
@@ -15581,37 +15588,6 @@ MonoBehaviour:
   anisotropy: 0.25
   scattering: 0.05
   radius: 1
---- !u!1 &1167607245
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1167607246}
-  m_Layer: 0
-  m_Name: threat
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1167607246
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1167607245}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -33.53, y: 0, z: 24.85}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1174886185
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -15893,7 +15869,7 @@ PrefabInstance:
     - target: {fileID: 4463845962344408814, guid: 0a752953edbc5434196cf9a9cbb4baed,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -35.49
+      value: -44.27
       objectReference: {fileID: 0}
     - target: {fileID: 4463845962344408814, guid: 0a752953edbc5434196cf9a9cbb4baed,
         type: 3}
@@ -15903,7 +15879,7 @@ PrefabInstance:
     - target: {fileID: 4463845962344408814, guid: 0a752953edbc5434196cf9a9cbb4baed,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 25.06
+      value: 18.82
       objectReference: {fileID: 0}
     - target: {fileID: 4463845962344408814, guid: 0a752953edbc5434196cf9a9cbb4baed,
         type: 3}
@@ -16036,12 +16012,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4245289300940584986, guid: b17011237cac9449ea6d90f5f6461402, type: 3}
---- !u!54 &1284985958 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 6846856222237183171, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1310858514
 GameObject:
   m_ObjectHideFlags: 0
@@ -16198,12 +16168,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1334473959}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!54 &1336770113 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 4251177359124897321, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1338026791
 GameObject:
   m_ObjectHideFlags: 0
@@ -17093,12 +17057,6 @@ MonoBehaviour:
   anisotropy: 0.25
   scattering: 0.05
   radius: 1
---- !u!54 &1397690675 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 3639533151134987780, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!64 &1401043022
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -17121,12 +17079,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 2149494427911466068, guid: b17011237cac9449ea6d90f5f6461402, type: 3}
---- !u!54 &1419277582 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 5098466078287638258, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1437086599
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17358,12 +17310,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1747413796}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &1471375587 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 3992282927345849483, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!64 &1477357255
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -19375,12 +19321,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1768110311}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!54 &1775323687 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 5480068097138481287, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1775572982
 GameObject:
   m_ObjectHideFlags: 0
@@ -19871,12 +19811,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1789656980}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!54 &1810987716 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 1097507568503751104, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1816140263
 GameObject:
   m_ObjectHideFlags: 0
@@ -20964,12 +20898,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 491407671667553481, guid: b17011237cac9449ea6d90f5f6461402, type: 3}
---- !u!54 &1937830141 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 3303811715229470476, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!64 &1947755423
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -21100,12 +21028,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1747413796}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
---- !u!54 &1960765190 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 2472840009413264526, guid: 77912444cc288796b9294cb9d62e431e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3457784104316428637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1964357305
 GameObject:
   m_ObjectHideFlags: 0
@@ -22236,180 +22158,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 996498548271550587, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 996498548271550587, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 996498548271550587, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 996498548271550587, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 930843054}
-    - target: {fileID: 996498548271550587, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 996498548271550587, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 996498548271550587, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1047536378610242138, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1047536378610242138, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1047536378610242138, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1047536378610242138, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1471375587}
-    - target: {fileID: 1047536378610242138, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1047536378610242138, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1047536378610242138, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 1079020063521059880, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: m_Name
       value: Enemy
-      objectReference: {fileID: 0}
-    - target: {fileID: 1155518123400841022, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1155518123400841022, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1155518123400841022, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1155518123400841022, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 341126849}
-    - target: {fileID: 1155518123400841022, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1155518123400841022, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1155518123400841022, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1190696418369185082, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1450053660614001030, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1502636834464839105, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2005725479168340990, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2398330663818171562, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2707954316116697937, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2707954316116697937, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2707954316116697937, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2707954316116697937, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1960765190}
-    - target: {fileID: 2707954316116697937, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2707954316116697937, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2707954316116697937, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3161992191935927518, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3180916379769057608, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
@@ -22429,7 +22181,7 @@ PrefabInstance:
     - target: {fileID: 3180916379769057608, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.5429418
+      value: 0.7655232
       objectReference: {fileID: 0}
     - target: {fileID: 3180916379769057608, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
@@ -22439,7 +22191,7 @@ PrefabInstance:
     - target: {fileID: 3180916379769057608, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.8397703
+      value: -0.64340824
       objectReference: {fileID: 0}
     - target: {fileID: 3180916379769057608, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
@@ -22454,568 +22206,33 @@ PrefabInstance:
     - target: {fileID: 3180916379769057608, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -245.768
+      value: -80.093
       objectReference: {fileID: 0}
     - target: {fileID: 3180916379769057608, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3292017035609518669, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292017035609518669, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292017035609518669, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292017035609518669, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1937830141}
-    - target: {fileID: 3292017035609518669, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292017035609518669, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292017035609518669, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3555914424349473712, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3555914424349473712, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3555914424349473712, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3555914424349473712, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1419277582}
-    - target: {fileID: 3555914424349473712, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3555914424349473712, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3555914424349473712, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3592383358157131037, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4008581928905257278, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4008581928905257278, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4008581928905257278, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4008581928905257278, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1284985958}
-    - target: {fileID: 4008581928905257278, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4008581928905257278, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4008581928905257278, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4066726570969195013, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_Radius
-      value: 0.06
-      objectReference: {fileID: 0}
-    - target: {fileID: 4325011652861220978, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4458768654865640312, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4676286939569174073, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4676286939569174073, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4676286939569174073, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4676286939569174073, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4676286939569174073, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4676286939569174073, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4878597989371527717, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4878597989371527717, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4878597989371527717, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4878597989371527717, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1336770113}
-    - target: {fileID: 4878597989371527717, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4878597989371527717, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4878597989371527717, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4935348727773002157, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5170695969615833716, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5170695969615833716, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5170695969615833716, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5170695969615833716, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1810987716}
-    - target: {fileID: 5170695969615833716, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5170695969615833716, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5170695969615833716, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5467935025966463816, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5467935025966463816, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5467935025966463816, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5467935025966463816, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 559411406}
-    - target: {fileID: 5467935025966463816, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5467935025966463816, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5467935025966463816, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5609120037615214821, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5609120037615214821, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5609120037615214821, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5609120037615214821, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1284985958}
-    - target: {fileID: 5609120037615214821, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5609120037615214821, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5609120037615214821, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5619488508329714593, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6095220085274597211, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6849364678418516890, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6849364678418516890, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6849364678418516890, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6849364678418516890, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1397690675}
-    - target: {fileID: 6849364678418516890, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6849364678418516890, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6849364678418516890, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7040217186419950594, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7061888109199651833, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7061888109199651833, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7061888109199651833, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7061888109199651833, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1775323687}
-    - target: {fileID: 7061888109199651833, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7061888109199651833, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7061888109199651833, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7176227129698195864, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7176227129698195864, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7176227129698195864, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7176227129698195864, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1060662168}
-    - target: {fileID: 7176227129698195864, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7176227129698195864, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7176227129698195864, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7464736223623085511, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7464736223623085511, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7464736223623085511, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7464736223623085511, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1810987716}
-    - target: {fileID: 7464736223623085511, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7464736223623085511, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7464736223623085511, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7727422175955505778, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7731561861930550950, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7731561861930550950, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7731561861930550950, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7731561861930550950, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
-      value: 
-      objectReference: {fileID: 1284985958}
-    - target: {fileID: 7731561861930550950, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7731561861930550950, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7731561861930550950, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8364736506676604543, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 8385672102563579177, guid: 77912444cc288796b9294cb9d62e431e,
+    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8484369072148392269, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_XMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8484369072148392269, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_YMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8484369072148392269, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ZMotion
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8484369072148392269, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_ConnectedBody
+      propertyPath: blackboard.focus
       value: 
-      objectReference: {fileID: 1810987716}
-    - target: {fileID: 8484369072148392269, guid: 77912444cc288796b9294cb9d62e431e,
+      objectReference: {fileID: 143034989}
+    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
-      propertyPath: m_AngularXMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8484369072148392269, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularYMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8484369072148392269, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_AngularZMotion
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8571044314024618009, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8599971436181561449, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
+      propertyPath: blackboard.dingle
+      value: 
+      objectReference: {fileID: 437424008}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -23025,17 +22242,17 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 3457784104316428637}
+  - {fileID: 437424008}
+  - {fileID: 143034989}
   - {fileID: 1182015342}
   - {fileID: 906310168}
-  - {fileID: 1167607246}
-  - {fileID: 3457784104316428637}
   - {fileID: 369893502}
   - {fileID: 220640359}
   - {fileID: 1076927437}
   - {fileID: 384372661}
   - {fileID: 1646264505}
   - {fileID: 226988495}
-  - {fileID: 437424008}
   - {fileID: 406101975}
   - {fileID: 1450862647}
   - {fileID: 544375516}

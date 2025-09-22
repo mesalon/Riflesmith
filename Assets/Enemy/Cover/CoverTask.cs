@@ -24,7 +24,7 @@ public class CoverTask {
 	// CONVERSELY, CHECK IF YOU LEAN OUT, CHECK IF HE WOULD BE EXPOSED
 	// RIGHT NOW IT'S ONLY CONSIDERING A FLAT OFFSET TO THE SIDE. NOT TAKING INTO CONSIDERATION THE RELATIONSHIP OF THESE TWO DIFFERENT SITUATIONS
 	public void RunSplat(Vector3 threat, float bodyWidth, float bodyHeight) {
-		Quaternion rot = Quaternion.LookRotation((threat - cover.position).FlattenXZ(), Vector3.up);
+		Quaternion rot = Quaternion.LookRotation((threat - cover.position).FlattenY(), Vector3.up);
 		Vector3 myPosSplat = (cover.position + rot * new Vector3(Random.Range(-bodyWidth, bodyWidth), UnityEngine.Random.Range(0, bodyHeight), 0));
 		Vector3 threatSplat = (threat + rot * new Vector3(Random.Range(-bodyWidth *  cfg.threatBreadth, bodyWidth * cfg.threatBreadth), UnityEngine.Random.Range(0, bodyHeight), 0));
 

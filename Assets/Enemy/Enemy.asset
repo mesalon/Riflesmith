@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: New Enemy Config
+  m_Name: Enemy
   m_EditorClassIdentifier: Assembly-CSharp::EnemyConfig
   enemy:
     enableFire: 1
@@ -43,40 +43,86 @@ MonoBehaviour:
   vision:
     angleChanceCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     distanceChanceCurve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     playerMask:
       serializedVersion: 2
-      m_Bits: 0
+      m_Bits: 8
     visionMask:
       serializedVersion: 2
-      m_Bits: 0
+      m_Bits: 4096
     sightRange: 100
     viewAngleMax: 100
     overallVisionFactor: 1
-    consistencyFactor: 2
+    consistencyFactor: 4
     movementWindow: 1
   locomotion:
     hitMask:
       serializedVersion: 2
       m_Bits: 0
-    walkSpeed: 4
-    runSpeed: 6
+    walkSpeed: 1.25
+    jogSpeed: 2
+    sprintSpeed: 6
+    turnSpeed: 3
     sens: 4
     aimSpeed: 5
     verticalLook: 0
     smoothing: 5
-    destinationTolerance: 0.1
     lookSpeed: 4
     minAimDistance: 4
+  body:
+    health: 100
+    strength: 100
+    recoveryMin: 5
+    recoveryMax: 10
+    recoveryDelay: 3
+    force: 20
+    damper: 20
+    speed: 2
   cover:
     range: 10
     navRange: 15
@@ -92,4 +138,4 @@ MonoBehaviour:
     skepticism: 10
     envLayer:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 4096

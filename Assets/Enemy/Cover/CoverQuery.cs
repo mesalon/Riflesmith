@@ -37,7 +37,7 @@ using System.Collections.Generic;
 }
 
 public class CoverQuery {
-	private readonly CoverParams cfg;
+	private CoverParams cfg;
 	private Vector3 scale = Vector3.one * 0.1f;
 	private Vector3 myPos, threat, threatTorso;
 	private NavMeshPath path;
@@ -58,7 +58,7 @@ public class CoverQuery {
 
 			wasd.Add(new(c.position + (cfg.bodyHeight / 2) * Vector3.up, threatTorso));
 			if ((c.position - myPos).sqrMagnitude < cfg.range * cfg.range && // In range?
-					Mathf.Abs(Vector3.Dot((threat - c.position).normalized.FlattenXZ(), c.normal.FlattenXZ())) > cfg.minDot && // Angle ok?
+					Mathf.Abs(Vector3.Dot((threat - c.position).normalized.FlattenY(), c.normal.FlattenY())) > cfg.minDot && // Angle ok?
 					Physics.Linecast(c.position + (cfg.bodyHeight / 2) * Vector3.up, threatTorso, out var _, cfg.envLayer)) { // Breaks LOS to torso?
 				navQueue.Add(c); 
 			}

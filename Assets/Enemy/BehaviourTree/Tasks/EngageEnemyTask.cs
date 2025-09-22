@@ -6,10 +6,12 @@ public class EngageEnemyTask : Node { // This system is flawed. A shooter's firi
 	private readonly Enemy ctx;
 
 	public EngageEnemyTask(Enemy ctx) {
+		this.ctx = ctx;
 	}
 
 	public override NodeState Evaluate(out Node active) {
 		active = this;
+		ctx.locomotion.ADS(true);
 		gun.triggerState = true;
 		return NodeState.Running;
 	}

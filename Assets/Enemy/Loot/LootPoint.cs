@@ -32,7 +32,7 @@ public class LootPoint : MonoBehaviour, IInteractable {
 			for (int i = 0; i < weights.Count; i++) {
 				if (r <= weights[i]) {
 					print($"({i}) Picked {gear[i]}");
-					GameObject inst = Instantiate(gear[i].items.Random(), Interactor.transform.position, Interactor.transform.rotation);
+					GameObject inst = Instantiate(gear[i].items.GetRandom(), Interactor.transform.position, Interactor.transform.rotation);
 					if (inst.TryGetComponent(out IInteractable interactable)) { Interactor.Pick(interactable); }
 					break;
 				}

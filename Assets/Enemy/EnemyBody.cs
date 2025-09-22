@@ -1,21 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public struct BodyCfg {
+	public float health;
+	public float strength;
 	public float recoveryMin;
 	public float recoveryMax;
 	public float recoveryDelay;
-	public float strength;
 	public float force;
 	public float damper;
 	public float speed;
 }
 
 public class EnemyBody {
-	public float Health { get; private set; } = 100;
+	public float Health { get; private set; }
 	public bool isUp { get; private set; } = true;
 	private readonly Blackboard ctx;
-	private readonly BodyCfg cfg;
+	private BodyCfg cfg => ctx.cfg.body;
 	private Vector3[] axes;
 	private readonly float seed;
 	private float bleeding;
@@ -24,14 +26,13 @@ public class EnemyBody {
 
 	public EnemyBody(Blackboard ctx) {
 		this.ctx = ctx;
-		cfg = ctx.cfg.health;
 		seed = ctx.transform.GetInstanceID();
+		Health = cfg.health;
 		strength = cfg.strength;
 		axes = new Vector3[ctx.joints.Count];
 		for (int i = 0; i < ctx.joints.Count; i++)
 			axes[i] = Random.onUnitSphere;
 		SetForce(1);
-		SetRagdoll(true);
 	}
 
 	public void Tick() {
@@ -66,6 +67,7 @@ public class EnemyBody {
 	}
 
 	public void Damage(float amount, float force) {
+		Debug.Log("Hello");
 		Health = Mathf.Max(0, Health - amount);
 		strength = Mathf.Max(0, strength - force);
 		bleeding += amount * 0.1f;
@@ -75,6 +77,7 @@ public class EnemyBody {
 	public void SetRagdoll(bool state) {
 		isUp = !state;
 		ctx.anim.enabled = !state;
+		ctx.weapon.enabled = !state;
 		foreach (ConfigurableJoint j in ctx.joints) {
 			Rigidbody rag = j.GetComponent<Rigidbody>();
 			rag.isKinematic = !state;

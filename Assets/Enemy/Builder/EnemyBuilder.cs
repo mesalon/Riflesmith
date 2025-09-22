@@ -41,7 +41,7 @@ public class EnemyBuilder : MonoBehaviour {
 				entry.worldObject.SetActive(true);
 				Material skin = null;
 				if (entry.skins.Count > 0) { // todo: Aesthetic cohesion system
-					skin = entry.skins.Random();
+					skin = entry.skins.GetRandom();
 					entry.smr.material = skin;
 				}
 				if (debugs) print($"Enabling {entry.worldObject.name} with {(skin ? $"skin {skin}" : "no skin")}");
