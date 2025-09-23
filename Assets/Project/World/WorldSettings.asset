@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dd73c3d92595bf4ba4cacd28bbbf4ef, type: 3}
+  m_Name: WorldSettings
+  m_EditorClassIdentifier: 
+  blowbackCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.30854213
+      outSlope: 4
+      tangentMode: 69
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.10295599
+    - serializedVersion: 3
+      time: 0.25
+      value: 1
+      inSlope: -0.0040940573
+      outSlope: -0.0040940573
+      tangentMode: 0
+      weightedMode: 2
+      inWeight: 0.09046667
+      outWeight: 0.5598057
+    - serializedVersion: 3
+      time: 0.9750061
+      value: 0
+      inSlope: -4.0006905
+      outSlope: -4.0006905
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.028070336
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
