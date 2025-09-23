@@ -41,54 +41,6 @@ MonoBehaviour:
     delayWeightBase: 0
     inconsistencyBase: 0
   vision:
-    angleChanceCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    distanceChanceCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
     playerMask:
       serializedVersion: 2
       m_Bits: 8
@@ -96,10 +48,13 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 4096
     sightRange: 100
-    viewAngleMax: 100
+    FOVAngle: 105
     overallVisionFactor: 1
     consistencyFactor: 4
     movementWindow: 1
+    staticPeripheryFalloff: 0.2
+    motionPeripheryFalloff: 0.02
+    showDebug: 1
   locomotion:
     hitMask:
       serializedVersion: 2

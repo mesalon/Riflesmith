@@ -42,7 +42,6 @@ public class Enemy : MonoBehaviour {
 		if (body.isUp) {
 			locomotion.Tick();
 			vision.Tick();
-			vision.Debug();
 			body.Tick();
 			try {
 				brain.Evaluate(out active);

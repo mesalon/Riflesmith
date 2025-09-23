@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,6 +22,11 @@ public static class Ext {
 		double ms = (Stopwatch.GetTimestamp() - stamp) * 1000.0 / Stopwatch.Frequency;
 		if (message) Debug.Log($"Execution of {(msg == String.Empty ? "method" : msg)} took {ms} ms");
 		return ms;
+	}
+
+	public static StringBuilder AppendLines(this StringBuilder str, params object[] lines) {
+		foreach (object o in lines) { str.AppendLine(o?.ToString()); }
+		return str;
 	}
 
 	public static string DebugFields(object data) {
