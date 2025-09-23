@@ -19,10 +19,7 @@ public class GameManager : MonoBehaviour {
 	[SerializeField] float tierIncrease;
 	[SerializeField] List<Transform> spawnPoints;
 	[SerializeField] GameObject player;
-	[SerializeField] List<GameObject> spawnGear;
-	[SerializeField] Enemy enemy;
-	[SerializeField] Enemy HVT;
-	[SerializeField] bool spawnPlayer;
+	[SerializeField] Enemy enemyPF;
 
 	private void Awake() {
 		if (I == null) {
@@ -30,17 +27,6 @@ public class GameManager : MonoBehaviour {
 			DontDestroyOnLoad(gameObject);
 		}
 		else { Destroy(gameObject); }
-	}
-	
-	void Start() {
-		int i = Random.Range(0, spawnPoints.Count);
-		if (spawnPoints.Count > i) {
-			Transform spawn = spawnPoints[i];
-			if(spawnPlayer) Instantiate(player, spawn.position, spawn.rotation);
-			foreach (GameObject go in spawnGear) {
-				Instantiate(go, spawn.position, spawn.rotation);
-			}
-		}
 	}
 
 	void Update() {
@@ -67,7 +53,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public static Enemy SpawnEnemy(Vector3 position, bool hvt = false) {
+	public static Enemy SpawnEnemy(Vector3 position) {
 		bool badSpot = false;
 		Collider[] overlap = Physics.OverlapCapsule(position, position + Vector3.up * 1.8f, 0.5f);
 		foreach (Collider col in overlap) {
@@ -76,6 +62,6 @@ public class GameManager : MonoBehaviour {
 				break;
 			}
 		}
-		return Instantiate(hvt ? I.HVT : I.enemy, badSpot ? position + Vector3.up * 1.8f: position, Quaternion.Euler(0, Random.Range(0, 360), 0));
+		return Instantiate(I.enemyPF, badSpot ? position + Vector3.up * 1.8f: position, Quaternion.Euler(0, Random.Range(0, 360), 0));
 	}
 }
