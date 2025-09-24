@@ -44,9 +44,7 @@ public class EnemyVision {
 				p = player;
 				Vector3 eyePos = ctx.eyes.position, playerPos = player.rig.head.position;
 				if (Physics.Linecast(eyePos, playerPos, out RaycastHit hit, cfg.visionMask)) {
-					Debug.Log("2");
 					if(hit.transform.root == player.transform) {
-						Debug.Log("3");
 						Vector3 a = ctx.eyes.forward, b = (playerPos - eyePos).normalized;
 						float angle = (Dot(a, b));
 						float staticChance = Mathf.Exp(cfg.staticPeripheryDecay * angle);
