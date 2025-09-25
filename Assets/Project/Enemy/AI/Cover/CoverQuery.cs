@@ -85,6 +85,7 @@ public class CoverQuery {
 				}
 			}
 		}
+		
 		GraphWindow.AddToGraph("Nav", (float)Ext.DebugTimestamp(t2, message: false));
 
 		// 4. Splatting

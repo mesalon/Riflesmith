@@ -15,6 +15,7 @@ public class Blackboard {
 	public List<ConfigurableJoint> joints;
 	public UnityEngine.Animations.Rigging.Rig gunRestRig;
 	public Transform ikTarget;
+	public int x, y;
 
 	public Player target;
 	public Vector3? aimFocus;

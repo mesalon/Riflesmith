@@ -38,19 +38,18 @@ public class GameManager : MonoBehaviour {
 	}
 
 	private void OnDrawGizmos() {
-		for (int i = Ext.labelRequests.Count - 1; i >= 0; i--) {
-			LabelRequest r = Ext.labelRequests[i];
-			r.style ??= new() {
-				alignment = TextAnchor.MiddleCenter, 
-				normal = new() { textColor = r.color == default ? Color.white : r.color }
-			};
-			Handles.Label(r.position, r.text, r.style);
-			Ext.labelRequests.RemoveAt(i);
+		for (int i = Ext.labelQueue.Count - 1; i >= 0; i--) { 
+			var label = Ext.labelQueue[i]; 
+			Handles.Label(label.position, label.text, label.style); 
+			label.lifespan -= Time.deltaTime;
 		}
-		for (int i = Ext.drawQueue.Count - 1; i >= 0; i--) {
-			Ext.drawQueue[i]();
-			Ext.drawQueue.RemoveAt(i);
+		for (int i = Ext.drawQueue.Count - 1; i >= 0; i--) { 
+			var draw = Ext.drawQueue[i]; 
+			draw.action(); 
+			draw.lifespan -= Time.deltaTime;
 		}
+		Ext.labelQueue.RemoveAll(r => r.lifespan <= 0);
+		Ext.drawQueue.RemoveAll(r => r.lifespan <= 0);
 	}
 
 	public static Enemy SpawnEnemy(Vector3 position) {

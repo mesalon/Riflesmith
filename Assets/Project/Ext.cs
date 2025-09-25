@@ -9,8 +9,8 @@ using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
 public static class Ext {
-	public static List<LabelRequest> labelRequests = new();
-	public static List<Action> drawQueue = new();
+	public static List<LabelRequest> labelQueue = new();
+	public static List<DrawRequest> drawQueue = new();
 
 	// todo: combine all these into one somehow
 	public static bool DidPass(this float current, float amount, float previous) => current > amount && previous <= amount;
@@ -73,8 +73,12 @@ public static class Ext {
 		list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = value;
 	}
 
-	public static void Label(Vector3 position, string text, GUIStyle style = null, Color color = default) {
-		labelRequests.Add(new() { position = position, text = text, style = style,  color = color });
+	public static void Label(Vector3 position, string text, float lifespan = 0, GUIStyle style = null, Color color = default) {
+		style ??= new() {
+			alignment = TextAnchor.MiddleCenter, 
+			normal = new() { textColor = color == default ? Color.white : color }
+		};
+		labelQueue.Add(new() { position = position, text = text, lifespan = lifespan, style = style, color = color });
 	}
 
 	public static float NormalizeAngle(this float angle) => angle % 360 <= 180 ? angle % 360 : angle % 360 - 360;
@@ -99,7 +103,7 @@ public static class Ext {
 		}
 	}
 
-	public static void Draw(Action action) { drawQueue.Add(action); }
+	public static void Draw(Action action, float lifespan = 0) { drawQueue.Add(new() { action = action, lifespan = lifespan }); }
 
 	public static void DrawCube(Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
 		Draw(() => {
@@ -110,25 +114,37 @@ public static class Ext {
 				});
 	}
 
-	public static void DrawCubeLine(Vector3 start, Vector3 end, Color color, float thickness = 0.05f) {
+	public static void DrawCubeLine(Vector3 start, Vector3 end, Color color, float lifespan = 0, float thickness = 0.05f) {
 		Draw(() => {
-				Quaternion rotation = Quaternion.LookRotation((end - start).normalized, Vector3.up);
+				Vector3 dir = (end - start).normalized;
+				Quaternion rotation = dir != Vector3.zero ? Quaternion.LookRotation(dir, Vector3.up) : Quaternion.identity;
 				Gizmos.matrix = Matrix4x4.TRS((start + end) / 2f, rotation, Vector3.one);
 				Gizmos.color = color;
 				Gizmos.DrawCube(Vector3.zero, new Vector3(thickness, thickness, (end - start).magnitude));
 				Gizmos.matrix = Matrix4x4.identity;
-				});
+				}, lifespan);
 	}
 
-	public static void DrawCubeRay(Vector3 start, Vector3 direction, float length, Color color, float thickness = 0.05f) {
-		Vector3 end = start + direction.normalized * length;
-		DrawCubeLine(start, end, color, thickness);
+	public static void DrawCubeRay(Vector3 start, Vector3 dir, Color color, float lifespan = 0, float thickness = 0.05f) {
+		Vector3 end = start + dir;
+		DrawCubeLine(start, end, color, lifespan, thickness);
 	}
 
 	public static Vector3 FlattenY(this Vector3 vector) => new(vector.x, 0, vector.z);
 
-	public static Color GetColor(bool condition) => (condition ? Color.green : Color.red) * (new Color(1, 1, 1, 0.5f));
-	public static Color GetColor(bool condition, Color a, Color b) => (condition ? a : b) * (new Color(1, 1, 1, 0.5f));
+	public static Color MultiLerp(Color[] colors, float t) {
+		int count = colors.Length;
+		GradientColorKey[] colorKeys = new GradientColorKey[count];
+		GradientAlphaKey[] alphaKeys = new GradientAlphaKey[count];
+		for (int i = 0; i < count; i++) {
+			float time = (float)i / (count - 1);
+			colorKeys[i] = new GradientColorKey(colors[i], time);
+			alphaKeys[i] = new GradientAlphaKey(colors[i].a, time);
+		}
+		Gradient gradient = new Gradient();
+		gradient.SetKeys(colorKeys, alphaKeys);
+		return gradient.Evaluate(t);
+	}
 
 	public static T GetRandom<T>(this List<T> list) {
 		if (list == null || list.Count == 0) { return default(T); }
@@ -172,11 +188,16 @@ public static class Ext {
 	}
 }
 
-public struct LabelRequest {
+public class LabelRequest {
 	public Vector3 position;
 	public string text;
 	public GUIStyle style;
 	public Color color;
+	public float lifespan;
+}
+public class DrawRequest {
+	public Action action;
+	public float lifespan;
 }
 
 [System.Serializable] public struct FloatRange { public float Min, Max; }

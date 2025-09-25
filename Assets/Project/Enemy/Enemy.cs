@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour {
 	public EnemyVision vision;
 	public EnemyBody body;
 	private Node brain;
+	public bool runLocomotion = true, runVision = true, runBody = true, runBrain = true;
 
 	private void Awake() {
 		locomotion = new(blackboard);
@@ -40,16 +41,24 @@ public class Enemy : MonoBehaviour {
 	private void Update() {
 		Node active = null;
 		if (body.isUp) {
-			locomotion.Tick();
-			vision.Tick();
-			body.Tick();
+			if (runLocomotion) locomotion.Tick();
+			if (runBody) body.Tick();
 			try {
-				brain.Evaluate(out active);
-			} catch (System.Exception e) {
-				Debug.Log($"Error in execution of brain.\n{e}");
-			}
+				if (runBrain) brain.Evaluate(out active);
+			} catch (System.Exception e) { }
 		}
-		Ext.Label(transform.position + 2 * Vector3.up, $"node: {active}");
+		//Ext.Label(transform.position + 2 * Vector3.up, $"node: {active}");
+	}
+
+	private void FixedUpdate() {
+		if (body.isUp) {
+			if (runVision) vision.Tick();
+		}
+	}
+
+	[ContextMenu("Generate Vision Heatmap")]
+	private void GenerateVisionHeatmap() {
+		vision.GenerateHeatmap();
 	}
 }
 

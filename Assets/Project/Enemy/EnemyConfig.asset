@@ -9,22 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: Enemy
+  m_Script: {fileID: 11500000, guid: 2b5406367583e1c4ea52691fbd20d78b, type: 3}
+  m_Name: EnemyConfig
   m_EditorClassIdentifier: Assembly-CSharp::EnemyConfig
   enemy:
-    enableFire: 1
+    enableFire: 0
     range: 0
     skill: 0
     ammo: 0
     intent: 0
     recoil: 0
     burst:
-      Min: 2
-      Max: 4
+      Min: 0
+      Max: 0
     delay:
       Min: 0
-      Max: 0.5
+      Max: 0
     rangeBurstWeight: 0
     skillBurstWeight: 0
     ammoBurstWeight: 0
@@ -40,44 +40,39 @@ MonoBehaviour:
     burstWeightBase: 0
     delayWeightBase: 0
     inconsistencyBase: 0
+  body:
+    health: 100
+    strength: 100
+    recovery: 10
+    recoveryDelay: 8
+    ragdollStrength: 0
+    ragdollDamper: 0
+    ragdollSpeed: 0
   vision:
     playerMask:
       serializedVersion: 2
       m_Bits: 8
     visionMask:
       serializedVersion: 2
-      m_Bits: 4096
+      m_Bits: 4294967295
     sightRange: 100
     FOVAngle: 105
-    overallVisionFactor: 1
-    consistencyFactor: 4
-    movementWindow: 1
-    staticPeripheryFalloff: 0.2
-    motionPeripheryFalloff: 0.02
+    detectionSpeed: 1
+    stillPeripheryDecay: 0.15
+    stillSensitivity: 5
+    motionPeripheryDecay: 0.02
+    motionSensitivity: 5
+    maxAngleDetection: 15
+    accumulatorDecay: 0.25
     showDebug: 1
   locomotion:
-    hitMask:
-      serializedVersion: 2
-      m_Bits: 0
     walkSpeed: 1.25
     jogSpeed: 2
     sprintSpeed: 6
-    turnSpeed: 3
-    sens: 4
-    aimSpeed: 5
-    verticalLook: 0
-    smoothing: 5
+    turnSpeed: 4
+    aimSpeed: 2
     lookSpeed: 4
-    minAimDistance: 4
-  body:
-    health: 100
-    strength: 100
-    recoveryMin: 5
-    recoveryMax: 10
-    recoveryDelay: 3
-    force: 20
-    damper: 20
-    speed: 2
+    minAimDistance: 2
   cover:
     range: 10
     navRange: 15
@@ -93,4 +88,4 @@ MonoBehaviour:
     skepticism: 10
     envLayer:
       serializedVersion: 2
-      m_Bits: 4096
+      m_Bits: 4294967295

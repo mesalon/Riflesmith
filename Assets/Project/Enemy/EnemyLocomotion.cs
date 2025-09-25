@@ -2,17 +2,23 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [System.Serializable] public struct LocomotionCfg {
-	public LayerMask hitMask;
 	public float walkSpeed;
 	public float jogSpeed;
 	public float sprintSpeed;
 	public float turnSpeed;
-	public float sens;
 	public float aimSpeed;
-	public bool verticalLook;
-	public float smoothing;
 	public float lookSpeed;
 	public float minAimDistance;
+
+	public static readonly LocomotionCfg Default = new() {
+		walkSpeed = 1.25f,
+		jogSpeed = 2,
+		sprintSpeed = 6,
+		turnSpeed = 4,
+		aimSpeed = 2,
+		lookSpeed = 4,
+		minAimDistance = 2,
+	};
 }
 
 public class EnemyLocomotion {

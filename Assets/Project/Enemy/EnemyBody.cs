@@ -1,16 +1,21 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
 public struct BodyCfg {
 	public float health;
 	public float strength;
-	public float recoveryMin;
-	public float recoveryMax;
+	public float recovery;
 	public float recoveryDelay;
-	public float force;
-	public float damper;
-	public float speed;
+	public float ragdollStrength;
+	public float ragdollDamper;
+	public float ragdollSpeed;
+
+	public static readonly BodyCfg Default = new() {
+		health = 100,
+		strength = 100,
+		recovery = 10,
+		recoveryDelay = 8,
+	};
 }
 
 public class EnemyBody {
@@ -36,7 +41,7 @@ public class EnemyBody {
 	}
 
 	public void Tick() {
-		float regenRate = Mathf.Lerp(cfg.recoveryMin, cfg.recoveryMax, hitTime - cfg.recoveryDelay / 10);
+		float regenRate = Mathf.Lerp(0, cfg.recovery, hitTime - cfg.recoveryDelay / 10);
 		strength = Mathf.Min(100, strength + regenRate * (Health / 100) * Time.deltaTime);
 		bleeding = Mathf.Max(0, bleeding - bleeding * 0.1f * Time.deltaTime);
 		SetForce(Mathf.Min(strength, Health) / 100);
@@ -57,9 +62,9 @@ public class EnemyBody {
 
 		for (int i = 0; i < ctx.joints.Count; i++) { // todo, fix the animations and remove the random spinning
 			ctx.joints[i].targetRotation = Quaternion.Euler(
-					Mathf.PerlinNoise(Time.time * cfg.speed + i + seed, 0) * 360,
-					Mathf.PerlinNoise(0, Time.time * cfg.speed + i + seed) * 360,
-					Mathf.PerlinNoise(Time.time * cfg.speed + i * 10 + seed, Time.time * cfg.speed + i) * 360
+					Mathf.PerlinNoise(Time.time * cfg.ragdollSpeed + i + seed, 0) * 360,
+					Mathf.PerlinNoise(0, Time.time * cfg.ragdollSpeed + i + seed) * 360,
+					Mathf.PerlinNoise(Time.time * cfg.ragdollSpeed + i * 10 + seed, Time.time * cfg.ragdollSpeed + i) * 360
 					);
 		}
 
@@ -90,8 +95,8 @@ public class EnemyBody {
 
 	public void SetForce(float scale) {
 		JointDrive drive = ctx.joints[0].angularXDrive;
-		drive.positionSpring = scale * cfg.force;
-		drive.positionDamper = scale * cfg.damper;
+		drive.positionSpring = scale * cfg.ragdollStrength;
+		drive.positionDamper = scale * cfg.ragdollDamper;
 		foreach (ConfigurableJoint j in ctx.joints) {
 			j.angularXDrive = drive;
 			j.angularYZDrive = drive;
