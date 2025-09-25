@@ -24,9 +24,9 @@ public static class Ext {
 		return ms;
 	}
 
-	public static StringBuilder AppendLines(this StringBuilder str, params object[] lines) {
-		foreach (object o in lines) { str.AppendLine(o?.ToString()); }
-		return str;
+	public static StringBuilder AppendLines(this StringBuilder sb, params object[] lines) {
+		foreach (object o in lines) { sb.AppendLine(o?.ToString()); }
+		return sb;
 	}
 
 	public static string DebugFields(object data) {

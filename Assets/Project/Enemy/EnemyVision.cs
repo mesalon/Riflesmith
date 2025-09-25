@@ -56,90 +56,88 @@ public class EnemyVision {
 	// Right now it's actually better when moving because it sets off the movement detection
 	public Player Tick() {
 		Player detectedPlayer = null;
-		StringBuilder debug = cfg.showDebug ? new() : null;
+		MobileDebug debug = cfg.showDebug ? new() : null;
 		foreach (Collider col in Physics.OverlapSphere(ctx.transform.position, cfg.sightRange, cfg.playerMask)) { // todo non alloc
 			if (col.TryGetComponent(out Player player) && player.isActiveAndEnabled) {
-				Vector3 eyePos = ctx.eyes.position, playerPos = player.rig.head.position;
+				Vector3 eyePos = ctx.eyes.position; 
+				Vector3 playerPos = player.rig.head.position;
 				Vector3 playerDir = (playerPos - eyePos).normalized;
-				float dot = Dot(ctx.eyes.forward, playerDir);
-				if (Physics.Linecast(eyePos, playerPos, out RaycastHit hit, cfg.visionMask) && hit.transform.root == player.transform && dot > maxAngleCos) {
-					float angle = Acos(dot) * Rad2Deg;
-					float motion = 0;
-					if (lastPlayerDir is Vector3 lpd) {
-						motion = Mathf.InverseLerp(0, cfg.maxAngleDetection, Vector3.Angle(playerDir, lpd) / Time.fixedDeltaTime);
-					}
-					lastPlayerDir = playerDir;
+				if (Physics.Linecast(eyePos, playerPos, out RaycastHit hit, cfg.visionMask) && hit.transform.root == player.transform) {
+					float motion = Mathf.InverseLerp(0, cfg.maxAngleDetection, Vector3.Angle(playerDir, lastPlayerDir ?? playerDir) / Time.fixedDeltaTime);
+					float angle = Vector3.Angle(ctx.eyes.forward, playerDir);
+					debug?.Add("Angle", angle);
+					debug?.Add("Motion", motion);
+					if (ComputeRate(Vector3.Distance(eyePos, playerPos), Dot(ctx.eyes.forward, playerDir), angle, motion, out float rate)) {
+						lastPlayerDir = playerDir;
+						accumulator += rate * Time.fixedDeltaTime;
+						if (accumulator >= 1) {
+							accumulator = 0;
+							detectedPlayer = player;
+						}
 
-					float rate = GetRate(angle, motion, debug);
-					accumulator += rate * Time.fixedDeltaTime;
-
-					if (accumulator >= 1) {
-						accumulator = 0;
-						detectedPlayer = player;
+						float realRate = rate - cfg.accumulatorDecay;
+						float spotTime = 1 / realRate;
+						debug?.Add("Spot rate", realRate);
+						debug?.Add("Spot time", spotTime);
+						debug?.Add("Accumulator", accumulator);
+						if (cfg.showDebug) { 
+							Ext.Label(ctx.transform.position + 2.5f * Vector3.up, debug.ToString(), Time.fixedDeltaTime); 
+							Color alpha = new(1, 1, 1, 0.5f);
+							Color c = Color.Lerp(Color.red, Color.green, Mathf.InverseLerp(0, 15, 1 / rate));
+							Ext.DrawCubeLine(ctx.eyes.position, playerPos, c * alpha, Time.fixedDeltaTime);
+							Ext.DrawCubeRay(player.transform.position, accumulator * (2 * Vector3.up), Color.white, Time.fixedDeltaTime, 0.2f);
+							Ext.Label(player.transform.position + 2 * Vector3.up, $"{accumulator * 100:F1}% - detection in {spotTime:F3}s", Time.fixedDeltaTime);
+						}
+					} else {
+						lastPlayerDir = null;
 					}
-
-					float realRate = rate - cfg.accumulatorDecay;
-					float spotTime = 1 / realRate; 
-					debug?.AppendLines(
-							$"Angle: {angle:F2}",
-							$"Accumulator: {accumulator:F3}",
-							$"Detection rate: {realRate:F2}",
-							$"Detection time: {spotTime}s"
-							);
-					if (cfg.showDebug && player) { 
-						Ext.Label(ctx.transform.position + 2.5f * Vector3.up, debug.ToString(), Time.fixedDeltaTime); 
-						//Debug.Log(debug.ToString());
-						Color alpha = new(1, 1, 1, 0.5f);
-						Color c = Color.Lerp(Color.red, Color.green, Mathf.InverseLerp(0, 15, 1 / realRate));
-						Ext.DrawCubeLine(ctx.eyes.position, playerPos, c * alpha, Time.fixedDeltaTime);
-						Ext.DrawCubeRay(player.transform.position, accumulator * (2 * Vector3.up), Color.white, Time.fixedDeltaTime, 0.2f);
-						Ext.Label(player.transform.position + 2 * Vector3.up, $"{accumulator * 100:F1}% - detection in {spotTime:F3}s", Time.fixedDeltaTime);
-					}
-				} else {
-					lastPlayerDir = null;
+					break;
 				}
 
-				break;
 			}
 		}
 		accumulator = Max(0, accumulator - cfg.accumulatorDecay * Time.fixedDeltaTime);
 		return detectedPlayer;
 	}
 
-	public float GetRate(float angle, float motion, StringBuilder debug = null) {
-		float stillScore = Exp(-cfg.stillPeripheryDecay * angle) * cfg.stillSensitivity;
-		float motionDecay = Exp(-cfg.motionPeripheryDecay * angle);
-		float motionScore = motionDecay * motion * cfg.motionSensitivity;
-		debug?.AppendLines(
-				$"motionDecay: {motionDecay}, motion: {motion}, motionScore({motionScore})",
-				$"stillScore: {stillScore:F4}"
-				);
-		return cfg.detectionSpeed * Max(stillScore, motionScore);
+
+	public bool ComputeRate(float range, float dot, float angle, float motion, out float rate, MobileDebug debug = null) {
+		rate = 0;
+		if (dot > maxAngleCos && range < cfg.sightRange) {
+			float rangeScore = 1 / (range * range);
+			float stillScore = Exp(-cfg.stillPeripheryDecay * angle) * cfg.stillSensitivity;
+			float motionDecay = Exp(-cfg.motionPeripheryDecay * angle);
+			float motionScore = motionDecay * motion * cfg.motionSensitivity;
+			debug?.Add("motionDecay", motionDecay);
+			debug?.Add("stillScore", stillScore);
+			rate = cfg.detectionSpeed *  Max(stillScore, motionScore);
+			return true;
+		}
+		return false;
 	}
 
 #if UNITY_EDITOR
 	public void GenerateHeatmap() {
-		long t = System.Diagnostics.Stopwatch.GetTimestamp();
+		long time = System.Diagnostics.Stopwatch.GetTimestamp();
 		int textureSize = 512;
 		float maxDistance = cfg.sightRange;
-
 		Texture2D heatmap = new Texture2D(textureSize, textureSize, TextureFormat.RGB24, false);
 		Color[] pixels = new Color[textureSize * textureSize];
 		for (int y = 0; y < textureSize; y++) {
 			for (int x = 0; x < textureSize; x++) {
 				float xPos = ((float)x / (textureSize - 1) - 0.5f) * 2 * maxDistance;
 				float zPos = ((float)y / (textureSize - 1) - 0.5f) * 2 * maxDistance;
-				Vector3 targetPosition = new(xPos, 0, zPos);
-				float detectionTime = 1 / GetRate(Angle(Vector3.forward, targetPosition.normalized), 0);
-				float dot = Dot(ctx.eyes.forward, targetPosition.normalized);
-
 				Color pixelColor;
-				if (float.IsFinite(detectionTime) && targetPosition.magnitude < cfg.sightRange && dot > maxAngleCos) {
-					pixelColor = Color.Lerp(Color.black, Color.red, InverseLerp(15, 0, detectionTime)); 
+				Vector3 targetPosition = new(xPos, 0, zPos);
+				if (ComputeRate(targetPosition.magnitude, Dot(Vector3.forward, targetPosition.normalized), Angle(Vector3.forward, targetPosition.normalized), ctx.simMotion, out float rate)) {
+					pixelColor = ctx.heatmap.Evaluate(InverseLerp(0, ctx.maxHeatmapTime, 1 / rate));
 				} else {
-					pixelColor = Color.grey;
+					pixelColor = Color.darkGray;
 				}
-				if (x == ctx.x && y == ctx.y) { Debug.Log(Vector3.Distance(Vector3.zero, targetPosition)); }
+
+				if (x == ctx.x && y == ctx.y) { 
+					Debug.Log(Vector3.Distance(Vector3.zero, targetPosition)); 
+				}
 
 				pixels[y * textureSize + x] = pixelColor;
 			}
@@ -153,7 +151,7 @@ public class EnemyVision {
 		Debug.Log("Vision heatmap saved to: " + path);
 		AssetDatabase.Refresh();
 		GameObject.DestroyImmediate(heatmap);
-		Ext.DebugTimestamp(t, "time");
+		Ext.DebugTimestamp(time, "time");
 	}
 #endif
 }

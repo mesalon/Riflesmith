@@ -58,8 +58,8 @@ MonoBehaviour:
     sightRange: 100
     FOVAngle: 105
     detectionSpeed: 1
-    stillPeripheryDecay: 0.15
-    stillSensitivity: 5
+    stillPeripheryDecay: 0.2
+    stillSensitivity: 10
     motionPeripheryDecay: 0.02
     motionSensitivity: 5
     maxAngleDetection: 15

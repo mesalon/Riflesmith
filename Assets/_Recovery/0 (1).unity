@@ -10976,7 +10976,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializedBakingSet: {fileID: 0}
-  sceneGUID: 5a463281e6e238742a45430f11e82829
+  sceneGUID: 1c5e2fd38781574059f208d34f42e2d4
   obsoleteAsset: {fileID: 0}
   obsoleteCellSharedDataAsset: {fileID: 0}
   obsoleteCellSupportDataAsset: {fileID: 0}
@@ -20859,131 +20859,6 @@ PrefabInstance:
       propertyPath: blackboard.dingle
       value: 
       objectReference: {fileID: 437424008}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.atime0
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.atime1
-      value: 65535
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.atime2
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.ctime0
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.ctime1
-      value: 3277
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.ctime2
-      value: 16384
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.ctime3
-      value: 49151
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.ctime4
-      value: 65535
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key0.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key0.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key0.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key1.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key1.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key1.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key2.a
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key2.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key2.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key2.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key3.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key3.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key3.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.m_Mode
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.maxHeatmapTime
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.m_NumAlphaKeys
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.m_NumColorKeys
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

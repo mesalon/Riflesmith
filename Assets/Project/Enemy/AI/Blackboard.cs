@@ -16,6 +16,9 @@ public class Blackboard {
 	public UnityEngine.Animations.Rigging.Rig gunRestRig;
 	public Transform ikTarget;
 	public int x, y;
+	public float simMotion;
+	public Gradient heatmap;
+	public float maxHeatmapTime;
 
 	public Player target;
 	public Vector3? aimFocus;
