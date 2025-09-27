@@ -46,6 +46,9 @@ public class EnemyLocomotion {
 
 	Vector3 dest;
 	public void Tick() {
+		if (ctx.bool1)
+		ctx.transform.rotation = Quaternion.Euler(0, Mathf.PingPong(Time.time * 100, 90) - 45, 0);
+		return;
 		if (Input.GetMouseButtonDown(0)) {
 			Ray ray = GameManager.Camera.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray.origin, ray.direction * 1000, out RaycastHit hit)) {

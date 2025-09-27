@@ -11,6 +11,7 @@ using Object = UnityEngine.Object;
 public static class Ext {
 	public static List<LabelRequest> labelQueue = new();
 	public static List<DrawRequest> drawQueue = new();
+	public static int FixedFrameCount => Mathf.RoundToInt(Time.fixedTime / Time.fixedDeltaTime);
 
 	// todo: combine all these into one somehow
 	public static bool DidPass(this float current, float amount, float previous) => current > amount && previous <= amount;

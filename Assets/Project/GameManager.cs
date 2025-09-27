@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour {
 	
 	[SerializeField] float tierIncrease;
 	[SerializeField] List<Transform> spawnPoints;
-	[SerializeField] GameObject player;
+	public Player player;
 	[SerializeField] Enemy enemyPF;
 
 	private void Awake() {
@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour {
 			DontDestroyOnLoad(gameObject);
 		}
 		else { Destroy(gameObject); }
+		if (!player) player = FindFirstObjectByType<Player>();
 	}
 
 	void Update() {

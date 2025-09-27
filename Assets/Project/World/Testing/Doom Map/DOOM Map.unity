@@ -15122,7 +15122,7 @@ PrefabInstance:
     - target: {fileID: 4463845962344408814, guid: 0a752953edbc5434196cf9a9cbb4baed,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4463845962344408814, guid: 0a752953edbc5434196cf9a9cbb4baed,
         type: 3}
@@ -15132,7 +15132,7 @@ PrefabInstance:
     - target: {fileID: 4463845962344408814, guid: 0a752953edbc5434196cf9a9cbb4baed,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4463845962344408814, guid: 0a752953edbc5434196cf9a9cbb4baed,
         type: 3}
@@ -15147,7 +15147,7 @@ PrefabInstance:
     - target: {fileID: 4463845962344408814, guid: 0a752953edbc5434196cf9a9cbb4baed,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 4463845962344408814, guid: 0a752953edbc5434196cf9a9cbb4baed,
         type: 3}
@@ -20841,7 +20841,7 @@ PrefabInstance:
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: runLocomotion
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
@@ -20902,12 +20902,12 @@ PrefabInstance:
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: blackboard.heatmap.key0.b
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: blackboard.heatmap.key0.g
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
@@ -20922,7 +20922,7 @@ PrefabInstance:
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: blackboard.heatmap.key1.g
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
@@ -20947,17 +20947,17 @@ PrefabInstance:
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: blackboard.heatmap.key2.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
-        type: 3}
-      propertyPath: blackboard.heatmap.key3.b
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
-      propertyPath: blackboard.heatmap.key3.g
+      propertyPath: blackboard.heatmap.key3.b
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
+        type: 3}
+      propertyPath: blackboard.heatmap.key3.g
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
@@ -20967,12 +20967,12 @@ PrefabInstance:
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: blackboard.heatmap.m_Mode
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}
       propertyPath: blackboard.maxHeatmapTime
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 6448900194800072700, guid: 77912444cc288796b9294cb9d62e431e,
         type: 3}

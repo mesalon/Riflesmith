@@ -15,15 +15,12 @@ public class Blackboard {
 	public List<ConfigurableJoint> joints;
 	public UnityEngine.Animations.Rigging.Rig gunRestRig;
 	public Transform ikTarget;
-	public int x, y;
-	public float simMotion;
-	public Gradient heatmap;
-	public float maxHeatmapTime;
 
 	public Player target;
 	public Vector3? aimFocus;
 	public Vector3 targetLKP;
-	public Transform dingle;
 	public Transform focus;
 	public Vector3? cover;
+	public bool bool1;
+	public Transform dingle;
 }
