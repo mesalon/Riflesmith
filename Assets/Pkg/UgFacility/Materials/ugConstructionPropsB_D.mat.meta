@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8b9f6c267e39ad24e8a3b8b6c0ad77f3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 275900
+  packageName: Underground Facility Set
+  packageVersion: 1.1
+  assetPath: Assets/UgFacility/Materials/ugConstructionPropsB_D.mat
+  uploadId: 755031

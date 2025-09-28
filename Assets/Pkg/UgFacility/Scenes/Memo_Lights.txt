@@ -1,0 +1,20 @@
+----------------------------------------------------------------
+Before opening the demo scene, increase Pixel light Count to 10-20.
+
+Edit > ProjectSettings > Quality > Pixel light Count
+
+[HDRP]
+
+Before opening the demo scene, increase Maximum Shadows to 300.
+
+ HDRP > Lighting > Shadows > Maximum Shadows on Screen
+
+
+----------------------------------------------------------------
+If the demo scene viewport is running slow, set occlusion culling.
+
+-Bake OcclusionCulling
+--Windows>Rendering>OcclusionCulling
+
+-Camera setting
+--Scene View Camera > OcclusionCulling  (the camera icon in the upper right corner of the viewport)

@@ -151,7 +151,7 @@ public class EnemyVision {
 		heatmap.SetPixels(pixels);
 		heatmap.Apply();
 		byte[] bytes = heatmap.EncodeToPNG();
-		string path = "Assets/Editor/vision_heatmap.png";
+		string path = $"Assets/Editor/vision_heatmap_{cfg.simMotion}.png";
 		File.WriteAllBytes(path, bytes);
 		Debug.Log("Vision heatmap saved to: " + path);
 		AssetDatabase.Refresh();

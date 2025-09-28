@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 05c9fc7aa64a8364783fbc23b1c400b3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 36300000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 275900
+  packageName: Underground Facility Set
+  packageVersion: 1.1
+  assetPath: Assets/UgFacility/Scenes/UgFacility_no_shadow/OcclusionCullingData.asset
+  uploadId: 755031

@@ -3,9 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags:
-  - Spawn Point
-  - FxTemporaire
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -13,17 +11,17 @@ TagManager:
   - Player
   - Water
   - UI
-  - Gun
-  - Casing
+  - Interactable
+  - Firearm
   - Attachment
+  - 
   - Backpack
   - Screwdriver
-  - Ragdoll
+  - 
   - Environment
+  - 
+  - Ragdoll
   - Enemy
-  - 
-  - 
-  - 
   - 
   - 
   - 

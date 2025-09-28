@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 59a7d4121509d3f4a9d58a89651c869d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 275900
+  packageName: Underground Facility Set
+  packageVersion: 1.1
+  assetPath: Assets/UgFacility/Materials/ugCurtainA_ColB.mat
+  uploadId: 755031
