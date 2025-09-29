@@ -16,7 +16,7 @@ public class FPSController : MonoBehaviour {
 	}
 
 	void Update() {
-		Vector3 move = (transform.right * Input.GetAxisRaw("Horizontal") + transform.forward * Input.GetAxisRaw("Vertical")) * (Input.GetKey(KeyCode.LeftShift) ? runSpeed : moveSpeed);
+		Vector3 move = (transform.right * Input.GetAxis("Horizontal") + transform.forward * Input.GetAxis("Vertical")) * (Input.GetKey(KeyCode.LeftShift) ? runSpeed : moveSpeed);
 		cc.Move(move * Time.deltaTime);
 		cc.Move(velocity * Time.deltaTime);
 
