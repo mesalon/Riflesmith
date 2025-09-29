@@ -3323,7 +3323,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mask:
     serializedVersion: 2
-    m_Bits: 16319
+    m_Bits: 11711
   showDebugTracers: 1
   debugTracerTime: 1
   debugTracerColor: {r: 1, g: 0, b: 0, a: 1}

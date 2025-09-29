@@ -5,22 +5,22 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class CoverGenerator : MonoBehaviour {
-	public static CoverGenerator Instance;
+	public static CoverGenerator I;
 	public List<CoverPoint> cover = new();
 	public float bodyWidth = 0.3f;
 	public float bodyHeight = 1.75f;
 
 	private void Awake() {
-		if (Instance != null) {
+		if (I != null) {
 			Destroy(this);
 			return;
 		}
-		Instance = this;
+		I = this;
 	}
 
+	// Todo: nuke code and precompute safety and offense scores for each point
 	public void Generate() {
 		cover.Clear();
-
 		NavMeshTriangulation tri = NavMesh.CalculateTriangulation();
 		HashSet<(Vector3, Vector3)> boundHash = new();
 		for (int i = 0; i < tri.indices.Length; i += 3) {

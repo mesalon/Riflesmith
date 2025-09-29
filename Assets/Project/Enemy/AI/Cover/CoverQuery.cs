@@ -54,7 +54,7 @@ public class CoverQuery {
 		path = new();
 
 		// 1. Range & angle
-		foreach (CoverPoint c in CoverGenerator.Instance.cover) {
+		foreach (CoverPoint c in CoverGenerator.I.cover) {
 
 			wasd.Add(new(c.position + (cfg.bodyHeight / 2) * Vector3.up, threatTorso));
 			if ((c.position - myPos).sqrMagnitude < cfg.range * cfg.range && // In range?
