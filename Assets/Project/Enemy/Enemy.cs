@@ -12,6 +12,7 @@ public class Enemy : MonoBehaviour {
 		locomotion = new(blackboard);
 		vision = new(blackboard);
 		body = new(blackboard);
+		return;
 		brain = new SelectorNode(new() {
 				new SelectorNode(new() {
 						// Survive
@@ -39,7 +40,7 @@ public class Enemy : MonoBehaviour {
 		if (body.isUp) {
 			if (runLocomotion) locomotion.Tick();
 			if (runBody) body.Tick();
-			brain.Evaluate(out active);
+			//brain.Evaluate(out active);
 		}
 		//Ext.Label(transform.position + 2 * Vector3.up, $"node: {active}");
 	}

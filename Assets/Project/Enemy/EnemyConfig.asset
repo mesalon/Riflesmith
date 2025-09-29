@@ -49,12 +49,9 @@ MonoBehaviour:
     ragdollDamper: 0
     ragdollSpeed: 0
   vision:
-    playerMask:
-      serializedVersion: 2
-      m_Bits: 8
     visionMask:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 8192
     sightRange: 100
     FOVAngle: 105
     detectionSpeed: 1
@@ -98,7 +95,7 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
     simMotion: 1
     maxHeatmapTime: 30
-    debugSmoothing: 15
+    debugSmoothing: 1
   locomotion:
     walkSpeed: 1.25
     jogSpeed: 2

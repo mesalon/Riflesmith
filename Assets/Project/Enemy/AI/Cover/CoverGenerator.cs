@@ -9,6 +9,7 @@ public class CoverGenerator : MonoBehaviour {
 	public List<CoverPoint> cover = new();
 	public float bodyWidth = 0.3f;
 	public float bodyHeight = 1.75f;
+	[SerializeField] bool debug;
 
 	private void Awake() {
 		if (I != null) {
@@ -55,7 +56,7 @@ public class CoverGenerator : MonoBehaviour {
 	}
 
 	private void OnDrawGizmosSelected() {
-		if (cover != null) {
+		if (debug && cover != null) {
 			foreach (var point in cover) {
 				Gizmos.DrawRay(point.position, Vector3.up * 0.1f);
 				Gizmos.DrawRay(point.position, new Vector3(point.normal.z, 0, -point.normal.x) * 0.1f);

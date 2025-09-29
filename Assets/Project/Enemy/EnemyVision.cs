@@ -9,7 +9,6 @@ using static UnityEngine.Mathf;
 using static UnityEngine.Vector3;
 
 [Serializable] public class VisionCfg {
-	public LayerMask playerMask;
 	public LayerMask visionMask;
 	public float sightRange;
 	public float FOVAngle;
@@ -28,7 +27,6 @@ using static UnityEngine.Vector3;
 	public int debugSmoothing;
 
 	public static readonly VisionCfg Default = new() {
-		playerMask = ~0,
 		visionMask = ~0,
 		sightRange = 100,
 		FOVAngle = 105,
@@ -65,7 +63,7 @@ public class EnemyVision {
 			Vector3 eyePos = ctx.eyes.position; 
 			Vector3 playerPos = player.rig.head.position;
 			Vector3 playerDir = (playerPos - eyePos).normalized;
-			if (Physics.Linecast(eyePos, playerPos, out RaycastHit hit, cfg.visionMask) && hit.transform.root == player.transform) {
+			if (!Physics.Linecast(eyePos, playerPos, out var _, cfg.visionMask)) {
 				Vector3 lpd = lastPlayerPos.HasValue ? (lastPlayerPos.Value - eyePos).normalized : playerDir;
 				float motion = Mathf.InverseLerp(0, cfg.maxAngleDetection, Vector3.Angle(playerDir, lpd) / Time.fixedDeltaTime);
 				float angle = Vector3.Angle(ctx.eyes.forward, playerDir);
@@ -90,9 +88,13 @@ public class EnemyVision {
 						Color c = ColorForRate(rate);
 						Ext.DrawCubeLine(ctx.eyes.position, playerPos, c * alpha, Time.fixedDeltaTime);
 						Ext.DrawCubeRay(player.transform.position, accumulator * (2 * Vector3.up), c, Time.fixedDeltaTime, 0.5f);
+						if (spotTime <= 0) {
+							Debug.Log($"Spot zero. {spotTime}, {realRate}, {motion}");
+							
+						}
 						float detection = debug.fields["Spot time"].Average();
 						Ext.Label(player.transform.position + 2 * Vector3.up, 
-								$"{debug.fields["Accumulator"].Average() * 100:F1}% - detection in {(detection >= 0 ? detection : "NEVER"):F2}", Time.fixedDeltaTime);
+								$"{debug.fields["Accumulator"].Average() * 100:F1}% - detection in {(detection > 0 ? detection : "NEVER"):F2}", Time.fixedDeltaTime);
 					}
 				} else {
 					lastPlayerPos = null;
@@ -151,7 +153,7 @@ public class EnemyVision {
 		heatmap.SetPixels(pixels);
 		heatmap.Apply();
 		byte[] bytes = heatmap.EncodeToPNG();
-		string path = $"Assets/Editor/vision_heatmap_{cfg.simMotion}.png";
+		string path = $"Assets/Editor/vision_heatmap.png";
 		File.WriteAllBytes(path, bytes);
 		Debug.Log("Vision heatmap saved to: " + path);
 		AssetDatabase.Refresh();

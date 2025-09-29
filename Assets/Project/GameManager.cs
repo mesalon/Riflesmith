@@ -39,6 +39,10 @@ public class GameManager : MonoBehaviour {
 	}
 
 	private void OnDrawGizmos() {
+		if (!Application.isPlaying) {
+			Ext.labelQueue.Clear();
+			Ext.drawQueue.Clear();
+		}
 		for (int i = Ext.labelQueue.Count - 1; i >= 0; i--) { 
 			var label = Ext.labelQueue[i]; 
 			Handles.Label(label.position, label.text, label.style); 
