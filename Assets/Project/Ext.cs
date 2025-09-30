@@ -12,6 +12,7 @@ public static class Ext {
 	public static List<LabelRequest> labelQueue = new();
 	public static List<DrawRequest> drawQueue = new();
 	public static int FixedFrameCount => Mathf.RoundToInt(Time.fixedTime / Time.fixedDeltaTime);
+	public static long Timestamp => Stopwatch.GetTimestamp();
 
 	// todo: combine all these into one somehow
 	public static bool DidPass(this float current, float amount, float previous) => current > amount && previous <= amount;
@@ -19,7 +20,7 @@ public static class Ext {
 	public static bool DidReach(this float current, float amount, float previous) => current >= amount && previous < amount;
 	public static bool DidRecede(this float current, float amount, float previous) => current <= amount && previous > amount;
 
-	public static double DebugTimestamp(this long stamp, string msg = "", bool message = true) {
+	public static double LogTime(this long stamp, string msg = "", bool message = true) {
 		double ms = (Stopwatch.GetTimestamp() - stamp) * 1000.0 / Stopwatch.Frequency;
 		if (message) Debug.Log($"Execution of {(msg == String.Empty ? "method" : msg)} took {ms} ms");
 		return ms;
@@ -95,6 +96,13 @@ public static class Ext {
 	}
 
 	public static void PrintAll<T>(this IEnumerable<T> objects) { Debug.Log(String.Join(", ", objects)); }
+
+	public static void DrawAxis(Vector3 position, float radius, Color color = default) {
+		if (color == default) { color = Color.white; }
+		Gizmos.DrawRay(position - radius * Vector3.right, radius * 2 * Vector3.right);
+		Gizmos.DrawRay(position - radius * Vector3.up, radius * 2 * Vector3.up);
+		Gizmos.DrawRay(position - radius * Vector3.forward, radius * 2 * Vector3.forward);
+	}
 
 	public static void DrawPath(Vector3[] path, Color startCol = default, Color endCol = default, float offset = 0) {
 		for (int i = 0; i < path.Length - 1; i++) {

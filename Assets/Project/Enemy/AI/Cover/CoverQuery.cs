@@ -86,7 +86,7 @@ public class CoverQuery {
 			}
 		}
 		
-		GraphWindow.AddToGraph("Nav", (float)Ext.DebugTimestamp(t2, message: false));
+		GraphWindow.AddToGraph("Nav", (float)Ext.LogTime(t2, message: false));
 
 		// 4. Splatting
 		long t3 = Stopwatch.GetTimestamp();
@@ -107,9 +107,9 @@ public class CoverQuery {
 				}
 			}
 		}
-		GraphWindow.AddToGraph("Splatting", (float)Ext.DebugTimestamp(t3, message: false));
+		GraphWindow.AddToGraph("Splatting", (float)Ext.LogTime(t3, message: false));
 
-		GraphWindow.AddToGraph("Total FindCover", (float)Ext.DebugTimestamp(t, message: false));
+		GraphWindow.AddToGraph("Total FindCover", (float)Ext.LogTime(t, message: false));
 
 		if (cfg.doDebugs) {
 			Debug.Log($"NAV: {navQueue.Count}, tasks: {coverTasks.Count}, finished: {finished.Count}");

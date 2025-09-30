@@ -158,7 +158,7 @@ public class EnemyVision {
 		Debug.Log("Vision heatmap saved to: " + path);
 		AssetDatabase.Refresh();
 		GameObject.DestroyImmediate(heatmap);
-		Ext.DebugTimestamp(time, "time");
+		Ext.LogTime(time, "time");
 	}
 #endif
 }
