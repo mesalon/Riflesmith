@@ -9,7 +9,8 @@ public class NavMeshFilter : MonoBehaviour {
 	public List<Vector3> points = new();
 	[SerializeField] NavMeshTriangulation mesh;
 	[SerializeField] int start;
-	[SerializeField] int inspect;
+	[SerializeField] int inspectTri;
+	[SerializeField] int inspectVtx;
 	[SerializeField] int triA;
 	[SerializeField] int triB;
 	[SerializeField] List<int>[] adjacencies;
@@ -46,37 +47,35 @@ public class NavMeshFilter : MonoBehaviour {
 		return traversed;
 	}
 
+	Dictionary<int, List<int>> usageMap = new(); // Map of vertices to the triangles that use it
 	private void BuildAdjacencies() {
-		long t = Ext.Timestamp;
-		adjacencies = new List<int>[mesh.areas.Length];
-		Dictionary<int, List<int>> usageMap = new(); // Map of vertices to the triangles that use it
+		usageMap.Clear();
+		// IS THIS FUCKER LYING TO ME???
 		for (int i = 0; i < mesh.indices.Length; i += 3) {
 			int triangle = i / 3;
-			for (int v = 0; v < 3; v++) {
-				int vertex = mesh.indices[i + v];
+			if (triangle == inspectTri) { print($"Processing triangle {triangle}"); }
+			for (int j = 0; j < 3; j++) {
+				int vertex = mesh.indices[i + j];
 				usageMap.TryAdd(vertex, new List<int>());
-				usageMap[vertex].Add(triangle); 
+				usageMap[vertex].Add(triangle);
+				if (triangle == inspectTri) print($"Adding triangle {triangle} to usage by vertex {vertex}");
 			}
 		}
 
-		int vI = mesh.indices[triA * 3];
-		Handles.Label(mesh.vertices[inspect], $"This vertex is used by {usageMap[inspect].Count} triangles.");
-		Handles.Label(mesh.vertices[vI], $"{triA} has {usageMap[vI].Count} items: {string.Join(", ", usageMap[vI])}");
-
 		for (int i = 0; i < mesh.indices.Length; i += 3) {
+			break;
 			HashSet<int> neighbors = new();
 			neighbors.UnionWith(usageMap[mesh.indices[i + 0]]);
 			neighbors.UnionWith(usageMap[mesh.indices[i + 1]]);
 			neighbors.UnionWith(usageMap[mesh.indices[i + 2]]);
 			neighbors.Remove(i); // A triangle is not adjacent to itself.
-			adjacencies[i / 3] = new List<int>(neighbors);
+			//adjacencies[i / 3] = new List<int>(neighbors);
 		}
-		
-		Ext.LogTime(t, "adjacencies");
 	}
 
 	private void OnDrawGizmosSelected() {
-		BuildAdjacencies();
+		Handles.Label(mesh.vertices[mesh.indices[inspectTri * 3]], $"showing triange {inspectTri}, vertex {mesh.indices[inspectTri * 3]}: used by {string.Join(", ", usageMap[mesh.indices[inspectTri * 3]])}");
+
 		Mesh fullMesh = new Mesh {
 			vertices = mesh.vertices,
 			triangles = mesh.indices
@@ -85,13 +84,13 @@ public class NavMeshFilter : MonoBehaviour {
 		Gizmos.color = Color.darkCyan * 0.5f;
 		Gizmos.DrawWireMesh(fullMesh, Vector3.zero, Quaternion.identity);
 		Gizmos.color = Color.green;
-		DrawTris(adjacencies[triA]);
+		DrawTris(usageMap[triA]);
 		Gizmos.color = Color.red;
 		DrawTris(new() { triA }, 0.25f);
-		Handles.Label(mesh.vertices[mesh.indices[triA * 3 + 0]] + Vector3.up, $"Adjacent: {triA}");
-		DrawTris(new() { triB });
+		Gizmos.color = Color.purple;
+		DrawTris(usageMap[triB]);
 	}
-	
+
 	void DrawTris(List<int> triangles, float offset = 0) {
 		foreach (int triangle in triangles) {
 			Mesh triangleMesh = new Mesh {
