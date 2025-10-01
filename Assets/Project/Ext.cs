@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
@@ -19,6 +20,10 @@ public static class Ext {
 	public static bool DidFail(this float current, float amount, float previous) => current < amount && previous >= amount;
 	public static bool DidReach(this float current, float amount, float previous) => current >= amount && previous < amount;
 	public static bool DidRecede(this float current, float amount, float previous) => current <= amount && previous > amount;
+
+	public static T? TryIndex<T>(this T[] array, int index) {
+		return (index >= 0 && index < array.Length) ? array[index] : default;
+	}
 
 	public static double LogTime(this long stamp, string msg = "", bool message = true) {
 		double ms = (Stopwatch.GetTimestamp() - stamp) * 1000.0 / Stopwatch.Frequency;
@@ -220,4 +225,10 @@ public class NamedRangeAttribute : PropertyAttribute {
 		this.MinLabel = minLabel;
 		this.MaxLabel = maxLabel;
 	}
+}
+
+public static class NavMeshExt {
+	public static (int a, int b) OrderEdge(this (int a, int b) edge) => edge.a < edge.b ? (edge.a, edge.b) : (edge.b, edge.a);
+
+
 }
