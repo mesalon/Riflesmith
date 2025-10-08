@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.AI;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
+enum w {
+	was
+}
 
 public static class Ext {
 	public static List<LabelRequest> labelQueue = new();
@@ -102,18 +104,20 @@ public static class Ext {
 
 	public static void PrintAll<T>(this IEnumerable<T> objects) { Debug.Log(String.Join(", ", objects)); }
 
-	public static void DrawAxis(Vector3 position, float radius, Color color = default) {
+	public static void DrawAxis(Vector3 position, float radius, Quaternion rotation = default, Color color = default) {
 		if (color == default) { color = Color.white; }
-		Gizmos.DrawRay(position - radius * Vector3.right, radius * 2 * Vector3.right);
-		Gizmos.DrawRay(position - radius * Vector3.up, radius * 2 * Vector3.up);
-		Gizmos.DrawRay(position - radius * Vector3.forward, radius * 2 * Vector3.forward);
+		Vector3 right = (rotation * Vector3.right);
+		Vector3 up = (rotation * Vector3.up);
+		Vector3 forward = (rotation * Vector3.forward);
+		Gizmos.DrawRay(position - radius * right, radius * 2 * right);
+		Gizmos.DrawRay(position - radius * up, radius * 2 * up);
+		Gizmos.DrawRay(position - radius * forward, radius * 2 * forward);
 	}
 
-	public static void DrawPath(Vector3[] path, Color startCol = default, Color endCol = default, float offset = 0) {
+	public static void DrawPath(Vector3[] path, Gradient gradient = null, float offset = 0) {
 		for (int i = 0; i < path.Length - 1; i++) {
-			Debug.DrawLine(path[i] + Vector3.up * offset, path[i + 1] + Vector3.up * offset,
-					Color.Lerp(startCol == default ? Color.green : startCol, endCol == default ? Color.red : endCol,
-						i / ((float)path.Length - 1)));
+			Color c = gradient != null ? gradient.Evaluate((float)i / path.Length) : Color.Lerp(Color.blue, Color.yellow, i);
+			Debug.DrawLine(path[i] + Vector3.up * offset, path[i + 1] + Vector3.up * offset, c, i / ((float)path.Length - 1));
 		}
 	}
 
@@ -231,4 +235,63 @@ public static class NavMeshExt {
 	public static (int a, int b) OrderEdge(this (int a, int b) edge) => edge.a < edge.b ? (edge.a, edge.b) : (edge.b, edge.a);
 
 
+}
+
+public class Vector3Comparer : IEqualityComparer<Vector3> {
+	private readonly float inverseTolerance;
+
+	public Vector3Comparer(float tolerance = 0.001f) {
+		inverseTolerance = 1f / tolerance;
+	}
+
+	private (int, int, int) GetGridCoords(Vector3 v) {
+		int hx = Mathf.RoundToInt(v.x * inverseTolerance);
+		int hy = Mathf.RoundToInt(v.y * inverseTolerance);
+		int hz = Mathf.RoundToInt(v.z * inverseTolerance);
+		return (hx, hy, hz);
+	}
+
+	public bool Equals(Vector3 v1, Vector3 v2) {
+		return GetGridCoords(v1) == GetGridCoords(v2);
+	}
+
+	public int GetHashCode(Vector3 v) {
+		var gridCoords = GetGridCoords(v);
+		return System.HashCode.Combine(gridCoords.Item1, gridCoords.Item2, gridCoords.Item3);
+	}
+}
+
+public class EdgeComparer : IEqualityComparer<(Vector3 a, Vector3 b)> {
+	private readonly IEqualityComparer<Vector3> vectorComparer;
+
+	public EdgeComparer(float tolerance = 0.001f) {
+		this.vectorComparer = new Vector3Comparer(tolerance);
+	}
+
+	public bool Equals((Vector3, Vector3) edge1, (Vector3, Vector3) edge2) {
+		var norm1 = Normalize(edge1);
+		var norm2 = Normalize(edge2);
+
+		// Use the vector comparer to check for equality with tolerance.
+		return vectorComparer.Equals(norm1.a, norm2.a) && 
+			vectorComparer.Equals(norm1.b, norm2.b);
+	}
+
+	public int GetHashCode((Vector3 a, Vector3 b) edge) {
+		var ordered = Normalize(edge);
+
+		// Use the vector comparer to get consistent hash codes.
+		int hashA = vectorComparer.GetHashCode(ordered.a);
+		int hashB = vectorComparer.GetHashCode(ordered.b);
+
+		return System.HashCode.Combine(hashA, hashB);
+	}
+
+	// This method was already correct.
+	private (Vector3 a, Vector3 b) Normalize((Vector3 a, Vector3 b) edge) {
+		Vector3 a = edge.a;
+		Vector3 b = edge.b;
+		return a.x < b.x || (a.x == b.x && (a.y < b.y || (a.y == b.y && a.z < b.z))) ?
+			(a, b) : (b, a);
+	}
 }

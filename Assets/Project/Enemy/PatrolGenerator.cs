@@ -1,97 +1,140 @@
-using Random = UnityEngine.Random;
 using System.Collections.Generic;
-using System;
-using System.Linq;
-using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class PatrolGenerator : MonoBehaviour {
-	[SerializeField] UnityEngine.Rendering.SerializedDictionary<Vector3, HashSet<Vector3>> visMatrix = new();
-	[SerializeField] List<Vector3> final = new();
-	[SerializeField] List<Vector3> witnesses = new();
-	[SerializeField] float voxelSize;
-	[SerializeField] bool debug;
-	[SerializeField, Range(0, 1)] float percentShown;
-	[SerializeField, Range(0, 1)] float percentShownFinal;
-	[SerializeField] float height;
-	private Bounds fit;
+	public static PatrolGenerator I;
+	public NearestNeighborTSP tsp;
 
-	public void GenerateMatrix() {
+	[SerializeField] private float voxelSize;
+	[SerializeField] private float height;
+	[Space]
+	[SerializeField] private bool debug;
+	[SerializeField] private int start;
+	[SerializeField] private List<Vector3> witnesses = new();
+	[SerializeField] private List<Vector3> patrolPoints = new();
+
+	private void Awake() {
+		if (I != null) { Destroy(this); return; }
+		I = this;
+	}
+
+	public void GeneratePatrolPoints() {
+		long witnessTimestamp = Ext.Timestamp;
 		witnesses.Clear();
-		NavMeshTriangulation tri = NavMesh.CalculateTriangulation();
-		foreach (Vector3 v in tri.vertices) { fit.Encapsulate(v); }
-		HashSet<Vector3> hash = new();
-		Vector3 size = fit.max - fit.min;
+		NavMeshTriangulation navMeshData = NavMesh.CalculateTriangulation();
+		if (navMeshData.vertices.Length == 0) {
+			Debug.LogWarning("NavMesh not found or has no vertices.");
+			return;
+		}
+
+		Bounds navMeshBounds = new Bounds(navMeshData.vertices[0], Vector3.zero);
+		foreach (Vector3 v in navMeshData.vertices) { navMeshBounds.Encapsulate(v); }
+
 		if (voxelSize > 0) {
-			for (float x = 0; x < size.x; x += voxelSize) {
-				for (float y = 0; y < size.y; y += voxelSize) {
-					for (float z = 0; z < size.z; z += voxelSize) {
-						if (NavMesh.SamplePosition(fit.min + new Vector3(x, y, z), out NavMeshHit hit, 1, ~0)) {
-							hash.Add(hit.position + height * Vector3.up);
+			for (float x = navMeshBounds.min.x; x < navMeshBounds.max.x; x += voxelSize) {
+				for (float y = navMeshBounds.min.y; y < navMeshBounds.max.y; y += voxelSize) {
+					for (float z = navMeshBounds.min.z; z < navMeshBounds.max.z; z += voxelSize) {
+						Vector3 samplePoint = new Vector3(x, y, z);
+						if (NavMesh.SamplePosition(samplePoint, out NavMeshHit hit, voxelSize, NavMesh.AllAreas)) {
+							witnesses.Add(hit.position + height * Vector3.up);
 						}
 					}
 				}
 			}
 		}
-		witnesses = hash.ToList();
+		Ext.LogTime(witnessTimestamp, "witness generation");
+		if (witnesses.Count == 0) return;
 
-		visMatrix.Clear();
-		long matrix = Ext.Timestamp;
+		long matrixTimestamp = Ext.Timestamp;
+		var visibilityMatrix = new Dictionary<Vector3, List<Vector3>>(witnesses.Count);
 		foreach (Vector3 from in witnesses) {
-			HashSet<Vector3> visible = new();
-			foreach (Vector3 to in witnesses) { 
-				if (!Physics.Linecast(from, to)) {
-					visible.Add(to); 
+			var visible = new List<Vector3>();
+			foreach (Vector3 to in witnesses) {
+				if (!Physics.Linecast(from, to, ~0, QueryTriggerInteraction.Ignore)) {
+					visible.Add(to);
 				}
 			}
-			visMatrix.Add(from, visible);
+			visibilityMatrix[from] = visible;
 		}
-		Ext.LogTime(matrix, "matrix generation");
-	}
+		Ext.LogTime(matrixTimestamp, "visibility matrix");
 
-	public void SelectPoints() {
-		final.Clear();
-		long t = Ext.Timestamp;
-		HashSet<Vector3> unseen = witnesses.ToHashSet();
-		foreach (var _ in visMatrix) {
-			if (unseen.Count == 0) break;
-			KeyValuePair<Vector3, HashSet<Vector3>> heighestKvp = default;
-			int heighest = 0;
-			foreach (var kvp in visMatrix) {
-				int stillVisible = 0;
-				foreach (Vector3 point in kvp.Value) { if (unseen.Contains(point)) stillVisible++; }
-				if (stillVisible > heighest) {
-					heighest = stillVisible;
-					heighestKvp = kvp;
+		long selectionTimestamp = Ext.Timestamp;
+		patrolPoints.Clear();
+		var unseen = new HashSet<Vector3>(witnesses);
+
+		while (unseen.Count > 0) {
+			Vector3 bestPatrolPoint = default;
+			List<Vector3> bestVisibleSet = null;
+			int maxCoverage = 0;
+
+			foreach (var entry in visibilityMatrix) {
+				int coverage = 0;
+				foreach (Vector3 point in entry.Value) {
+					if (unseen.Contains(point)) {
+						coverage++;
+					}
+				}
+
+				if (coverage > maxCoverage) {
+					maxCoverage = coverage;
+					bestPatrolPoint = entry.Key;
+					bestVisibleSet = entry.Value;
 				}
 			}
-			foreach (Vector3 point in heighestKvp.Value) { 
-				unseen.Remove(point); 
+
+			if (maxCoverage == 0) {
+				Debug.LogWarning($"Could not cover all witness points. {unseen.Count} remain.");
+				break;
 			}
-			print($"Trying to rm from <{heighestKvp.Key}, {heighestKvp.Value.Count}>, unseen left: {unseen.Count}\nRemoving {String.Join("\n", heighestKvp.Value)}");
-			final.Add(heighestKvp.Key);
+
+			patrolPoints.Add(bestPatrolPoint);
+			foreach (Vector3 newlySeenPoint in bestVisibleSet) {
+				unseen.Remove(newlySeenPoint);
+			}
 		}
-		Ext.LogTime(t, "point selection");
+		Ext.LogTime(selectionTimestamp, "patrol selection");
+
+		long tspTimestamp = Ext.Timestamp;
+		tsp = new NearestNeighborTSP(patrolPoints.ToArray());
+		Ext.LogTime(tspTimestamp, "TSP");
 	}
 
-	private void OnDrawGizmosSelected() {
+	public Vector3[] GetPatrolPath(Vector3 from) {
+		int closestI = 0;
+		for (int i = 0; i < patrolPoints.Count; i++) {
+			if ((patrolPoints[i] - from).sqrMagnitude < (patrolPoints[closestI] - from).sqrMagnitude) { closestI = i; }
+		}
+		return tsp.GetPath(closestI);
+	}
+
+	private void OnDrawGizmos() {
 		if (!debug) return;
 		Gizmos.color = Color.purple;
-		Gizmos.DrawWireCube(fit.center, fit.size);
-		foreach (var point in witnesses) { Ext.DrawAxis(point, 0.5f); }
-		foreach (var kvp in visMatrix) {
-			Random.InitState(kvp.Key.GetHashCode());
-			if (Random.value < percentShown) {
-				Gizmos.color = Random.ColorHSV();
-				foreach (Vector3 v in kvp.Value) {
-					Gizmos.DrawLine(kvp.Key, v);
-				}
-			}
+		if (witnesses != null) {
+			foreach (var point in witnesses) { Ext.DrawAxis(point, 0.25f); }
 		}
-		foreach (Vector3 point in final) {
-			Gizmos.color = Color.green;
-			Gizmos.DrawSphere(point, 1);
+		Gizmos.color = Color.green;
+		if (patrolPoints != null) {
+			foreach (Vector3 point in patrolPoints) { Gizmos.DrawSphere(point, 0.5f); }
 		}
 	}
-}
 
+#if UNITY_EDITOR
+	[CustomEditor(typeof(PatrolGenerator))]
+	public class PatrolGeneratorEditor : Editor {
+		public override void OnInspectorGUI() {
+			DrawDefaultInspector();
+			PatrolGenerator generator = (PatrolGenerator)target;
+			EditorGUILayout.Space();
+			if (GUILayout.Button("Generate Patrol Path")) {
+				generator.GeneratePatrolPoints();
+				EditorUtility.SetDirty(generator);
+			}
+		}
+	}
+#endif
+}

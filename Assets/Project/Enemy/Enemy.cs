@@ -14,23 +14,7 @@ public class Enemy : MonoBehaviour {
 		body = new(blackboard);
 		return;
 		brain = new SelectorNode(new() {
-				new SelectorNode(new() {
-						// Survive
-						new SequenceNode(new() {
-								new IsPlayerVisible(this),
-								new FindCover(this),
-								new MoveToCoverTask(this),
-								}),
-						// Engage
-						new SequenceNode(new() {
-								new HasLOS(this),
-								new HasAmmo(this),
-								new EngageEnemyTask(this),
-								}),
-						// Hunt
-						// Patrol
-						//new MoveToCoverTask(this),
-						}),
+				new EngageEnemyTask(this),
 				new PatrolTask(this),
 				});
 	}

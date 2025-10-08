@@ -1,0 +1,20 @@
+{
+    "asset": "aca4efd834b386a0bba38be468508e02",
+    "fileName": "0199a2b2-67a5-7238-9201-e4de5ade011a.png",
+    "prompt": "woman",
+    "negativePrompt": "",
+    "model": "e019af84-3249-4fe3-81bc-a1ba0323fdce",
+    "modelName": "GPT Image 1 - High",
+    "customSeed": -1,
+    "w3CTraceId": "c3617557cff78a308aeb6ab22a697abe",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

@@ -82,7 +82,7 @@ public class EnemyLocomotion {
 
 	}
 
-	public void Move(Vector3 destination, float speed) {
+	public bool Move(Vector3 destination, float speed) {
 		if (this.destination != destination) {
 			this.destination = destination;
 			cornerIdx = 1;
@@ -99,8 +99,11 @@ public class EnemyLocomotion {
 
 			Vector3 pathDirection = path.corners[cornerIdx] - path.corners[cornerIdx - 1];
 			if (Vector3.Dot((ctx.transform.position - path.corners[cornerIdx]).normalized, pathDirection) >= 0) { cornerIdx++; }
+			return false;
 		}
+		return true;
 	}
+
 	private void Face(Vector3 target, float speed) {
 		Quaternion rot = Quaternion.LookRotation((target - ctx.transform.position).FlattenY().normalized);
 		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, rot, speed * Time.deltaTime);

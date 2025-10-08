@@ -1,0 +1,20 @@
+{
+    "asset": "aca4efd834b386a0bba38be468508e02",
+    "fileName": "0199a2af-f22b-7f8b-b507-7c1f31a6f8c6.jpg",
+    "prompt": "girl's boobs",
+    "negativePrompt": "",
+    "model": "94c4260f-b988-40e7-b3d3-435b9f449bd0",
+    "modelName": "Flux.1 Dev",
+    "customSeed": -1,
+    "w3CTraceId": "f9a36774d308c05e1144fd6e24139e3c",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

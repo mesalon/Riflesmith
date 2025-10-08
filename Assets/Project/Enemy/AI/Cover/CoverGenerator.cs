@@ -1,3 +1,4 @@
+// Todo: nuke code and precompute safety and offense scores for each point
 using System;
 using UnityEngine;
 using UnityEngine.AI;
@@ -12,73 +13,32 @@ public class CoverGenerator : MonoBehaviour {
 	[SerializeField] bool debug;
 
 	private void Awake() {
-		if (I != null) {
-			Destroy(this);
-			return;
-		}
+		if (I != null) { Destroy(this); return; }
 		I = this;
 	}
 
-	// Todo: nuke code and precompute safety and offense scores for each point
 	public void Generate() {
 		cover.Clear();
-		NavMeshTriangulation mesh = NavMesh.CalculateTriangulation();
-		HashSet<(int, int)> boundHash = new();
-
-		for (int i = 0; i < mesh.indices.Length; i += 3) {
-			int i0 = mesh.indices[i];
-			int i1 = mesh.indices[i + 1];
-			int i2 = mesh.indices[i + 2];
-
-			// Edge.
-			// Have you ever been on an Edging Streak?
-			// Edge.
-			// Edge.
-			// Do they keep you in a state of Edging? Edge.
-			// Edge.
-			// When youre not performing your Edging, Do they make you Goon? Edge.
-			// Edge.
-			// Rizz.
-			// Rizz.
-			// Whats it like to hold a Gyatt of someone you love? Rizz.
-			// Rizz.
-			// Do they teach you how to feel? Sigma to Sigma?
-			// Rizz.
-			// Rizz.
-			// Do you long for having your heart Rizzed? Rizz.
-			// Rizz.
-			// Do you dream about being Rizzed?
-			// Rizz.
-			// Baby Gronk Rizzed up Livvy Dunne, Rizz.
-			// Rizz.
-			// Do you feel theres a part of you thats Skibidi?
-			// Rizz.
-			// Rizz.
-			// Skibidi Edge Rizz.
-			// Skibidi Edge Rizz.
-			// Why dont you say that 3 times? Skibidi Edge Rizz.
-			// Skibidi Edge Rizz.
-			// Skibidi Edge Rizz.
-			void ProcessEdge(int a, int b) {
-				(int, int) orderedEdge = a < b ? (a, b) : (b, a);
-				// Is the element already in the set? It's a duplicate. Fuck both of them!
-				if (!boundHash.Add(orderedEdge)) { boundHash.Remove(orderedEdge); }
+		NavMeshTriangulation tri = NavMesh.CalculateTriangulation();
+		HashSet<(Vector3, Vector3)> boundHash = new HashSet<(Vector3, Vector3)>(new EdgeComparer());
+		for (int i = 0; i < tri.indices.Length; i += 3) {
+			for (int j = 0; j < 3; j++) { // Is the element already in the set? It's a duplicate. Fuck both of them!
+				Vector3 a = tri.vertices[tri.indices[j]];
+				Vector3 b = tri.vertices[tri.indices[(j + 1) % 3]];
+				if(!boundHash.Add((a, b))) boundHash.Remove((a, b)); 
 			}
-
-			ProcessEdge(i0, i1);
-			ProcessEdge(i1, i2);
-			ProcessEdge(i2, i0);
 		}
 
-		List<(int a, int b)> bounds = boundHash.ToList();
+		List<(Vector3, Vector3)> bounds = boundHash.ToList();
 		for (int i = 0; i < bounds.Count; i++) {
-			(Vector3 a, Vector3 b) edge = (mesh.vertices[bounds[i].a], mesh.vertices[bounds[i].b]);
+			(Vector3 a, Vector3 b) edge = bounds[i];
 			Vector3 tangent = (edge.b - edge.a).normalized;
 			Vector3 normal = new(tangent.z, 0, -tangent.x);
 			float minLength = bodyWidth * 2;
 			CoverPoint coverA = new(edge.a + tangent * bodyWidth, normal);
 			CoverPoint coverB = new(edge.b - tangent * bodyWidth, normal);
-			if ((edge.b - edge.a).sqrMagnitude > minLength * minLength) {
+			if ((edge.b - edge.a).sqrMagnitude > minLength * minLength 
+					&& Vector3.Distance(coverA.position, coverB.position) > minLength) {
 				cover.Add(coverA);
 				cover.Add(coverB);
 			} 

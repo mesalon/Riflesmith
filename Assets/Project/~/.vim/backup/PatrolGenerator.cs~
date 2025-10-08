@@ -1,0 +1,143 @@
+using System.Collections.Generic;
+using UnityEngine.AI;
+using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+public class PatrolGenerator : MonoBehaviour {
+	public static PatrolGenerator I;
+	public NearestNeighborTSP tsp;
+
+	[SerializeField] private float voxelSize;
+	[SerializeField] private float height;
+	[Space]
+	[SerializeField] private Gradient pathColor;
+	[SerializeField] private bool debug;
+	[SerializeField] private int start;
+	[SerializeField] private List<Vector3> witnesses = new();
+	[SerializeField] private List<Vector3> patrolPoints = new();
+
+	private void Awake() {
+		if (I != null) { Destroy(this); return; }
+		I = this;
+	}
+
+	public void GeneratePatrolPoints() {
+		//--- 1. Generate Witness Points via Voxelization ---
+		long witnessTimestamp = Ext.Timestamp;
+		witnesses.Clear();
+		NavMeshTriangulation navMeshData = NavMesh.CalculateTriangulation();
+		if (navMeshData.vertices.Length == 0) {
+			Debug.LogWarning("NavMesh not found or has no vertices.");
+			return;
+		}
+
+		Bounds navMeshBounds = new Bounds(navMeshData.vertices[0], Vector3.zero);
+		foreach (Vector3 v in navMeshData.vertices) { navMeshBounds.Encapsulate(v); }
+
+		if (voxelSize > 0) {
+			for (float x = navMeshBounds.min.x; x < navMeshBounds.max.x; x += voxelSize) {
+				for (float y = navMeshBounds.min.y; y < navMeshBounds.max.y; y += voxelSize) {
+					for (float z = navMeshBounds.min.z; z < navMeshBounds.max.z; z += voxelSize) {
+						Vector3 samplePoint = new Vector3(x, y, z);
+						if (NavMesh.SamplePosition(samplePoint, out NavMeshHit hit, voxelSize, NavMesh.AllAreas)) {
+							witnesses.Add(hit.position + height * Vector3.up);
+						}
+					}
+				}
+			}
+		}
+		Ext.LogTime(witnessTimestamp, "witness generation");
+		if (witnesses.Count == 0) return;
+
+		//--- 2. Calculate Visibility Matrix (in-memory for performance) ---
+		long matrixTimestamp = Ext.Timestamp;
+		var visibilityMatrix = new Dictionary<Vector3, List<Vector3>>(witnesses.Count);
+		foreach (Vector3 from in witnesses) {
+			var visible = new List<Vector3>();
+			foreach (Vector3 to in witnesses) {
+				if (!Physics.Linecast(from, to, ~0, QueryTriggerInteraction.Ignore)) {
+					visible.Add(to);
+				}
+			}
+			visibilityMatrix[from] = visible;
+		}
+		Ext.LogTime(matrixTimestamp, "visibility matrix");
+
+		//--- 3. Select Patrol Points using Greedy Set Cover ---
+		long selectionTimestamp = Ext.Timestamp;
+		patrolPoints.Clear();
+		var unseen = new HashSet<Vector3>(witnesses);
+
+		while (unseen.Count > 0) {
+			Vector3 bestPatrolPoint = default;
+			List<Vector3> bestVisibleSet = null;
+			int maxCoverage = 0;
+
+			foreach (var entry in visibilityMatrix) {
+				int coverage = 0;
+				foreach (Vector3 point in entry.Value) {
+					if (unseen.Contains(point)) {
+						coverage++;
+					}
+				}
+
+				if (coverage > maxCoverage) {
+					maxCoverage = coverage;
+					bestPatrolPoint = entry.Key;
+					bestVisibleSet = entry.Value;
+				}
+			}
+
+			if (maxCoverage == 0) {
+				Debug.LogWarning($"Could not cover all witness points. {unseen.Count} remain.");
+				break;
+			}
+
+			patrolPoints.Add(bestPatrolPoint);
+			foreach (Vector3 newlySeenPoint in bestVisibleSet) {
+				unseen.Remove(newlySeenPoint);
+			}
+		}
+		Ext.LogTime(selectionTimestamp, "patrol selection");
+
+		//--- 4. Calculate TSP Path ---
+		long tspTimestamp = Ext.Timestamp;
+		tsp = new NearestNeighborTSP(patrolPoints.ToArray());
+		Ext.LogTime(tspTimestamp, "TSP");
+	}
+
+	private void OnDrawGizmos() {
+		if (!debug) return;
+
+		Gizmos.color = Color.purple;
+		if (witnesses != null) {
+			foreach (var point in witnesses) { Ext.DrawAxis(point, 0.25f); }
+		}
+
+		Gizmos.color = Color.green;
+		if (patrolPoints != null) {
+			foreach (Vector3 point in patrolPoints) { Gizmos.DrawSphere(point, 0.5f); }
+		}
+
+		if (tsp != null && tsp != null) {
+			Ext.DrawPath(tsp.GetPath(start), pathColor);
+		}
+	}
+
+#if UNITY_EDITOR
+	[CustomEditor(typeof(PatrolGenerator))]
+	public class PatrolGeneratorEditor : Editor {
+		public override void OnInspectorGUI() {
+			DrawDefaultInspector();
+			PatrolGenerator generator = (PatrolGenerator)target;
+			EditorGUILayout.Space();
+			if (GUILayout.Button("Generate Patrol Path")) {
+				generator.GeneratePatrolPoints();
+				EditorUtility.SetDirty(generator);
+			}
+		}
+	}
+#endif
+}

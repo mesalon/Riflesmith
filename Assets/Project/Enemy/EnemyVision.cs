@@ -59,7 +59,7 @@ public class EnemyVision {
 	public Player Tick() {
 		Player detectedPlayer = null;
 		Player player = GameManager.I.player;
-		if (player.isActiveAndEnabled) {
+		if (player && player.isActiveAndEnabled) {
 			Vector3 eyePos = ctx.eyes.position; 
 			Vector3 playerPos = player.rig.head.position;
 			Vector3 playerDir = (playerPos - eyePos).normalized;

@@ -55,7 +55,6 @@ public class CoverQuery {
 
 		// 1. Range & angle
 		foreach (CoverPoint c in CoverGenerator.I.cover) {
-
 			wasd.Add(new(c.position + (cfg.bodyHeight / 2) * Vector3.up, threatTorso));
 			if ((c.position - myPos).sqrMagnitude < cfg.range * cfg.range && // In range?
 					Mathf.Abs(Vector3.Dot((threat - c.position).normalized.FlattenY(), c.normal.FlattenY())) > cfg.minDot && // Angle ok?

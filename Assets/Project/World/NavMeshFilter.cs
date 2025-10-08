@@ -1,109 +1,111 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 public class NavMeshFilter : MonoBehaviour {
-	public List<Vector3> points = new();
-	[SerializeField] NavMeshTriangulation mesh;
 	[SerializeField] int start;
-	[SerializeField] int inspectTri;
-	[SerializeField] int inspectVtx;
-	[SerializeField] int triA;
-	[SerializeField] int triB;
-	[SerializeField] List<int>[] adjacencies;
+	[SerializeField] List<int> island;
+	[SerializeField] bool debug;
+	private NavMeshTriangulation mesh;
 
-	[ContextMenu("Filter NavMesh To Largest Island")]
-	public void FilterNavMesh() {
-		points.Clear();
-		Debug.Log("Starting NavMesh filtering process...");
-		NavMeshTriangulation mesh = NavMesh.CalculateTriangulation();
-		this.mesh = mesh;
+	private void Filter() {
+		NavMesh.RemoveAllNavMeshData();
+		List<int> newIndices = new();
+		foreach (int triIndex in island) {
+			for (int i = 0; i < 3; i++) { newIndices.Add(mesh.indices[triIndex * 3 + i]); }
+		}
+		Mesh m = new();
+		m.vertices = mesh.vertices;
+		m.SetTriangles(newIndices, 0);
+		m.RecalculateBounds();
 
+		NavMeshBuildSource source = new NavMeshBuildSource {
+			shape = NavMeshBuildSourceShape.Mesh,
+			sourceObject = m,
+			transform = Matrix4x4.identity,
+			area = 0
+		};
+
+		var sources = new List<NavMeshBuildSource> { source };
+		NavMeshBuilder.UpdateNavMeshData(GetComponent<NavMeshSurface>().navMeshData, NavMesh.GetSettingsByID(0), sources, m.bounds);
 
 	}
 
-	private List<int> Bfs(NavMeshTriangulation mesh) {
-		int V = adjacencies.Length;
-		int s = start;
-		List<int> traversed = new List<int>();
-		Queue<int> toVisit = new Queue<int>();
-		bool[] visited = new bool[V];
-		visited[s] = true;
-		toVisit.Enqueue(s);
-
+	private void FloodFill() {
+		island.Clear();
+		List<int>[] adjacencies = BuildAdjacencies();
+		int source = start;
+		bool[] visited = new bool[adjacencies.Length];
+		visited[source] = true;
+		Queue<int> toVisit = new();
+		toVisit.Enqueue(source);
 		while (toVisit.Count > 0) {
-			int current = toVisit.Dequeue();
-			traversed.Add(current);
-			foreach (int x in adjacencies[current]) {
-				if (!visited[x]) {
-					visited[x] = true;
-					toVisit.Enqueue(x);
+			int count = toVisit.Count;
+			for (int i = 0; i < count; i++) {
+				int current = toVisit.Dequeue();
+				island.Add(current);
+				foreach (int x in adjacencies[current]) {
+					if (!visited[x]) {
+						visited[x] = true;
+						toVisit.Enqueue(x);
+					}
 				}
 			}
 		}
-		return traversed;
 	}
 
-	Dictionary<int, List<int>> usageMap = new(); // Map of vertices to the triangles that use it
-	private void BuildAdjacencies() {
-		usageMap.Clear();
-		// IS THIS FUCKER LYING TO ME???
+	private List<int>[] BuildAdjacencies() {
+		mesh = NavMesh.CalculateTriangulation();
+		Dictionary<Vector3, List<int>> usageMap = new(new Vector3Comparer()); // Map of vertices to the triangles that use it
 		for (int i = 0; i < mesh.indices.Length; i += 3) {
 			int triangle = i / 3;
-			if (triangle == inspectTri) { print($"Processing triangle {triangle}"); }
 			for (int j = 0; j < 3; j++) {
-				int vertex = mesh.indices[i + j];
+				Vector3 vertex = mesh.vertices[mesh.indices[i + j]];
 				usageMap.TryAdd(vertex, new List<int>());
 				usageMap[vertex].Add(triangle);
-				if (triangle == inspectTri) print($"Adding triangle {triangle} to usage by vertex {vertex}");
 			}
 		}
 
+		List<int>[] adjacencies = new List<int>[mesh.indices.Length / 3];
 		for (int i = 0; i < mesh.indices.Length; i += 3) {
-			break;
-			HashSet<int> neighbors = new();
-			neighbors.UnionWith(usageMap[mesh.indices[i + 0]]);
-			neighbors.UnionWith(usageMap[mesh.indices[i + 1]]);
-			neighbors.UnionWith(usageMap[mesh.indices[i + 2]]);
-			neighbors.Remove(i); // A triangle is not adjacent to itself.
-			//adjacencies[i / 3] = new List<int>(neighbors);
+			int triangle = i / 3;
+			HashSet<int> neighbors = new(); // Populate this with every triangle that it is adjacent to.
+			for (int j = 0; j < 3; j++) { neighbors.UnionWith(usageMap[mesh.vertices[mesh.indices[i + j]]]); }
+			neighbors.Remove(triangle); // A triangle is not adjacent to itself.
+			adjacencies[triangle] = new List<int>(neighbors);
+		}
+		return adjacencies;
+	}
+
+	private void OnDrawGizmos() {
+		if (debug) {
+			if (mesh.areas == null) { mesh = NavMesh.CalculateTriangulation(); }
+			Gizmos.color = Color.green;
+			if (island.Count > 0) DrawTris(island);
 		}
 	}
 
-	private void OnDrawGizmosSelected() {
-		Handles.Label(mesh.vertices[mesh.indices[inspectTri * 3]], $"showing triange {inspectTri}, vertex {mesh.indices[inspectTri * 3]}: used by {string.Join(", ", usageMap[mesh.indices[inspectTri * 3]])}");
-
-		Mesh fullMesh = new Mesh {
-			vertices = mesh.vertices,
-			triangles = mesh.indices
-		};
-		fullMesh.RecalculateNormals();
-		Gizmos.color = Color.darkCyan * 0.5f;
-		Gizmos.DrawWireMesh(fullMesh, Vector3.zero, Quaternion.identity);
-		Gizmos.color = Color.green;
-		DrawTris(usageMap[triA]);
-		Gizmos.color = Color.red;
-		DrawTris(new() { triA }, 0.25f);
-		Gizmos.color = Color.purple;
-		DrawTris(usageMap[triB]);
-	}
-
-	void DrawTris(List<int> triangles, float offset = 0) {
+	private void DrawTris(List<int> triangles, float offset = 0) {
+		if (triangles == null || triangles.Count == 0) { return; }
+		var triPool = new int[triangles.Count * 3];
+		var vtxPool = new Vector3[triangles.Count * 3];
+		int j = 0;
 		foreach (int triangle in triangles) {
-			Mesh triangleMesh = new Mesh {
-				vertices = new Vector3[] {
-					mesh.vertices[mesh.indices[triangle * 3 + 0]] + offset * Vector3.up,
-					mesh.vertices[mesh.indices[triangle * 3 + 1]] + offset * Vector3.up,
-					mesh.vertices[mesh.indices[triangle * 3 + 2]] + offset * Vector3.up
-				},
-				triangles = new int[] { 0, 1, 2 }
-			};
-			triangleMesh.RecalculateNormals();
-			Gizmos.DrawWireMesh(triangleMesh, Vector3.zero, Quaternion.identity);
+			for (int i = 0; i < 3; i++) {
+				vtxPool[j] = mesh.vertices[mesh.indices[triangle * 3 + i]] + offset * Vector3.up;
+				triPool[j] = j;
+				j++;
+			}
 		}
+
+		Mesh combinedMesh = new Mesh { vertices = vtxPool, triangles = triPool };
+		combinedMesh.RecalculateNormals();
+		Gizmos.DrawWireMesh(combinedMesh);
 	}
 
 #if UNITY_EDITOR
@@ -112,13 +114,9 @@ public class NavMeshFilter : MonoBehaviour {
 		public override void OnInspectorGUI() {
 			base.OnInspectorGUI();
 			NavMeshFilter filter = target as NavMeshFilter;
-			if (GUILayout.Button("Filter NavMesh To Largest Island")) { filter.FilterNavMesh(); }
-			if (GUILayout.Button("Build adjacencies")) { 
-				filter.FilterNavMesh();
-				filter.BuildAdjacencies(); 
-			}
+			if (GUILayout.Button("Flood Fill Selected")) { filter.FloodFill(); }
+			if (GUILayout.Button("Apply to NavMesh")) { filter.Filter(); }
 		}
 	}
 #endif
 }
-
