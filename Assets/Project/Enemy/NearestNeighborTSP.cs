@@ -3,10 +3,10 @@ using UnityEngine.AI;
 using UnityEngine;
 using System.Linq;
 
-public class NearestNeighborTSP {
-	Vector3[] points;
-	Vector3[,][] pathMap;
-	float[,] distMap;
+public class NearestNeighborTSP : ScriptableObject {
+	[SerializeField] Vector3[] points;
+	[SerializeField] Vector3[,][] pathMap;
+	[SerializeField] float[,] distMap;
 
 	public NearestNeighborTSP(Vector3[] points) {
 		int n = points.Length;
@@ -39,6 +39,7 @@ public class NearestNeighborTSP {
 			float nearestDist = float.PositiveInfinity;
 			int nearestIdx = -1;
 			for (int j = 0; j < n; j++) {
+				Debug.Log($"n: {visited}, {distMap}");
 				if (!visited[j] && distMap[currentIndex, j] < nearestDist) {
 					nearestDist = distMap[currentIndex, j];
 					nearestIdx = j;

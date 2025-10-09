@@ -7,15 +7,14 @@ using UnityEditor;
 
 public class PatrolGenerator : MonoBehaviour {
 	public static PatrolGenerator I;
-	public NearestNeighborTSP tsp;
+	public List<Vector3> patrolPoints = new();
+	[SerializeField] public NearestNeighborTSP tsp;
 
 	[SerializeField] private float voxelSize;
 	[SerializeField] private float height;
 	[Space]
 	[SerializeField] private bool debug;
-	[SerializeField] private int start;
 	[SerializeField] private List<Vector3> witnesses = new();
-	[SerializeField] private List<Vector3> patrolPoints = new();
 
 	private void Awake() {
 		if (I != null) { Destroy(this); return; }
@@ -97,10 +96,6 @@ public class PatrolGenerator : MonoBehaviour {
 			}
 		}
 		Ext.LogTime(selectionTimestamp, "patrol selection");
-
-		long tspTimestamp = Ext.Timestamp;
-		tsp = new NearestNeighborTSP(patrolPoints.ToArray());
-		Ext.LogTime(tspTimestamp, "TSP");
 	}
 
 	public Vector3[] GetPatrolPath(Vector3 from) {
@@ -108,6 +103,7 @@ public class PatrolGenerator : MonoBehaviour {
 		for (int i = 0; i < patrolPoints.Count; i++) {
 			if ((patrolPoints[i] - from).sqrMagnitude < (patrolPoints[closestI] - from).sqrMagnitude) { closestI = i; }
 		}
+		print($"Asking tsp for {closestI}");
 		return tsp.GetPath(closestI);
 	}
 
@@ -133,6 +129,11 @@ public class PatrolGenerator : MonoBehaviour {
 			if (GUILayout.Button("Generate Patrol Path")) {
 				generator.GeneratePatrolPoints();
 				EditorUtility.SetDirty(generator);
+			}
+			if (GUILayout.Button("Make TSP")) {
+				long tspTimestamp = Ext.Timestamp;
+				generator.tsp = new NearestNeighborTSP(generator.patrolPoints.ToArray());
+				Ext.LogTime(tspTimestamp, "TSP");
 			}
 		}
 	}
