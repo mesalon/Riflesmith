@@ -3,50 +3,77 @@ using UnityEngine.AI;
 using UnityEngine;
 using System.Linq;
 
+[CreateAssetMenu(menuName = "Enemy/TSP")]
 public class NearestNeighborTSP : ScriptableObject {
+	[SerializeField] int n;
 	[SerializeField] Vector3[] points;
-	[SerializeField] Vector3[,][] pathMap;
-	[SerializeField] float[,] distMap;
 
-	public NearestNeighborTSP(Vector3[] points) {
-		int n = points.Length;
+	// Flattened from Vector3[,][] pathMap
+	[SerializeField] Vector3[] flatPathMap;
+	[SerializeField] int[] pathStartIndices;
+	[SerializeField] int[] pathLengths;
+
+	// Flattened from float[,] distMap
+	[SerializeField] float[] distMap;
+
+	public void Compute(Vector3[] points) {
+		n = points.Length;
 		this.points = points;
-		pathMap = new Vector3[n, n][];
-		distMap = new float[n, n];
+		
+		distMap = new float[n * n];
+		pathStartIndices = new int[n * n];
+		pathLengths = new int[n * n];
+
+		var tempPathList = new List<Vector3>();
 
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				if (i == j) continue;
+
+				int flatIndex = i * n + j;
 				var navPath = new NavMeshPath();
+
 				if (NavMesh.CalculatePath(points[i], points[j], NavMesh.AllAreas, navPath) && navPath.status == NavMeshPathStatus.PathComplete) {
-					pathMap[i, j] = navPath.corners;
-					distMap[i, j] = PathLength(navPath.corners);
+					pathStartIndices[flatIndex] = tempPathList.Count;
+					pathLengths[flatIndex] = navPath.corners.Length;
+					distMap[flatIndex] = PathLength(navPath.corners);
+					tempPathList.AddRange(navPath.corners);
 				} else {
-					distMap[i, j] = float.PositiveInfinity;
+					distMap[flatIndex] = float.PositiveInfinity;
+					pathStartIndices[flatIndex] = -1;
+					pathLengths[flatIndex] = 0;
 				}
 			}
 		}
-
+		flatPathMap = tempPathList.ToArray();
 	}
 
 	public Vector3[] GetPath(int start) {
-		int n = points.Length;
 		var finalPath = new List<Vector3> { points[start] };
 		var visited = new bool[n];
 		int currentIndex = start;
 		visited[currentIndex] = true;
+
 		for (int i = 1; i < n; i++) {
 			float nearestDist = float.PositiveInfinity;
 			int nearestIdx = -1;
+
 			for (int j = 0; j < n; j++) {
-				Debug.Log($"n: {visited}, {distMap}");
-				if (!visited[j] && distMap[currentIndex, j] < nearestDist) {
-					nearestDist = distMap[currentIndex, j];
+				if (!visited[j] && distMap[currentIndex * n + j] < nearestDist) {
+					nearestDist = distMap[currentIndex * n + j];
 					nearestIdx = j;
 				}
 			}
+
 			if (nearestIdx == -1) break;
-			finalPath.AddRange(pathMap[currentIndex, nearestIdx].Skip(1));
+
+			int flatIndex = currentIndex * n + nearestIdx;
+			int pathStart = pathStartIndices[flatIndex];
+			int pathLen = pathLengths[flatIndex];
+			for (int k = 1; k < pathLen; k++) {
+				finalPath.Add(flatPathMap[pathStart + k]);
+			}
+			
 			currentIndex = nearestIdx;
 			visited[currentIndex] = true;
 		}

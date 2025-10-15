@@ -103,8 +103,9 @@ public class PatrolGenerator : MonoBehaviour {
 		for (int i = 0; i < patrolPoints.Count; i++) {
 			if ((patrolPoints[i] - from).sqrMagnitude < (patrolPoints[closestI] - from).sqrMagnitude) { closestI = i; }
 		}
-		print($"Asking tsp for {closestI}");
-		return tsp.GetPath(closestI);
+		Vector3[] path = tsp.GetPath(closestI);
+		print($"Asking tsp for {closestI}, received {path.Length} points");
+		return path;
 	}
 
 	private void OnDrawGizmos() {
@@ -126,13 +127,13 @@ public class PatrolGenerator : MonoBehaviour {
 			DrawDefaultInspector();
 			PatrolGenerator generator = (PatrolGenerator)target;
 			EditorGUILayout.Space();
-			if (GUILayout.Button("Generate Patrol Path")) {
+			if (GUILayout.Button("Generate Patrol Points")) {
 				generator.GeneratePatrolPoints();
 				EditorUtility.SetDirty(generator);
 			}
 			if (GUILayout.Button("Make TSP")) {
 				long tspTimestamp = Ext.Timestamp;
-				generator.tsp = new NearestNeighborTSP(generator.patrolPoints.ToArray());
+				generator.tsp.Compute(generator.patrolPoints.ToArray());
 				Ext.LogTime(tspTimestamp, "TSP");
 			}
 		}

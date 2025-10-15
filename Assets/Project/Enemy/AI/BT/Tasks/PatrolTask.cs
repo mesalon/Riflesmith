@@ -9,13 +9,13 @@ public class PatrolTask : Node {
 	public PatrolTask(Enemy ctx) {
 		this.ctx = ctx.blackboard;
 		locomotion = ctx.locomotion;
-		Debug.Log($"p: {PatrolGenerator.I}");
 		patrol = PatrolGenerator.I.GetPatrolPath(ctx.transform.position);
 	}
 
 	public override NodeState Evaluate(out Node active) {
 		active = this;
-		Ext.Label(ctx.transform.position, $"moving: {patrol[point]}");
+		Debug.Log($"moving: {patrol[point]}");
+		Ext.DrawPath(patrol);
 		if (locomotion.Move(patrol[point], ctx.cfg.locomotion.walkSpeed)) { point++; }
 		return NodeState.Running;
 	}

@@ -13,7 +13,6 @@ public class Enemy : MonoBehaviour {
 		vision = new(blackboard);
 		body = new(blackboard);
 		brain = new SelectorNode(new() {
-				new EngageEnemyTask(this),
 				new PatrolTask(this),
 				});
 	}
