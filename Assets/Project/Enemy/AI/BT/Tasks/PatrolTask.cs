@@ -16,6 +16,7 @@ public class PatrolTask : Node {
 		active = this;
 		Debug.Log($"moving: {patrol[point]}");
 		Ext.DrawPath(patrol);
+		Ext.Label(patrol[point], "Alleged destination");
 		if (locomotion.Move(patrol[point], ctx.cfg.locomotion.walkSpeed)) { point++; }
 		return NodeState.Running;
 	}

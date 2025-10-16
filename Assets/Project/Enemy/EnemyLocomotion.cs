@@ -29,6 +29,7 @@ public class EnemyLocomotion {
 	private NavMeshPath path;
 	private Transform head;
 	private Vector3 destination;
+	private Vector3 navDestination;
 	private Vector2 ikAim;
 	private Vector3 lastPos;
 	private Vector3 velocity;
@@ -37,6 +38,7 @@ public class EnemyLocomotion {
 	private bool isAiming;
 	private float startMoveTime;
 	private int cornerIdx;
+	private float verticalVelocity;
 
 	public EnemyLocomotion(Blackboard ctx) {
 		this.ctx = ctx;
@@ -46,9 +48,11 @@ public class EnemyLocomotion {
 
 	Vector3 dest;
 	public void Tick() {
-		if (ctx.bool1)
-		ctx.transform.rotation = Quaternion.Euler(0, Mathf.PingPong(Time.time * 100, 90) - 45, 0);
-		return;
+		bool isGrounded = ctx.cc.isGrounded;
+		if (!isGrounded) { verticalVelocity += Physics.gravity.y * Time.deltaTime; } 
+		else if (verticalVelocity < 0) { verticalVelocity = -2f; }
+		ctx.cc.Move(new(0, verticalVelocity, 0));
+
 		if (Input.GetMouseButtonDown(0)) {
 			Ray ray = GameManager.Camera.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray.origin, ray.direction * 1000, out RaycastHit hit)) {
@@ -73,7 +77,7 @@ public class EnemyLocomotion {
 		Face(aimTarget, cfg.turnSpeed);
 		Ext.DrawCube(aimTarget, Quaternion.identity, Vector3.one * 0.05f, Color.red);
 		ctx.ikTarget.position = Vector3.Lerp(ctx.ikTarget.position, aimTarget, cfg.lookSpeed);
-		
+
 		ctx.gunRestRig.weight = Mathf.Lerp(ctx.gunRestRig.weight, isAiming ? 0 : 1, Time.deltaTime * cfg.aimSpeed);
 		ctx.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
 		ctx.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
@@ -85,11 +89,16 @@ public class EnemyLocomotion {
 	public bool Move(Vector3 destination, float speed) {
 		if (this.destination != destination) {
 			this.destination = destination;
+			if (NavMesh.SamplePosition(destination, out NavMeshHit hit, 20, NavMesh.AllAreas)) { navDestination = hit.position; }
 			cornerIdx = 1;
-			NavMesh.CalculatePath(ctx.transform.position, destination,  NavMesh.AllAreas, path);
+			NavMesh.CalculatePath(ctx.transform.position, navDestination,  NavMesh.AllAreas, path);
+			Debug.Log("Recalculating");
 		}
 
+		for (int i = 0; i < path.corners.Length; i++) { Ext.Label(path.corners[i], $"Corner {i}"); }
+		Debug.Log($"Total: {path.corners.Length}");
 		if (cornerIdx < path.corners.Length) {
+			Ext.Label(path.corners[cornerIdx] + Vector3.up * 0.2f, "current dest");
 			Vector3 dir = (path.corners[cornerIdx] - ctx.transform.position).FlattenY().normalized;
 			if (ctx.aimFocus == null) {
 				Quaternion rot = Quaternion.LookRotation(dir);
