@@ -1,7 +1,7 @@
 using UnityEngine;
+using Pathfinding;
 using UnityEngine.AI;
 using System.Collections.Generic;
-using Unity.AI.Navigation;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -14,7 +14,7 @@ public class NavMeshFilter : MonoBehaviour {
 	private NavMeshTriangulation mesh;
 
 	private void Filter() {
-		NavMesh.RemoveAllNavMeshData();
+		AstarPath.active.data.recastGraph.repla
 		List<int> newIndices = new();
 		foreach (int triIndex in island) {
 			for (int i = 0; i < 3; i++) { newIndices.Add(mesh.indices[triIndex * 3 + i]); }
