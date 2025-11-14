@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine.AI;
 using UnityEngine;
 using System.Linq;
 
@@ -31,9 +30,9 @@ public class NearestNeighborTSP : ScriptableObject {
 				if (i == j) continue;
 
 				int flatIndex = i * n + j;
-				var navPath = new NavMeshPath();
+				var navPath = new UnityEngine.AI.NavMeshPath();
 
-				if (NavMesh.CalculatePath(points[i], points[j], NavMesh.AllAreas, navPath) && navPath.status == NavMeshPathStatus.PathComplete) {
+				if (UnityEngine.AI.NavMesh.CalculatePath(points[i], points[j], UnityEngine.AI.NavMesh.AllAreas, navPath) && navPath.status == UnityEngine.AI.NavMeshPathStatus.PathComplete) {
 					pathStartIndices[flatIndex] = tempPathList.Count;
 					pathLengths[flatIndex] = navPath.corners.Length;
 					distMap[flatIndex] = PathLength(navPath.corners);

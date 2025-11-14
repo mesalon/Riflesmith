@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using UnityEngine.AI;
 using UnityEngine;
+using Pathfinding;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -24,23 +24,15 @@ public class PatrolGenerator : MonoBehaviour {
 	public void GeneratePatrolPoints() {
 		long witnessTimestamp = Ext.Timestamp;
 		witnesses.Clear();
-		NavMeshTriangulation navMeshData = NavMesh.CalculateTriangulation();
-		if (navMeshData.vertices.Length == 0) {
-			Debug.LogWarning("NavMesh not found or has no vertices.");
-			return;
-		}
-
-		Bounds navMeshBounds = new Bounds(navMeshData.vertices[0], Vector3.zero);
-		foreach (Vector3 v in navMeshData.vertices) { navMeshBounds.Encapsulate(v); }
-
+		Bounds bounds = AstarPath.active.data.recastGraph.bounds;
+		NearestNodeConstraint constraint = NearestNodeConstraint.Walkable;
+		constraint.maxDistanceSqr = voxelSize;
 		if (voxelSize > 0) {
-			for (float x = navMeshBounds.min.x; x < navMeshBounds.max.x; x += voxelSize) {
-				for (float y = navMeshBounds.min.y; y < navMeshBounds.max.y; y += voxelSize) {
-					for (float z = navMeshBounds.min.z; z < navMeshBounds.max.z; z += voxelSize) {
-						Vector3 samplePoint = new Vector3(x, y, z);
-						if (NavMesh.SamplePosition(samplePoint, out NavMeshHit hit, voxelSize, NavMesh.AllAreas)) {
-							witnesses.Add(hit.position + height * Vector3.up);
-						}
+			for (float x = bounds.min.x; x < bounds.max.x; x += voxelSize) {
+				for (float y = bounds.min.y; y < bounds.max.y; y += voxelSize) {
+					for (float z = bounds.min.z; z < bounds.max.z; z += voxelSize) {
+						NNInfo info = AstarPath.active.GetNearest(new Vector3(x, y, z), constraint);
+						if (info.node != null) witnesses.Add(info.position + height * Vector3.up);
 					}
 				}
 			}
