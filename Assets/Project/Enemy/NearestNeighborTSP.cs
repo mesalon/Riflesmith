@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Pathfinding;
 using UnityEngine;
 using System.Linq;
 
@@ -7,21 +8,14 @@ public class NearestNeighborTSP : ScriptableObject {
 	[SerializeField] int n;
 	[SerializeField] Vector3[] points;
 
-	// Flattened from Vector3[,][] pathMap
-	[SerializeField] Vector3[] flatPathMap;
-	[SerializeField] int[] pathStartIndices;
-	[SerializeField] int[] pathLengths;
-
 	// Flattened from float[,] distMap
 	[SerializeField] float[] distMap;
 
 	public void Compute(Vector3[] points) {
 		n = points.Length;
 		this.points = points;
-		
+
 		distMap = new float[n * n];
-		pathStartIndices = new int[n * n];
-		pathLengths = new int[n * n];
 
 		var tempPathList = new List<Vector3>();
 
@@ -30,23 +24,17 @@ public class NearestNeighborTSP : ScriptableObject {
 				if (i == j) continue;
 
 				int flatIndex = i * n + j;
-				var navPath = new UnityEngine.AI.NavMeshPath();
-
-				if (UnityEngine.AI.NavMesh.CalculatePath(points[i], points[j], UnityEngine.AI.NavMesh.AllAreas, navPath) && navPath.status == UnityEngine.AI.NavMeshPathStatus.PathComplete) {
-					pathStartIndices[flatIndex] = tempPathList.Count;
-					pathLengths[flatIndex] = navPath.corners.Length;
-					distMap[flatIndex] = PathLength(navPath.corners);
-					tempPathList.AddRange(navPath.corners);
-				} else {
-					distMap[flatIndex] = float.PositiveInfinity;
-					pathStartIndices[flatIndex] = -1;
-					pathLengths[flatIndex] = 0;
-				}
+				var path = ABPath.Construct(points[i], points[j], p => {
+						if (p.error) { distMap[flatIndex] = float.PositiveInfinity; }
+						distMap[flatIndex] = p.GetTotalLength();
+						});
 			}
 		}
-		flatPathMap = tempPathList.ToArray();
 	}
 
+	void OnPathComplete(Path path) {
+
+	}
 	public Vector3[] GetPath(int start) {
 		var finalPath = new List<Vector3> { points[start] };
 		var visited = new bool[n];
@@ -66,13 +54,6 @@ public class NearestNeighborTSP : ScriptableObject {
 
 			if (nearestIdx == -1) break;
 
-			int flatIndex = currentIndex * n + nearestIdx;
-			int pathStart = pathStartIndices[flatIndex];
-			int pathLen = pathLengths[flatIndex];
-			for (int k = 1; k < pathLen; k++) {
-				finalPath.Add(flatPathMap[pathStart + k]);
-			}
-			
 			currentIndex = nearestIdx;
 			visited[currentIndex] = true;
 		}
@@ -82,5 +63,15 @@ public class NearestNeighborTSP : ScriptableObject {
 	private float PathLength(Vector3[] path) {
 		if (path.Length < 2) return 0;
 		return path.Zip(path.Skip(1), (a, b) => Vector3.Distance(a, b)).Sum();
+	}
+}
+
+public class NiggerTSP : MonoBehaviour {
+	public List<Vector3> points;
+
+	public void Bake() {
+		for (int i = 0; i < points.Count; i++) {
+
+		}
 	}
 }

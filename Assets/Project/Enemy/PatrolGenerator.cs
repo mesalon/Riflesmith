@@ -8,13 +8,14 @@ using UnityEditor;
 public class PatrolGenerator : MonoBehaviour {
 	public static PatrolGenerator I;
 	public List<Vector3> patrolPoints = new();
-	[SerializeField] public NearestNeighborTSP tsp;
+	[SerializeField] public NNTSP tsp;
 
 	[SerializeField] private float voxelSize;
 	[SerializeField] private float height;
 	[Space]
 	[SerializeField] private bool debug;
 	[SerializeField] private List<Vector3> witnesses = new();
+	[SerializeField] Seeker seeker;
 
 	private void Awake() {
 		if (I != null) { Destroy(this); return; }
@@ -95,7 +96,7 @@ public class PatrolGenerator : MonoBehaviour {
 		for (int i = 0; i < patrolPoints.Count; i++) {
 			if ((patrolPoints[i] - from).sqrMagnitude < (patrolPoints[closestI] - from).sqrMagnitude) { closestI = i; }
 		}
-		Vector3[] path = tsp.GetPath(closestI);
+		Vector3[] path = tsp.GetPath(closestI).ToArray();
 		print($"Asking tsp for {closestI}, received {path.Length} points");
 		return path;
 	}
@@ -125,7 +126,7 @@ public class PatrolGenerator : MonoBehaviour {
 			}
 			if (GUILayout.Button("Make TSP")) {
 				long tspTimestamp = Ext.Timestamp;
-				generator.tsp.Compute(generator.patrolPoints.ToArray());
+				generator.tsp.Compute(generator.patrolPoints.ToArray(), generator.seeker);
 				Ext.LogTime(tspTimestamp, "TSP");
 			}
 		}
