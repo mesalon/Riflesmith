@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.AI;
+using Pathfinding;
 
 [System.Serializable] public struct LocomotionCfg {
 	public float walkSpeed;
@@ -26,91 +26,96 @@ public class EnemyLocomotion {
 	// They can also specify a look target, and whether to aim there with the gun
 	private readonly Blackboard ctx;
 	private LocomotionCfg cfg => ctx.cfg.locomotion;
-	private NavMeshPath path;
-	private Transform head;
-	private Vector3 destination;
-	private Vector3 navDestination;
-	private Vector2 ikAim;
 	private Vector3 lastPos;
-	private Vector3 velocity;
-	private Vector3 velocityRef;
-	private bool isCrouching;
-	private bool isAiming;
-	private float startMoveTime;
+	private Vector3 destination;
+	private Path path;
 	private int cornerIdx;
 	private float verticalVelocity;
+	private float speed;
+	private bool isCrouching;
+	private bool isAiming;
+	private Transform head;
+	private Vector2 ikAim;
+	private Vector3 velocity;
+	private Vector3 velocityRef;
+	private float startMoveTime;
 
 	public EnemyLocomotion(Blackboard ctx) {
 		this.ctx = ctx;
-		destination = ctx.transform.position;
-		path = new();
+		speed = cfg.walkSpeed;
 	}
 
-	Vector3 dest;
 	public void Tick() {
-		bool isGrounded = ctx.cc.isGrounded;
-		if (!isGrounded) { verticalVelocity += Physics.gravity.y * Time.deltaTime; } 
-		else if (verticalVelocity < 0) { verticalVelocity = -2f; }
-		ctx.cc.Move(new(0, verticalVelocity, 0));
-
 		if (Input.GetMouseButtonDown(0)) {
 			Ray ray = GameManager.Camera.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray.origin, ray.direction * 1000, out RaycastHit hit)) {
-				dest = hit.point;
+				Move(hit.point, cfg.jogSpeed);
 			}
 		}
-		if (ctx.focus) ctx.aimFocus = ctx.focus.position;
-		if (ctx.dingle) dest = ctx.dingle.position;
-		if (dest != default) Move(dest, cfg.walkSpeed);
 
-		Ext.DrawPath(path.corners);
+		if (!ctx.cc.isGrounded) { verticalVelocity += Physics.gravity.y * Time.deltaTime; } 
+		else if (verticalVelocity < 0) { verticalVelocity = -2f; }
+		ctx.cc.Move(new(0, verticalVelocity, 0));
 
-		Vector3 aimTarget;
-		if (ctx.aimFocus is Vector3 focus) { 
-			aimTarget = focus;
-			ctx.aimFocus = null; // Consume focus. It has to be set every frame.
-		} 
-		else { 
-			Vector3 aimDir = (destination + ctx.eyes.position.y * Vector3.up - ctx.eyes.position).normalized; 
-			aimTarget = ctx.eyes.position + aimDir * cfg.minAimDistance;
+		if (path != null) {
+			if (cornerIdx < path.vectorPath.Count) {
+				Vector3 dir = (path.vectorPath[cornerIdx] - ctx.transform.position).FlattenY().normalized;
+				ctx.cc.Move(dir * (speed * Time.deltaTime));
+				Vector3 pathDirection = (path.vectorPath[cornerIdx] - path.vectorPath[cornerIdx - 1]).FlattenY().normalized;
+				float dot = Vector3.Dot((ctx.transform.position - path.vectorPath[cornerIdx]).FlattenY().normalized, pathDirection);
+				if (dot >= 0) { cornerIdx++; }
+				Debug.DrawRay(destination, Vector3.up, Color.green); Ext.Label(destination + Vector3.up, "Destination");
+				for (int i = 1; i < path.vectorPath.Count; i++) {
+					Debug.DrawRay(path.vectorPath[i], (path.vectorPath[i] - path.vectorPath[i - 1]).normalized, i == cornerIdx ? Color.purple : Color.red);
+				}
+				Debug.DrawRay(ctx.transform.position + Vector3.up * 0.1f, dir, Color.green);
+				Ext.Label(path.vectorPath[cornerIdx], $"{dot:F2}");
+			}
+			else {
+				path = null;
+			}
 		}
-		Face(aimTarget, cfg.turnSpeed);
-		Ext.DrawCube(aimTarget, Quaternion.identity, Vector3.one * 0.05f, Color.red);
-		ctx.ikTarget.position = Vector3.Lerp(ctx.ikTarget.position, aimTarget, cfg.lookSpeed);
+		/*
+			 if (ctx.focus) ctx.aimFocus = ctx.focus.position;
+			 Vector3 aimTarget;
+			 if (ctx.aimFocus is Vector3 focus) { 
+			 aimTarget = focus;
+			 ctx.aimFocus = null; // Consume focus. It has to be set every frame.
+			 } else { 
+			 Vector3 aimDir = (destination + ctx.eyes.position.y * Vector3.up - ctx.eyes.position).normalized; 
+			 aimTarget = ctx.eyes.position + aimDir * cfg.minAimDistance;
+			 }
+			 Face(aimTarget, cfg.turnSpeed);
+			 Ext.DrawCube(aimTarget, Quaternion.identity, Vector3.one * 0.05f, Color.red);
+			 ctx.ikTarget.position = Vector3.Lerp(ctx.ikTarget.position, aimTarget, cfg.lookSpeed);
+				if (ctx.aimFocus == null) {
+					Quaternion rot = Quaternion.LookRotation(dir);
+					ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, rot, cfg.turnSpeed * Time.deltaTime);
+				}
+			 */
 
 		ctx.gunRestRig.weight = Mathf.Lerp(ctx.gunRestRig.weight, isAiming ? 0 : 1, Time.deltaTime * cfg.aimSpeed);
 		ctx.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
 		ctx.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
 		ctx.anim.SetBool("Crouching", isCrouching); 
 		lastPos = ctx.transform.position;
-
 	}
 
-	public bool Move(Vector3 destination, float speed) {
+	public void Move(Vector3 destination, float speed) {
 		if (this.destination != destination) {
 			this.destination = destination;
-			if (NavMesh.SamplePosition(destination, out NavMeshHit hit, 20, NavMesh.AllAreas)) { navDestination = hit.position; }
+			ctx.seeker.StartPath(ctx.transform.position, destination, OnPathComplete);
+			this.speed = speed;
 			cornerIdx = 1;
-			NavMesh.CalculatePath(ctx.transform.position, navDestination,  NavMesh.AllAreas, path);
-			Debug.Log("Recalculating");
 		}
+	}
 
-		for (int i = 0; i < path.corners.Length; i++) { Ext.Label(path.corners[i], $"Corner {i}"); }
-		Debug.Log($"Total: {path.corners.Length}");
-		if (cornerIdx < path.corners.Length) {
-			Ext.Label(path.corners[cornerIdx] + Vector3.up * 0.2f, "current dest");
-			Vector3 dir = (path.corners[cornerIdx] - ctx.transform.position).FlattenY().normalized;
-			if (ctx.aimFocus == null) {
-				Quaternion rot = Quaternion.LookRotation(dir);
-				ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, rot, cfg.turnSpeed * Time.deltaTime);
-			}
-			ctx.cc.Move(dir * (speed * Time.deltaTime));
-
-			Vector3 pathDirection = path.corners[cornerIdx] - path.corners[cornerIdx - 1];
-			if (Vector3.Dot((ctx.transform.position - path.corners[cornerIdx]).normalized, pathDirection) >= 0) { cornerIdx++; }
-			return false;
+	private void OnPathComplete(Path p) {
+		if (!p.error) {
+			path = p;
+		} else {
+			Debug.Log($"Error occured during OnPathComplete ({p.error})");
 		}
-		return true;
 	}
 
 	private void Face(Vector3 target, float speed) {

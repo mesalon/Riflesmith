@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using Pathfinding;
 #if UNITY_EDITOR
@@ -8,8 +9,8 @@ using UnityEditor;
 public class PatrolGenerator : MonoBehaviour {
 	public static PatrolGenerator I;
 	public List<Vector3> patrolPoints = new();
-	[SerializeField] public NNTSP tsp;
 
+	[SerializeField] NearestNeighborTSP tsp;
 	[SerializeField] private float voxelSize;
 	[SerializeField] private float height;
 	[Space]
@@ -23,6 +24,7 @@ public class PatrolGenerator : MonoBehaviour {
 	}
 
 	public void GeneratePatrolPoints() {
+		patrolPoints.Clear();
 		long witnessTimestamp = Ext.Timestamp;
 		witnesses.Clear();
 		Bounds bounds = AstarPath.active.data.recastGraph.bounds;
@@ -55,7 +57,6 @@ public class PatrolGenerator : MonoBehaviour {
 		Ext.LogTime(matrixTimestamp, "visibility matrix");
 
 		long selectionTimestamp = Ext.Timestamp;
-		patrolPoints.Clear();
 		var unseen = new HashSet<Vector3>(witnesses);
 
 		while (unseen.Count > 0) {
@@ -92,12 +93,14 @@ public class PatrolGenerator : MonoBehaviour {
 	}
 
 	public Vector3[] GetPatrolPath(Vector3 from) {
-		int closestI = 0;
+		int closest = 0;
+		float distance = float.MaxValue;
 		for (int i = 0; i < patrolPoints.Count; i++) {
-			if ((patrolPoints[i] - from).sqrMagnitude < (patrolPoints[closestI] - from).sqrMagnitude) { closestI = i; }
+			float d = (patrolPoints[i] - from).sqrMagnitude;
+			if (d < distance) { closest = i; distance = d; }
 		}
-		Vector3[] path = tsp.GetPath(closestI).ToArray();
-		print($"Asking tsp for {closestI}, received {path.Length} points");
+		Vector3[] path = tsp.GetPath(closest);
+		print($"Asking tsp for {closest}, received {path.Length} points");
 		return path;
 	}
 
@@ -109,7 +112,7 @@ public class PatrolGenerator : MonoBehaviour {
 		}
 		Gizmos.color = Color.green;
 		if (patrolPoints != null) {
-			foreach (Vector3 point in patrolPoints) { Gizmos.DrawSphere(point, 0.5f); }
+			foreach (Vector3 point in patrolPoints) { Gizmos.DrawSphere(point, 0.25f); }
 		}
 	}
 
@@ -126,7 +129,8 @@ public class PatrolGenerator : MonoBehaviour {
 			}
 			if (GUILayout.Button("Make TSP")) {
 				long tspTimestamp = Ext.Timestamp;
-				generator.tsp.Compute(generator.patrolPoints.ToArray(), generator.seeker);
+				generator.tsp = new NearestNeighborTSP(generator.patrolPoints.ToArray());
+				generator.tsp.Compute();
 				Ext.LogTime(tspTimestamp, "TSP");
 			}
 		}

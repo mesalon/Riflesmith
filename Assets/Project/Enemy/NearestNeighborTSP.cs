@@ -1,19 +1,19 @@
 using System.Collections.Generic;
 using Pathfinding;
 using UnityEngine;
-using System.Linq;
 
-[CreateAssetMenu(menuName = "Enemy/TSP")]
-public class NearestNeighborTSP : ScriptableObject {
-	[SerializeField] int n;
+[System.Serializable]
+public class NearestNeighborTSP {
 	[SerializeField] Vector3[] points;
-
-	// Flattened from float[,] distMap
+	// Makeshift 2D array
 	[SerializeField] float[] distMap;
 
-	public void Compute(Vector3[] points) {
-		n = points.Length;
+	public NearestNeighborTSP(Vector3[] points) {
 		this.points = points;
+	}
+
+	public void Compute() {
+		int n = points.Length;
 
 		distMap = new float[n * n];
 
@@ -22,21 +22,21 @@ public class NearestNeighborTSP : ScriptableObject {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				if (i == j) continue;
-
 				int flatIndex = i * n + j;
-				var path = ABPath.Construct(points[i], points[j], p => {
-						if (p.error) { distMap[flatIndex] = float.PositiveInfinity; }
-						distMap[flatIndex] = p.GetTotalLength();
-						});
+				var path = ABPath.Construct(points[i], points[j], null);
+				AstarPath.StartPath(path);
+				path.BlockUntilCalculated();
+
+				if (path.error) { distMap[flatIndex] = float.PositiveInfinity; }
+				distMap[flatIndex] = path.GetTotalLength();
 			}
 		}
 	}
 
-	void OnPathComplete(Path path) {
-
-	}
 	public Vector3[] GetPath(int start) {
+		long t = Ext.Timestamp;
 		var finalPath = new List<Vector3> { points[start] };
+		int n = points.Length;
 		var visited = new bool[n];
 		int currentIndex = start;
 		visited[currentIndex] = true;
@@ -44,34 +44,18 @@ public class NearestNeighborTSP : ScriptableObject {
 		for (int i = 1; i < n; i++) {
 			float nearestDist = float.PositiveInfinity;
 			int nearestIdx = -1;
-
 			for (int j = 0; j < n; j++) {
 				if (!visited[j] && distMap[currentIndex * n + j] < nearestDist) {
 					nearestDist = distMap[currentIndex * n + j];
 					nearestIdx = j;
 				}
 			}
-
 			if (nearestIdx == -1) break;
-
 			currentIndex = nearestIdx;
 			visited[currentIndex] = true;
+			finalPath.Add(points[currentIndex]);
 		}
+		Ext.LogTime(t);
 		return finalPath.ToArray();
-	}
-
-	private float PathLength(Vector3[] path) {
-		if (path.Length < 2) return 0;
-		return path.Zip(path.Skip(1), (a, b) => Vector3.Distance(a, b)).Sum();
-	}
-}
-
-public class NiggerTSP : MonoBehaviour {
-	public List<Vector3> points;
-
-	public void Bake() {
-		for (int i = 0; i < points.Count; i++) {
-
-		}
 	}
 }

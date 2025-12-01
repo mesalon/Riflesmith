@@ -85,7 +85,8 @@ public static class Ext {
 	public static void Label(Vector3 position, string text, float lifespan = 0, GUIStyle style = null, Color color = default) {
 		style ??= new() {
 			alignment = TextAnchor.MiddleCenter, 
-			normal = new() { textColor = color == default ? Color.white : color }
+			normal = new() { textColor = color == default ? Color.white : color },
+			fontSize = 24,
 		};
 		labelQueue.Add(new() { position = position, text = text, lifespan = lifespan, style = style, color = color });
 	}
@@ -204,6 +205,11 @@ public static class Ext {
 			list[n] = value;
 		}
 	}
+
+	public static T IndexLooped<T>(this T[] array, int i) {
+		int r = i % array.Length;
+		return array[r < 0 ? r + array.Length : r];
+	}
 }
 
 public class LabelRequest {
@@ -218,23 +224,21 @@ public class DrawRequest {
 	public float lifespan;
 }
 
-[System.Serializable] public struct FloatRange { public float Min, Max; }
-[System.Serializable] public struct IntRange { public int Min, Max; }
+[Serializable] public struct FloatRange { public float Min, Max; }
+[Serializable] public struct IntRange { public int Min, Max; }
 
 public class NamedRangeAttribute : PropertyAttribute {
 	public readonly string MinLabel;
 	public readonly string MaxLabel;
 
 	public NamedRangeAttribute(string minLabel, string maxLabel) {
-		this.MinLabel = minLabel;
-		this.MaxLabel = maxLabel;
+		MinLabel = minLabel;
+		MaxLabel = maxLabel;
 	}
 }
 
 public static class NavMeshExt {
 	public static (int a, int b) OrderEdge(this (int a, int b) edge) => edge.a < edge.b ? (edge.a, edge.b) : (edge.b, edge.a);
-
-
 }
 
 public class Vector3Comparer : IEqualityComparer<Vector3> {
@@ -257,7 +261,7 @@ public class Vector3Comparer : IEqualityComparer<Vector3> {
 
 	public int GetHashCode(Vector3 v) {
 		var gridCoords = GetGridCoords(v);
-		return System.HashCode.Combine(gridCoords.Item1, gridCoords.Item2, gridCoords.Item3);
+		return HashCode.Combine(gridCoords.Item1, gridCoords.Item2, gridCoords.Item3);
 	}
 }
 
@@ -265,29 +269,23 @@ public class EdgeComparer : IEqualityComparer<(Vector3 a, Vector3 b)> {
 	private readonly IEqualityComparer<Vector3> vectorComparer;
 
 	public EdgeComparer(float tolerance = 0.001f) {
-		this.vectorComparer = new Vector3Comparer(tolerance);
+		vectorComparer = new Vector3Comparer(tolerance);
 	}
 
 	public bool Equals((Vector3, Vector3) edge1, (Vector3, Vector3) edge2) {
 		var norm1 = Normalize(edge1);
 		var norm2 = Normalize(edge2);
-
-		// Use the vector comparer to check for equality with tolerance.
 		return vectorComparer.Equals(norm1.a, norm2.a) && 
 			vectorComparer.Equals(norm1.b, norm2.b);
 	}
 
 	public int GetHashCode((Vector3 a, Vector3 b) edge) {
 		var ordered = Normalize(edge);
-
-		// Use the vector comparer to get consistent hash codes.
 		int hashA = vectorComparer.GetHashCode(ordered.a);
 		int hashB = vectorComparer.GetHashCode(ordered.b);
-
-		return System.HashCode.Combine(hashA, hashB);
+		return HashCode.Combine(hashA, hashB);
 	}
 
-	// This method was already correct.
 	private (Vector3 a, Vector3 b) Normalize((Vector3 a, Vector3 b) edge) {
 		Vector3 a = edge.a;
 		Vector3 b = edge.b;

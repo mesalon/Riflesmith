@@ -1,4 +1,5 @@
 using UnityEngine;
+using Pathfinding;
 using System.Collections.Generic;
 
 [System.Serializable]
@@ -23,4 +24,5 @@ public class Blackboard {
 	public Vector3? cover;
 	public bool bool1;
 	public Transform dingle;
+	public Seeker seeker;
 }
