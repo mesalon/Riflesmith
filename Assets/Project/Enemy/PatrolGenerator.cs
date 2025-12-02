@@ -16,7 +16,6 @@ public class PatrolGenerator : MonoBehaviour {
 	[Space]
 	[SerializeField] private bool debug;
 	[SerializeField] private List<Vector3> witnesses = new();
-	[SerializeField] Seeker seeker;
 
 	private void Awake() {
 		if (I != null) { Destroy(this); return; }

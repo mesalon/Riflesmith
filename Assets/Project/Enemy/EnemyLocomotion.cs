@@ -28,6 +28,7 @@ public class EnemyLocomotion {
 	private LocomotionCfg cfg => ctx.cfg.locomotion;
 	private Vector3 lastPos;
 	private Vector3 destination;
+	private Vector3? lookTarget;
 	private Path path;
 	private int cornerIdx;
 	private float verticalVelocity;
@@ -75,24 +76,13 @@ public class EnemyLocomotion {
 				path = null;
 			}
 		}
-		/*
-			 if (ctx.focus) ctx.aimFocus = ctx.focus.position;
-			 Vector3 aimTarget;
-			 if (ctx.aimFocus is Vector3 focus) { 
-			 aimTarget = focus;
-			 ctx.aimFocus = null; // Consume focus. It has to be set every frame.
-			 } else { 
-			 Vector3 aimDir = (destination + ctx.eyes.position.y * Vector3.up - ctx.eyes.position).normalized; 
-			 aimTarget = ctx.eyes.position + aimDir * cfg.minAimDistance;
-			 }
-			 Face(aimTarget, cfg.turnSpeed);
-			 Ext.DrawCube(aimTarget, Quaternion.identity, Vector3.one * 0.05f, Color.red);
-			 ctx.ikTarget.position = Vector3.Lerp(ctx.ikTarget.position, aimTarget, cfg.lookSpeed);
-				if (ctx.aimFocus == null) {
-					Quaternion rot = Quaternion.LookRotation(dir);
-					ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, rot, cfg.turnSpeed * Time.deltaTime);
-				}
-			 */
+		if (lookTarget == null) { 
+			Vector3 aimDir = (destination - ctx.transform.position).normalized; 
+			lookTarget = ctx.eyes.position + aimDir * cfg.minAimDistance;
+		}
+		Face(lookTarget.Value, cfg.turnSpeed);
+		Ext.DrawCube(lookTarget.Value, Quaternion.identity, Vector3.one * 0.05f, Color.red);
+		lookTarget = null; // Consume focus. It has to be set every frame.
 
 		ctx.gunRestRig.weight = Mathf.Lerp(ctx.gunRestRig.weight, isAiming ? 0 : 1, Time.deltaTime * cfg.aimSpeed);
 		ctx.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
@@ -101,10 +91,11 @@ public class EnemyLocomotion {
 		lastPos = ctx.transform.position;
 	}
 
-	public void Move(Vector3 destination, float speed) {
+	public void Move(Vector3 destination, float speed, Vector3? lookTarget = null) {
 		if (this.destination != destination) {
 			this.destination = destination;
 			ctx.seeker.StartPath(ctx.transform.position, destination, OnPathComplete);
+			this.lookTarget = lookTarget;
 			this.speed = speed;
 			cornerIdx = 1;
 		}
@@ -121,6 +112,7 @@ public class EnemyLocomotion {
 	private void Face(Vector3 target, float speed) {
 		Quaternion rot = Quaternion.LookRotation((target - ctx.transform.position).FlattenY().normalized);
 		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, rot, speed * Time.deltaTime);
+		ctx.ikTarget.position = Vector3.Lerp(ctx.ikTarget.position, target, speed * Time.deltaTime * 2);
 	}
 
 	public void ADS(bool state) {
