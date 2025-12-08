@@ -22,8 +22,6 @@ using Pathfinding;
 }
 
 public class EnemyLocomotion {
-	// External calls simply tell the AI to move towards a position with some level of urgency
-	// They can also specify a look target, and whether to aim there with the gun
 	private readonly Blackboard ctx;
 	private LocomotionCfg cfg => ctx.cfg.locomotion;
 	private Vector3 lastPos;
@@ -76,12 +74,12 @@ public class EnemyLocomotion {
 			ctx.ikTarget.position = Vector3.Lerp(ctx.ikTarget.position, lookTarget.Value, cfg.lookSpeed * Time.deltaTime);
 			lookTarget = null; // Consume focus. It has to be set every frame.
 
-			ctx.gunRestRig.weight = Mathf.Lerp(ctx.gunRestRig.weight, isAiming ? 0 : 1, Time.deltaTime * cfg.aimSpeed);
-			ctx.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
-			ctx.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
-			ctx.anim.SetBool("Crouching", isCrouching); 
-			lastPos = ctx.transform.position;
 		}
+		ctx.gunRestRig.weight = Mathf.Lerp(ctx.gunRestRig.weight, isAiming ? 0 : 1, Time.deltaTime * cfg.aimSpeed);
+		ctx.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
+		ctx.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
+		ctx.anim.SetBool("Crouching", isCrouching); 
+		lastPos = ctx.transform.position;
 	}
 
 	public void Move(Vector3 destination, float speed, Vector3? lookTarget = null) {
@@ -92,6 +90,11 @@ public class EnemyLocomotion {
 			this.speed = speed;
 			cornerIdx = 1;
 		}
+	}
+	public void Stop() {
+		path = null;
+		if (path != null) path = null;
+		else ctx.seeker.CancelCurrentPathRequest();
 	}
 
 	private void OnPathComplete(Path p) {

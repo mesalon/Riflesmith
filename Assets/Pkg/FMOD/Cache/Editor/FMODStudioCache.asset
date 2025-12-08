@@ -66,7 +66,7 @@ MonoBehaviour:
   Path: Assets/Audio/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638823986100000000
+  lastModified: 638941597603503845
   FileSizes:
   - Name: Desktop
     Value: 251520
@@ -242,7 +242,7 @@ MonoBehaviour:
   StringsBanks:
   - {fileID: 2630580647410874798}
   cacheVersion: 131847
-  cacheTime: 638823986100000000
+  cacheTime: 638941597603510889
   SerializableEventsDict:
   - key: event:/Boom
     index: 0
@@ -395,7 +395,7 @@ MonoBehaviour:
   Path: Assets/Audio/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638823986100000000
+  lastModified: 638941597603510889
   FileSizes:
   - Name: Desktop
     Value: 1422

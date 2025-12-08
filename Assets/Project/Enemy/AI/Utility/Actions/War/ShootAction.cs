@@ -1,17 +1,17 @@
 using UnityEngine;
 
 public class ShootAction : AIAction {
-	private readonly Blackboard ctx;
+	private readonly Enemy ctx;
 
 	public ShootAction(Enemy ctx) {
-		this.ctx = ctx.blackboard;
+		this.ctx = ctx;
 	}
 
 	public override float GetScore() {
-		return ctx.target ? 0.5f : 0;
+		return ctx.blackboard.target ? 0.6f : 0;
 	}
 
 	public override void Execute() {
-		Debug.Log("Shooting");
+		ctx.locomotion.Stop();
 	}
 }

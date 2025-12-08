@@ -62,7 +62,8 @@ MonoBehaviour:
     maxAngleDetection: 15
     accumulatorDecay: 0.25
     rangeDecay: 0.001
-    showDebug: 1
+    visualDebug: 1
+    textDebug: 0
     heatmap:
       serializedVersion: 2
       key0: {r: 1, g: 0, b: 0, a: 1}
