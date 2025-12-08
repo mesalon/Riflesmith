@@ -5,31 +5,34 @@ public class Enemy : MonoBehaviour {
 	public EnemyLocomotion locomotion;
 	public EnemyVision vision;
 	public EnemyBody body;
-	private Node brain;
+	private UtilityAI brain;
 	public bool runLocomotion = true, runVision = true, runBody = true, runBrain = true;
 
 	private void Awake() {
 		locomotion = new(blackboard);
 		vision = new(blackboard);
 		body = new(blackboard);
-		brain = new SelectorNode(new() {
-				new PatrolTask(this),
-				});
+		brain = new(this);
 	}
 
 	private void Update() {
-		Node active = null;
 		if (body.isUp) {
 			if (runLocomotion) locomotion.Tick();
 			if (runBody) body.Tick();
-			brain.Evaluate(out active);
+			brain.Tick();
 		}
-		//Ext.Label(transform.position + 2 * Vector3.up, $"node: {active}");
 	}
 
 	private void FixedUpdate() {
-		if (body.isUp) {
-			if (runVision) vision.Tick();
+		if (!blackboard.target) {
+			if (runVision && body.isUp && vision.Tick(out Player player)) { 
+				blackboard.target = player; 
+				blackboard.targetLKP = player.transform.position;
+			}
+		} else {
+			if (!vision.CanSeePlayer) {
+				blackboard.target = null;
+			}
 		}
 	}
 

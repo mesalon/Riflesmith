@@ -20,7 +20,8 @@ using static UnityEngine.Vector3;
 	public float maxAngleDetection;
 	public float accumulatorDecay;
 	public float rangeDecay;
-	public bool showDebug;
+	public bool visualDebug;
+	public bool textDebug;
 	public Gradient heatmap;
 	public float simMotion;
 	public float maxHeatmapTime;
@@ -42,6 +43,7 @@ using static UnityEngine.Vector3;
 }
 
 public class EnemyVision {
+	public bool CanSeePlayer => !Physics.Linecast(ctx.eyes.position, GameManager.I.player.rig.head.position, out var _, cfg.visionMask);
 	private VisionCfg cfg => ctx.cfg.vision;
 	private readonly Blackboard ctx;
 	private readonly float maxAngleCos;
@@ -53,17 +55,17 @@ public class EnemyVision {
 	public EnemyVision(Blackboard ctx) {
 		this.ctx = ctx;
 		maxAngleCos = Cos(cfg.FOVAngle * Deg2Rad);
-		debug = cfg.showDebug ? new(cfg.debugSmoothing) : null;
+		debug = cfg.visualDebug || cfg.textDebug ? new(cfg.debugSmoothing) : null;
 	}
 
-	public Player Tick() {
-		Player detectedPlayer = null;
+	public bool Tick(out Player p) {
+		p = null;
 		Player player = GameManager.I.player;
 		if (player && player.isActiveAndEnabled) {
 			Vector3 eyePos = ctx.eyes.position; 
 			Vector3 playerPos = player.rig.head.position;
 			Vector3 playerDir = (playerPos - eyePos).normalized;
-			if (!Physics.Linecast(eyePos, playerPos, out var _, cfg.visionMask)) {
+			if (CanSeePlayer) {
 				Vector3 lpd = lastPlayerPos.HasValue ? (lastPlayerPos.Value - eyePos).normalized : playerDir;
 				float motion = Mathf.InverseLerp(0, cfg.maxAngleDetection, Vector3.Angle(playerDir, lpd) / Time.fixedDeltaTime);
 				float angle = Vector3.Angle(ctx.eyes.forward, playerDir);
@@ -74,7 +76,8 @@ public class EnemyVision {
 					accumulator += rate * Time.fixedDeltaTime;
 					if (accumulator >= 1) {
 						accumulator = 0;
-						detectedPlayer = player;
+						p = player;
+						return true;
 					}
 
 					float realRate = rate - cfg.accumulatorDecay;
@@ -82,19 +85,18 @@ public class EnemyVision {
 					debug?.Add("Spot rate", realRate);
 					debug?.Add("Spot time", spotTime);
 					debug?.Add("Accumulator", accumulator);
-					if (cfg.showDebug) { 
+					if (cfg.textDebug) {
 						Ext.Label(ctx.transform.position + 2.5f * Vector3.up, debug.ToString(), Time.fixedDeltaTime); 
+						if (spotTime <= 0) { Debug.Log($"Spot zero. {spotTime}, {realRate}, {motion}"); }
+						float detection = debug.fields["Spot time"].Average();
+						Ext.Label(player.transform.position + 2 * Vector3.up, 
+								$"{debug.fields["Accumulator"].Average() * 100:F1}% - detection in {(detection > 0 ? detection : "NEVER"):F2}", Time.fixedDeltaTime);
+					}
+					if (cfg.visualDebug) {
 						Color alpha = new(1, 1, 1, 0.5f);
 						Color c = ColorForRate(rate);
 						Ext.DrawCubeLine(ctx.eyes.position, playerPos, c * alpha, Time.fixedDeltaTime);
 						Ext.DrawCubeRay(player.transform.position, accumulator * (2 * Vector3.up), c, Time.fixedDeltaTime, 0.5f);
-						if (spotTime <= 0) {
-							Debug.Log($"Spot zero. {spotTime}, {realRate}, {motion}");
-							
-						}
-						float detection = debug.fields["Spot time"].Average();
-						Ext.Label(player.transform.position + 2 * Vector3.up, 
-								$"{debug.fields["Accumulator"].Average() * 100:F1}% - detection in {(detection > 0 ? detection : "NEVER"):F2}", Time.fixedDeltaTime);
 					}
 				} else {
 					lastPlayerPos = null;
@@ -102,7 +104,7 @@ public class EnemyVision {
 			}
 		}
 		accumulator = Max(0, accumulator - cfg.accumulatorDecay * Time.fixedDeltaTime);
-		return detectedPlayer;
+		return false;
 	}
 
 

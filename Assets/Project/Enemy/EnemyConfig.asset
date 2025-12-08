@@ -100,8 +100,8 @@ MonoBehaviour:
     walkSpeed: 1.25
     jogSpeed: 2
     sprintSpeed: 6
-    turnSpeed: 4
-    aimSpeed: 2
+    turnSpeed: 1
+    aimSpeed: 0.5
     lookSpeed: 4
     minAimDistance: 2
   cover:

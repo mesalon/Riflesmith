@@ -65,30 +65,23 @@ public class EnemyLocomotion {
 				Vector3 pathDirection = (path.vectorPath[cornerIdx] - path.vectorPath[cornerIdx - 1]).FlattenY().normalized;
 				float dot = Vector3.Dot((ctx.transform.position - path.vectorPath[cornerIdx]).FlattenY().normalized, pathDirection);
 				if (dot >= 0) { cornerIdx++; }
-				Debug.DrawRay(destination, Vector3.up, Color.green); Ext.Label(destination + Vector3.up, "Destination");
-				for (int i = 1; i < path.vectorPath.Count; i++) {
-					Debug.DrawRay(path.vectorPath[i], (path.vectorPath[i] - path.vectorPath[i - 1]).normalized, i == cornerIdx ? Color.purple : Color.red);
-				}
-				Debug.DrawRay(ctx.transform.position + Vector3.up * 0.1f, dir, Color.green);
-				Ext.Label(path.vectorPath[cornerIdx], $"{dot:F2}");
-			}
-			else {
-				path = null;
-			}
-		}
-		if (lookTarget == null) { 
-			Vector3 aimDir = (destination - ctx.transform.position).normalized; 
-			lookTarget = ctx.eyes.position + aimDir * cfg.minAimDistance;
-		}
-		Face(lookTarget.Value, cfg.turnSpeed);
-		Ext.DrawCube(lookTarget.Value, Quaternion.identity, Vector3.one * 0.05f, Color.red);
-		lookTarget = null; // Consume focus. It has to be set every frame.
 
-		ctx.gunRestRig.weight = Mathf.Lerp(ctx.gunRestRig.weight, isAiming ? 0 : 1, Time.deltaTime * cfg.aimSpeed);
-		ctx.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
-		ctx.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
-		ctx.anim.SetBool("Crouching", isCrouching); 
-		lastPos = ctx.transform.position;
+				if (lookTarget == null) { 
+					Vector3 aimDir = dir;
+					lookTarget = ctx.eyes.position + aimDir * cfg.minAimDistance;
+				}
+			}
+			Quaternion rot = Quaternion.LookRotation((lookTarget.Value - ctx.transform.position).FlattenY().normalized);
+			ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, rot, cfg.turnSpeed * Time.deltaTime);
+			ctx.ikTarget.position = Vector3.Lerp(ctx.ikTarget.position, lookTarget.Value, cfg.lookSpeed * Time.deltaTime);
+			lookTarget = null; // Consume focus. It has to be set every frame.
+
+			ctx.gunRestRig.weight = Mathf.Lerp(ctx.gunRestRig.weight, isAiming ? 0 : 1, Time.deltaTime * cfg.aimSpeed);
+			ctx.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
+			ctx.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
+			ctx.anim.SetBool("Crouching", isCrouching); 
+			lastPos = ctx.transform.position;
+		}
 	}
 
 	public void Move(Vector3 destination, float speed, Vector3? lookTarget = null) {
@@ -110,9 +103,6 @@ public class EnemyLocomotion {
 	}
 
 	private void Face(Vector3 target, float speed) {
-		Quaternion rot = Quaternion.LookRotation((target - ctx.transform.position).FlattenY().normalized);
-		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, rot, speed * Time.deltaTime);
-		ctx.ikTarget.position = Vector3.Lerp(ctx.ikTarget.position, target, speed * Time.deltaTime * 2);
 	}
 
 	public void ADS(bool state) {
