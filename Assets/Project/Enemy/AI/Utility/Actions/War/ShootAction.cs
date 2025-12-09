@@ -11,7 +11,17 @@ public class ShootAction : AIAction {
 		return ctx.blackboard.target ? 0.6f : 0;
 	}
 
-	public override void Execute() {
+	public override void Enter() {
 		ctx.locomotion.Stop();
+		ctx.locomotion.ADS(true);
+	}
+	float t;
+	public override void Tick() {
+		ctx.locomotion.Focus(ctx.blackboard.target.rig.head.position);
+		ctx.blackboard.weapon.FireOnce();
+		t += Time.deltaTime;
+	}
+	public override void Exit() { 
+		ctx.locomotion.ADS(false);
 	}
 }

@@ -27,10 +27,10 @@ public class Enemy : MonoBehaviour {
 		if (!blackboard.target) {
 			if (runVision && body.isUp && vision.Tick(out Player player)) { 
 				blackboard.target = player; 
-				blackboard.targetLKP = player.transform.position;
 			}
 		} else {
 			if (!vision.CanSeePlayer) {
+				blackboard.targetLKP = blackboard.target.rig.head.position;
 				blackboard.target = null;
 			}
 		}

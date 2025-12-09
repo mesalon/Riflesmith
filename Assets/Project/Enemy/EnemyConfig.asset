@@ -51,7 +51,7 @@ MonoBehaviour:
   vision:
     visionMask:
       serializedVersion: 2
-      m_Bits: 8192
+      m_Bits: 24576
     sightRange: 100
     FOVAngle: 105
     detectionSpeed: 1
@@ -98,11 +98,13 @@ MonoBehaviour:
     maxHeatmapTime: 30
     debugSmoothing: 1
   locomotion:
-    walkSpeed: 1.25
+    slowWalkSpeed: 0.75
+    walkSpeed: 1.1
     jogSpeed: 2
+    runSpeed: 3.5
     sprintSpeed: 6
     turnSpeed: 1
-    aimSpeed: 0.5
+    aimSpeed: 6
     lookSpeed: 4
     minAimDistance: 2
   cover:

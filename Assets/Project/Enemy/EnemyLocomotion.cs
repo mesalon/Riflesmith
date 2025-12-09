@@ -2,24 +2,22 @@ using UnityEngine;
 using Pathfinding;
 
 [System.Serializable] public struct LocomotionCfg {
-	public float walkSpeed;
-	public float jogSpeed;
-	public float sprintSpeed;
+	public float slowWalkSpeed, walkSpeed, jogSpeed, runSpeed, sprintSpeed;
 	public float turnSpeed;
 	public float aimSpeed;
 	public float lookSpeed;
 	public float minAimDistance;
 
 	public static readonly LocomotionCfg Default = new() {
-		walkSpeed = 1.25f,
-		jogSpeed = 2,
-		sprintSpeed = 6,
+		slowWalkSpeed = 0.75f, walkSpeed = 1.25f, jogSpeed = 2, runSpeed = 3.5f, sprintSpeed = 6,
 		turnSpeed = 4,
 		aimSpeed = 2,
 		lookSpeed = 4,
 		minAimDistance = 2,
 	};
 }
+
+public enum Pace { SlowWalk, Walk, Jog, Run, Sprint }
 
 public class EnemyLocomotion {
 	private readonly Blackboard ctx;
@@ -48,7 +46,7 @@ public class EnemyLocomotion {
 		if (Input.GetMouseButtonDown(0)) {
 			Ray ray = GameManager.Camera.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray.origin, ray.direction * 1000, out RaycastHit hit)) {
-				Move(hit.point, cfg.jogSpeed);
+				Move(hit.point, Pace.Walk);
 			}
 		}
 
@@ -64,37 +62,46 @@ public class EnemyLocomotion {
 				float dot = Vector3.Dot((ctx.transform.position - path.vectorPath[cornerIdx]).FlattenY().normalized, pathDirection);
 				if (dot >= 0) { cornerIdx++; }
 
-				if (lookTarget == null) { 
-					Vector3 aimDir = dir;
-					lookTarget = ctx.eyes.position + aimDir * cfg.minAimDistance;
-				}
+				if (lookTarget == null) { lookTarget = ctx.eyes.position + dir * cfg.minAimDistance; }
+			} else {
+				path = null;
 			}
+		}
+		if (lookTarget != null) {
 			Quaternion rot = Quaternion.LookRotation((lookTarget.Value - ctx.transform.position).FlattenY().normalized);
 			ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, rot, cfg.turnSpeed * Time.deltaTime);
 			ctx.ikTarget.position = Vector3.Lerp(ctx.ikTarget.position, lookTarget.Value, cfg.lookSpeed * Time.deltaTime);
-			lookTarget = null; // Consume focus. It has to be set every frame.
-
+			Ext.Label(lookTarget.Value, "Targ");
 		}
 		ctx.gunRestRig.weight = Mathf.Lerp(ctx.gunRestRig.weight, isAiming ? 0 : 1, Time.deltaTime * cfg.aimSpeed);
 		ctx.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
 		ctx.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
 		ctx.anim.SetBool("Crouching", isCrouching); 
+		lookTarget = null; // Consume focus. It has to be set every frame.
 		lastPos = ctx.transform.position;
 	}
 
-	public void Move(Vector3 destination, float speed, Vector3? lookTarget = null) {
+	public void Move(Vector3 destination, Pace pace) {
+		float speed = pace switch {
+			Pace.SlowWalk => cfg.slowWalkSpeed,
+			Pace.Walk => cfg.walkSpeed,
+			Pace.Jog => cfg.jogSpeed,
+			Pace.Run => cfg.runSpeed,
+			Pace.Sprint => cfg.sprintSpeed,
+		};
+		Move(destination, speed);
+	}
+	public void Move(Vector3 destination, float speed) {
 		if (this.destination != destination) {
 			this.destination = destination;
 			ctx.seeker.StartPath(ctx.transform.position, destination, OnPathComplete);
-			this.lookTarget = lookTarget;
 			this.speed = speed;
 			cornerIdx = 1;
 		}
 	}
 	public void Stop() {
+		destination = ctx.transform.position;
 		path = null;
-		if (path != null) path = null;
-		else ctx.seeker.CancelCurrentPathRequest();
 	}
 
 	private void OnPathComplete(Path p) {
@@ -105,7 +112,8 @@ public class EnemyLocomotion {
 		}
 	}
 
-	private void Face(Vector3 target, float speed) {
+	public void Focus(Vector3 target) {
+		lookTarget = target;
 	}
 
 	public void ADS(bool state) {

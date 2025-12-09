@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class UtilityAI { 
@@ -11,11 +12,13 @@ public class UtilityAI {
 		actions = new() {
 			new PatrolAction(ctx),
 			new ShootAction(ctx),
+			new SearchAction(ctx),
 		};
 	}
 
 	public void Tick() {
-		actions.Sort((a, b) => b.GetScore().CompareTo(a.GetScore()));
+		var msg = string.Join("\n", actions.OrderByDescending(a => a.GetScore()).Take(3).Select((a, i) => $"{i+1}: {a} ({a.GetScore()})"));
+		Ext.Label(ctx.transform.position + Vector3.up * 2, msg);
 
 		float highest = 0;
 		AIAction action = null;
@@ -27,9 +30,10 @@ public class UtilityAI {
 			}
 		}
 		if (action != current) {
+			if (current != null) current.Exit();
 			current = action;
 			current.Enter();
 		}
-		Ext.Label(ctx.transform.position + 2 * Vector3.up, $"Highest: {current} ({current.GetScore()})");
+		current.Tick();
 	}
 }
