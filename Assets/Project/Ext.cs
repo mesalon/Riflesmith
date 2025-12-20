@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
+using System.Linq;
 enum w {
 	was
 }
@@ -49,9 +50,15 @@ public static class Ext {
 		return str;
 	}
 
-	public static float GetPathLength(this Vector3[] path) {
+	public static float GetPathLength(this IEnumerable<Vector3> path) {
 		float length = 0;
-		for (int i = 0; i < path.Length - 1; i++) { length += Vector3.Distance(path[i], path[i + 1]); }
+		using var enumerator = path.GetEnumerator();
+		Vector3 previous = enumerator.Current;
+		while (enumerator.MoveNext()) {
+			Vector3 current = enumerator.Current;
+			length += Vector3.Distance(previous, current);
+			previous = current;
+		}
 		return length;
 	}
 
@@ -86,7 +93,7 @@ public static class Ext {
 		style ??= new() {
 			alignment = TextAnchor.MiddleCenter, 
 			normal = new() { textColor = color == default ? Color.white : color },
-			fontSize = 24,
+			fontSize = 12,
 		};
 		labelQueue.Add(new() { position = position, text = text, lifespan = lifespan, style = style, color = color });
 	}
@@ -103,22 +110,24 @@ public static class Ext {
 		return count > 0 ? all / count : default;
 	}
 
-	public static void PrintAll<T>(this IEnumerable<T> objects) { Debug.Log(String.Join(", ", objects)); }
+	public static void PrintAll<T>(this IEnumerable<T> objects) { Debug.Log(string.Join(", ", objects)); }
 
 	public static void DrawAxis(Vector3 position, float radius, Quaternion rotation = default, Color color = default) {
 		if (color == default) { color = Color.white; }
-		Vector3 right = (rotation * Vector3.right);
-		Vector3 up = (rotation * Vector3.up);
-		Vector3 forward = (rotation * Vector3.forward);
+		Vector3 right = rotation * Vector3.right;
+		Vector3 up = rotation * Vector3.up;
+		Vector3 forward = rotation * Vector3.forward;
 		Gizmos.DrawRay(position - radius * right, radius * 2 * right);
 		Gizmos.DrawRay(position - radius * up, radius * 2 * up);
 		Gizmos.DrawRay(position - radius * forward, radius * 2 * forward);
 	}
 
-	public static void DrawPath(Vector3[] path, Gradient gradient = null, float offset = 0) {
-		for (int i = 0; i < path.Length - 1; i++) {
-			Color c = gradient != null ? gradient.Evaluate((float)i / path.Length) : Color.Lerp(Color.blue, Color.yellow, i);
-			Debug.DrawLine(path[i] + Vector3.up * offset, path[i + 1] + Vector3.up * offset, c, i / ((float)path.Length - 1));
+	public static void DrawPath(IEnumerable<Vector3> path, Gradient gradient = null, float offset = 0) {
+		Vector3[] pathArr = path.ToArray();
+		for (int i = 0; i < pathArr.Length - 1; i++) {
+			float t = (float)i / pathArr.Length;
+			Color c = gradient != null ? gradient.Evaluate(t) : Color.Lerp(Color.blue, Color.yellow, t);
+			Debug.DrawLine(pathArr[i] + Vector3.up * offset, pathArr[i + 1] + Vector3.up * offset, c, i / ((float)pathArr.Length - 1));
 		}
 	}
 

@@ -10,21 +10,28 @@ public class EnemyFirearm : MonoBehaviour {
 	[SerializeField] private int capacity;
 	[SerializeField] private EventReference shot;
 	[SerializeField] ProjectileData projectile;
+	[SerializeField] ParticleSystem muzzleFlash;
+	[SerializeField] Light muzzleLight;
 	private Vector3 kickPos, kickRot;
 	private float recoilH, recoilV;
 	private float fireTime;
 	private bool releaseImmediately;
+	private float lightT;
 
 	private void Awake() {
 		rounds = capacity;
 	}
 
 	private void Update() {
+		if (lightT >= 0.05f) { muzzleLight.enabled = false; }
 		if (triggerState && fireTime > 1 / (cyclicRate / 60) && rounds > 0) {
 			if (releaseImmediately) {
 				triggerState = false;
 				releaseImmediately = false;
 			}
+			muzzleFlash.Emit(1);
+			muzzleLight.enabled = true;
+			lightT = 0;
 			RuntimeManager.PlayOneShot(shot, muzzle.position);
 			ProjectileManager.CreateProjectile(new(projectile, muzzle.position, muzzle.forward));
 			recoilH = Mathf.Clamp(Mathf.Lerp(Random.Range(-recoil.rot.y, recoil.rot.y), recoilH, recoil.stability), -recoil.rot.y, recoil.rot.y);
@@ -47,6 +54,7 @@ public class EnemyFirearm : MonoBehaviour {
 		kickRot -= appliedRot;
 
 		fireTime += Time.deltaTime;
+		lightT += Time.deltaTime;
 	}
 	public void FireOnce() {
 		triggerState = true;

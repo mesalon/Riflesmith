@@ -1,7 +1,7 @@
 using Debug = UnityEngine.Debug;
 using System.Diagnostics;
 using UnityEngine;
-using UnityEngine.AI;
+using Pathfinding;
 using System.Collections.Generic;
 
 [System.Serializable] public struct CoverParams {
@@ -40,51 +40,41 @@ public class CoverQuery {
 	private CoverParams cfg;
 	private Vector3 scale = Vector3.one * 0.1f;
 	private Vector3 myPos, threat, threatTorso;
-	private NavMeshPath path;
+	private Seeker seeker;
 
 	private List<CoverPoint> navQueue = new();
 	private List<CoverTask> coverTasks = new();
 	private List<CoverTask> finished = new();
 
-	public CoverQuery(Vector3 myPos, Vector3 threat, float threatHeight, CoverParams cfg) {
+	public CoverQuery(Vector3 myPos, Vector3 threat, Seeker seeker, CoverParams cfg) {
 		this.myPos = myPos;
 		this.threat = threat;
-		this.threatTorso = threat + threatHeight * Vector3.up;
+		this.seeker = seeker;
 		this.cfg = cfg;
-		path = new();
+		threatTorso = threat + 1.85f * Vector3.up;
 
 		// 1. Range & angle
 		foreach (CoverPoint c in CoverGenerator.I.cover) {
-			wasd.Add(new(c.position + (cfg.bodyHeight / 2) * Vector3.up, threatTorso));
+			float midpoint = cfg.bodyHeight / 2;
 			if ((c.position - myPos).sqrMagnitude < cfg.range * cfg.range && // In range?
 					Mathf.Abs(Vector3.Dot((threat - c.position).normalized.FlattenY(), c.normal.FlattenY())) > cfg.minDot && // Angle ok?
-					Physics.Linecast(c.position + (cfg.bodyHeight / 2) * Vector3.up, threatTorso, out var _, cfg.envLayer)) { // Breaks LOS to torso?
+					Physics.Linecast(c.position + midpoint * Vector3.up, threatTorso, out var _, cfg.envLayer)) { // Breaks LOS to torso?
 				navQueue.Add(c); 
 			}
 		}
 	}
 
-	List<(Vector3 a, Vector3 b)> wasd = new();
 	public void FindCover() {
-		foreach(var v in wasd) { Debug.DrawLine(v.a, v.b, Physics.Linecast(v.a, v.b, out var _, cfg.envLayer) ? Color.red : Color.green); }
+		long t = Stopwatch.GetTimestamp();
 
-		long t = System.Diagnostics.Stopwatch.GetTimestamp();
-
-		// 3. Navigation distance
+		// 3. Navigation distance TODO: FUCKING REPLACE THIS WITH ACTUAL NAV DISTANCE
 		long t2 = Stopwatch.GetTimestamp();
-		int navBatch = Mathf.Min(navQueue.Count, cfg.navBatch);
-		if (navBatch > 0) {
-			for (int i = 0; i < navBatch; i++) {
-				CoverPoint c = navQueue.PopRandom();
-				NavMesh.CalculatePath(myPos, c.position, NavMesh.AllAreas, path);
-				if (cfg.doDebugs && path.status == NavMeshPathStatus.PathComplete ) { Ext.DrawPath(path.corners); }
-				float dist = path.corners.GetPathLength();
-				if (path.status == NavMeshPathStatus.PathComplete && dist <= cfg.navRange) { 
-					coverTasks.Add(new(c, dist, cfg));
-				}
-			}
+		for (int i = navQueue.Count - 1; i >= 0; i--) {
+			float dist = Vector3.Distance(myPos, navQueue[i].position);
+			if (dist <= cfg.navRange) { coverTasks.Add(new(navQueue[i], dist, cfg)); }
+			navQueue.RemoveAt(i);
 		}
-		
+
 		GraphWindow.AddToGraph("Nav", (float)Ext.LogTime(t2, message: false));
 
 		// 4. Splatting
@@ -115,10 +105,7 @@ public class CoverQuery {
 			List<CoverTask> pool = new();
 			pool.AddRange(coverTasks);
 			pool.AddRange(finished);
-			foreach (CoverTask task in pool) { 
-				task.Debug();
-				if (task == pool[GameManager.I.var1]) { task.FullDebug(); }
-			}
+			foreach (CoverTask task in pool) { task.Debug(); }
 		}
 	}
 

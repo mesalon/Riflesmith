@@ -20,6 +20,7 @@ public class Blackboard {
 	public Player target;
 	public Vector3? aimFocus;
 	public Vector3? targetLKP;
+	public float seenTime;
 	public Transform focus;
 	public Vector3? cover;
 	public Transform dingle;

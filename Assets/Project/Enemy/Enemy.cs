@@ -5,13 +5,15 @@ public class Enemy : MonoBehaviour {
 	public EnemyLocomotion locomotion;
 	public EnemyVision vision;
 	public EnemyBody body;
+	public EnemyHandling handling;
 	private UtilityAI brain;
-	public bool runLocomotion = true, runVision = true, runBody = true, runBrain = true;
+	public bool runLocomotion = true, runVision = true, runBody = true, runBrain = true, runHandling = true;
 
 	private void Awake() {
 		locomotion = new(blackboard);
 		vision = new(blackboard);
 		body = new(blackboard);
+		handling = new(this);
 		brain = new(this);
 	}
 
@@ -19,7 +21,8 @@ public class Enemy : MonoBehaviour {
 		if (body.isUp) {
 			if (runLocomotion) locomotion.Tick();
 			if (runBody) body.Tick();
-			brain.Tick();
+			if (runHandling) handling.Tick();
+			if (runBrain) brain.Tick();
 		}
 	}
 
@@ -27,11 +30,13 @@ public class Enemy : MonoBehaviour {
 		if (!blackboard.target) {
 			if (runVision && body.isUp && vision.Tick(out Player player)) { 
 				blackboard.target = player; 
+				blackboard.seenTime = 0;
 			}
 		} else {
+			blackboard.targetLKP = blackboard.target.rig.head.position;
 			if (!vision.CanSeePlayer) {
-				blackboard.targetLKP = blackboard.target.rig.head.position;
 				blackboard.target = null;
+				blackboard.seenTime += Time.fixedDeltaTime;
 			}
 		}
 	}

@@ -20,6 +20,7 @@ using Pathfinding;
 public enum Pace { SlowWalk, Walk, Jog, Run, Sprint }
 
 public class EnemyLocomotion {
+	public bool Arrived => path == null;
 	private readonly Blackboard ctx;
 	private LocomotionCfg cfg => ctx.cfg.locomotion;
 	private Vector3 lastPos;
@@ -30,7 +31,6 @@ public class EnemyLocomotion {
 	private float verticalVelocity;
 	private float speed;
 	private bool isCrouching;
-	private bool isAiming;
 	private Transform head;
 	private Vector2 ikAim;
 	private Vector3 velocity;
@@ -70,10 +70,7 @@ public class EnemyLocomotion {
 		if (lookTarget != null) {
 			Quaternion rot = Quaternion.LookRotation((lookTarget.Value - ctx.transform.position).FlattenY().normalized);
 			ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, rot, cfg.turnSpeed * Time.deltaTime);
-			ctx.ikTarget.position = Vector3.Lerp(ctx.ikTarget.position, lookTarget.Value, cfg.lookSpeed * Time.deltaTime);
-			Ext.Label(lookTarget.Value, "Targ");
 		}
-		ctx.gunRestRig.weight = Mathf.Lerp(ctx.gunRestRig.weight, isAiming ? 0 : 1, Time.deltaTime * cfg.aimSpeed);
 		ctx.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
 		ctx.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
 		ctx.anim.SetBool("Crouching", isCrouching); 
@@ -114,9 +111,5 @@ public class EnemyLocomotion {
 
 	public void Focus(Vector3 target) {
 		lookTarget = target;
-	}
-
-	public void ADS(bool state) {
-		isAiming = state;
 	}
 }

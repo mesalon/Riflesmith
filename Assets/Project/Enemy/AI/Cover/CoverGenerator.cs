@@ -1,9 +1,9 @@
 // Todo: nuke code and precompute safety and offense scores for each point
-using System;
-using UnityEngine;
-using UnityEngine.AI;
 using System.Collections.Generic;
+using UnityEngine;
+using Pathfinding;
 using System.Linq;
+using System;
 
 public class CoverGenerator : MonoBehaviour {
 	public static CoverGenerator I;
@@ -19,12 +19,16 @@ public class CoverGenerator : MonoBehaviour {
 
 	public void Generate() {
 		cover.Clear();
-		NavMeshTriangulation tri = NavMesh.CalculateTriangulation();
-		HashSet<(Vector3, Vector3)> boundHash = new HashSet<(Vector3, Vector3)>(new EdgeComparer());
-		for (int i = 0; i < tri.indices.Length; i += 3) {
+		List<Int3[]> tris = new();
+		AstarPath.active.data.recastGraph.GetNodes(node => {
+				((TriangleMeshNode)node).GetVertices(out Int3 v1, out Int3 v2, out Int3 v3);
+				tris.Add(new Int3[] {v1, v2, v3});
+				});
+		HashSet<(Vector3, Vector3)> boundHash = new(new EdgeComparer());
+		foreach (Int3[] tri in tris) {
 			for (int j = 0; j < 3; j++) { // Is the element already in the set? It's a duplicate. Fuck both of them!
-				Vector3 a = tri.vertices[tri.indices[j]];
-				Vector3 b = tri.vertices[tri.indices[(j + 1) % 3]];
+				Vector3 a = (Vector3)tri[j];
+				Vector3 b = (Vector3)tri[(j + 1) % 3];
 				if(!boundHash.Add((a, b))) boundHash.Remove((a, b)); 
 			}
 		}
@@ -67,4 +71,3 @@ public struct CoverPoint {
 		this.normal = normal;
 	}
 }
-
