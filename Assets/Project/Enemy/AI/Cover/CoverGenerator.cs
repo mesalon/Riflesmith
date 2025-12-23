@@ -8,9 +8,9 @@ using System;
 public class CoverGenerator : MonoBehaviour {
 	public static CoverGenerator I;
 	public List<CoverPoint> cover = new();
-	public float bodyWidth = 0.3f;
+	public float bodyWidth = 0.4f;
 	public float bodyHeight = 1.75f;
-	[SerializeField] bool debug;
+	[SerializeField] bool showDebug;
 
 	private void Awake() {
 		if (I != null) { Destroy(this); return; }
@@ -41,8 +41,7 @@ public class CoverGenerator : MonoBehaviour {
 			float minLength = bodyWidth * 2;
 			CoverPoint coverA = new(edge.a + tangent * bodyWidth, normal);
 			CoverPoint coverB = new(edge.b - tangent * bodyWidth, normal);
-			if ((edge.b - edge.a).sqrMagnitude > minLength * minLength 
-					&& Vector3.Distance(coverA.position, coverB.position) > minLength) {
+			if (Vector3.Distance(edge.a, edge.b) > minLength && Vector3.Distance(coverA.position, coverB.position) > minLength) {
 				cover.Add(coverA);
 				cover.Add(coverB);
 			} 
@@ -51,7 +50,7 @@ public class CoverGenerator : MonoBehaviour {
 	}
 
 	private void OnDrawGizmosSelected() {
-		if (debug && cover != null) {
+		if (showDebug && cover != null) {
 			foreach (var point in cover) {
 				Gizmos.DrawRay(point.position, Vector3.up * 0.1f);
 				Gizmos.DrawRay(point.position, new Vector3(point.normal.z, 0, -point.normal.x) * 0.1f);

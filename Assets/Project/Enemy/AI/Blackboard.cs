@@ -20,11 +20,11 @@ public class Blackboard {
 	public Player target;
 	public Vector3? aimFocus;
 	public Vector3? targetLKP;
-	public float seenTime;
+	public float LKPAge;
 	public Transform focus;
 	public Vector3? cover;
 	public Transform dingle;
 	public Seeker seeker;
 	
-	public float alertness, suppression;
+	public float confidence = 1, alertness, suppression;
 }

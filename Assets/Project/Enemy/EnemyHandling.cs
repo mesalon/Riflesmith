@@ -15,29 +15,33 @@ public class EnemyHandling {
 	}
 
 	public void FireAt(Vector3 target) {
-		if (!isAiming) { ADS(true); }
+		isAiming = true;
 		aimTarget = target;
+		ctx.locomotion.Focus(aimTarget);
+		Vector3 targetDir = (aimTarget - board.eyes.position).normalized;
+		if (Vector3.Angle(aimDir, targetDir) < 5) {
+			if (t > rest) {
+				board.weapon.FireOnce();
+				t -= 0.25f + 0.15f * (0.5f - Random.value);
+				burst++;
+				if (burst == 3) { 
+					t = burst = 0; 
+					rest = 0.75f + (0.5f - Random.value) * 0.75f;
+				}
+			}
+		}
+		t += Time.deltaTime;
 	}
 
 	float t;
 	int burst;
+	float rest;
 	public void Tick() {
 		board.gunRestRig.weight = Mathf.Lerp(board.gunRestRig.weight, isAiming ? 0 : 1, Time.deltaTime * cfg.aimSpeed);
 		aimMag = (aimTarget - board.eyes.position).magnitude;
 		Vector3 targetDir = (aimTarget - board.eyes.position).normalized;
 		aimDir = Vector3.RotateTowards(aimDir, targetDir, cfg.lookSpeed * Time.deltaTime, float.MaxValue);
-		board.ikTarget.position = board.eyes.position + aimDir * aimMag;
-
-		ctx.locomotion.Focus(aimTarget);
-		if (Vector3.Angle(aimDir, targetDir) < 5) {
-			if (t > 1.5f) {
-				board.weapon.FireOnce();
-				t -= 0.25f;
-				burst++;
-				if (burst == 3) { t = burst = 0; }
-			}
-		}
-		t += Time.deltaTime;
+		if (isAiming) board.ikTarget.position = board.eyes.position + aimDir * Mathf.Max(aimMag, 5);
 	}
 
 	public void ADS(bool state) {

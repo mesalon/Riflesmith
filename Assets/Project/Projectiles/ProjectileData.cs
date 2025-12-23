@@ -3,8 +3,7 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Projectile", menuName = "Items/New Projectile")]
 public class ProjectileData : ScriptableObject {
-	public Mesh tracer;
-	public Material tracerMat;
+	public Material tailMat, headMat;
 	public float minSpeed, maxSpeed;
 	public float damage;
 	public float force;

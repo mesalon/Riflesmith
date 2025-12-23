@@ -31,11 +31,6 @@ public class EnemyLocomotion {
 	private float verticalVelocity;
 	private float speed;
 	private bool isCrouching;
-	private Transform head;
-	private Vector2 ikAim;
-	private Vector3 velocity;
-	private Vector3 velocityRef;
-	private float startMoveTime;
 
 	public EnemyLocomotion(Blackboard ctx) {
 		this.ctx = ctx;

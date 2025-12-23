@@ -1,4 +1,8 @@
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+using System.Linq;
+#endif
 
 public class Enemy : MonoBehaviour {
 	public Blackboard blackboard;
@@ -6,7 +10,7 @@ public class Enemy : MonoBehaviour {
 	public EnemyVision vision;
 	public EnemyBody body;
 	public EnemyHandling handling;
-	private UtilityAI brain;
+	public UtilityAI brain;
 	public bool runLocomotion = true, runVision = true, runBody = true, runBrain = true, runHandling = true;
 
 	private void Awake() {
@@ -27,17 +31,17 @@ public class Enemy : MonoBehaviour {
 	}
 
 	private void FixedUpdate() {
-		if (!blackboard.target) {
+		if (blackboard.target) {
+			blackboard.targetLKP = blackboard.target.rig.head.position;
+		} else {
 			if (runVision && body.isUp && vision.Tick(out Player player)) { 
 				blackboard.target = player; 
-				blackboard.seenTime = 0;
+				blackboard.LKPAge = 0;
 			}
-		} else {
-			blackboard.targetLKP = blackboard.target.rig.head.position;
-			if (!vision.CanSeePlayer) {
-				blackboard.target = null;
-				blackboard.seenTime += Time.fixedDeltaTime;
-			}
+		}
+		if (!vision.CanSeePlayer) {
+			blackboard.target = null;
+			blackboard.LKPAge += Time.fixedDeltaTime;
 		}
 	}
 
@@ -57,3 +61,22 @@ public class Enemy : MonoBehaviour {
 	public float burstWeightBase, delayWeightBase;
 	public float inconsistencyBase;
 }
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(Enemy))]
+public class EnemyEditor : Editor {
+	public override void OnInspectorGUI() {
+		base.OnInspectorGUI();
+		EditorGUILayout.Space();
+		Enemy e = (Enemy)target;
+		var topItems = e.brain.actions
+			.Select(a => new { Action = a, Score = a.GetScore() }) 
+			.OrderByDescending(x => x.Score)
+			.Take(5)
+			.ToList();
+		for (int i = 0; i < topItems.Count(); i++) {
+			EditorGUILayout.LabelField($"{i}: {topItems[i].Action} | {topItems[i].Score}");
+		}
+	}
+}
+#endif

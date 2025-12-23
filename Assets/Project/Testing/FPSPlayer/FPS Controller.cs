@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class FPSController : MonoBehaviour {
 	[SerializeField] Transform head;
+	[SerializeField] ProjectileData projectile;
 	[SerializeField] private float moveSpeed = 5f;
 	[SerializeField] private float runSpeed = 10f;
 	[SerializeField] private float jumpHeight = 2f;
@@ -26,5 +27,7 @@ public class FPSController : MonoBehaviour {
 		vLook -= mouseY;
 		vLook = Mathf.Clamp(vLook, -90f, 90f);
 		head.transform.localRotation = Quaternion.Euler(vLook, 0f, 0f);
+
+		if (Input.GetKeyDown(KeyCode.Space)) { ProjectileManager.CreateProjectile(new Projectile(projectile, head.position, head.forward)); }
 	}
 }

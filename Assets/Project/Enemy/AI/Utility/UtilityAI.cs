@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 public class UtilityAI { 
-	private List<AIAction> actions;
+	public List<AIAction> actions;
 	private AIAction current;
 	private Enemy ctx;
 

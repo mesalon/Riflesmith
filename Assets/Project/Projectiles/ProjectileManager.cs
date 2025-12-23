@@ -10,6 +10,7 @@ public class ProjectileManager : MonoBehaviour {
 	public bool showDebugTracers;
 	public float debugTracerTime;
 	public Color debugTracerColor = Color.white;
+	public Material tailMat, headMat;
 	public GameObject concreteFX;
 	public GameObject woodFX;
 	public GameObject metalFX;
@@ -25,7 +26,7 @@ public class ProjectileManager : MonoBehaviour {
 	
 	private void Update() {
 		for(int i = projectiles.Count - 1; i >= 0; i--) { // Count backwards as to not make the gods angry
-			projectiles[i].Draw();
+			projectiles[i].Draw(this);
 			projectiles[i].Tick(this, out bool destroyProjectile);
 			if(destroyProjectile) {
 				projectiles.RemoveAt(i);

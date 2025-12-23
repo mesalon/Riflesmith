@@ -38,7 +38,6 @@ using System.Collections.Generic;
 
 public class CoverQuery {
 	private CoverParams cfg;
-	private Vector3 scale = Vector3.one * 0.1f;
 	private Vector3 myPos, threat, threatTorso;
 	private Seeker seeker;
 
@@ -116,17 +115,13 @@ public class CoverQuery {
 			return false;
 		}
 
-		float Quality(CoverTask task) {
-			float distScore = 1 - Mathf.InverseLerp(0, cfg.navRange, task.distance);
-			return task.Safety + task.Offense * aggression + distScore * urgency; 
-		}
-
 		CoverTask best = null;
 		float maxQuality = float.NegativeInfinity;
 		foreach (CoverTask task in finished) {
-			float currentQuality = Quality(task);
-			if (currentQuality > maxQuality) {
-				maxQuality = currentQuality;
+			float distScore = 1 - Mathf.InverseLerp(0, cfg.navRange, task.distance);
+			float quality = task.Safety + task.Offense * aggression + distScore * urgency; 
+			if (quality > maxQuality) {
+				maxQuality = quality;
 				best = task;
 			}
 		}

@@ -49,6 +49,6 @@ public class CoverTask {
 	public void Debug() {
 		foreach (var splat in safetySplats) { Ext.DrawCube(splat.Item1, Quaternion.identity, Vector3.one * 0.05f, splat.Item2 ? Color.green : Color.black); }
 		foreach (var splat in returnFireSplats) { Ext.DrawCube(splat.Item1, Quaternion.identity, Vector3.one * 0.05f, splat.Item2 ? Color.greenYellow : Color.grey); }
-		Ext.Label(cover.position - 0.5f * Vector3.one, $"Safety: {Safety:F2}\nOffense: {Offense:f2}");
+		Ext.Label(cover.position + 2 * Vector3.up, $"Safety: {Safety:F2}\nOffense: {Offense:f2}");
 	}
 }
