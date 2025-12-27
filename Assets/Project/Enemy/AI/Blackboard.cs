@@ -6,25 +6,27 @@ using System.Collections.Generic;
 public class Blackboard {
 	public EnemyConfig cfg;
 	public EnemyFirearm weapon;
-	public Transform transform;
 	public Transform eyes;
+	public Transform weaponAimPose, weaponRestPose;
+	public Transform weaponHandle;
+	public Transform ikTarget;
 	public Animator anim;
 	public CharacterController cc;
 	public AnimationClip getUpClip;
+	public Transform focus;
+	public Transform dingle;
+	public Seeker seeker;
 	public Transform coreRag;
 	public List<Transform> ragdollReference;
 	public List<ConfigurableJoint> joints;
-	public UnityEngine.Animations.Rigging.Rig gunRestRig;
-	public Transform ikTarget;
+	public bool coverDebug, coverDebugFull;
+	public float aimError, fixAmount, fixVariance;
 
-	public Player target;
-	public Vector3? aimFocus;
-	public Vector3? targetLKP;
-	public float LKPAge;
-	public Transform focus;
-	public Vector3? cover;
-	public Transform dingle;
-	public Seeker seeker;
-	
-	public float confidence = 1, alertness, suppression;
+	[HideInInspector] public CoverQuery cover;
+	[HideInInspector] public Player target;
+	[HideInInspector] public Vector3? aimFocus;
+	[HideInInspector] public Vector3? targetLKP;
+	[HideInInspector] public float confidence, alertness, suppression;
+	[HideInInspector] public float LKPAge;
+	[HideInInspector] public bool expectsToSeeTarget;
 }

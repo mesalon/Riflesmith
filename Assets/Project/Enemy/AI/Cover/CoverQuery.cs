@@ -1,4 +1,3 @@
-using Debug = UnityEngine.Debug;
 using System.Diagnostics;
 using UnityEngine;
 using Pathfinding;
@@ -17,6 +16,9 @@ using System.Collections.Generic;
 	public int splatBatch;
 	public int threatBreadth;
 	public int skepticism;
+	public float aggression;
+	public float urgency;
+	public Vector3? posBias;
 	public LayerMask envLayer;
 
 	public static readonly CoverParams Default = new() {
@@ -25,13 +27,14 @@ using System.Collections.Generic;
 		minDot = 0.5f,
 		bodyWidth = 0.3f,
 		bodyHeight = 1.8f,
-		doDebugs = true,
 		maxPoints = 20,
-		maxSplats = 30,
+		maxSplats = 20,
 		navBatch = 1,
-		splatBatch = 20,
+		splatBatch = 40,
 		threatBreadth = 3,
 		skepticism = 10,
+		aggression = 1,
+		urgency = 1,
 		envLayer = ~0,
 	};
 }
@@ -63,7 +66,7 @@ public class CoverQuery {
 		}
 	}
 
-	public void FindCover() {
+	public void Search() {
 		long t = Stopwatch.GetTimestamp();
 
 		// 3. Navigation distance TODO: FUCKING REPLACE THIS WITH ACTUAL NAV DISTANCE
@@ -83,51 +86,62 @@ public class CoverQuery {
 			if (splatsDone >= cfg.splatBatch) { break; }
 
 			CoverTask task = coverTasks[i];
-			while (splatsDone < cfg.splatBatch) {
-				if (task.runs < cfg.maxSplats) {
-					task.RunSplat(threat, cfg.bodyWidth, cfg.bodyHeight);
-					splatsDone++;
-				}
-				else {
-					finished.Add(task);
-					coverTasks.RemoveAt(i);
-					break;
-				}
+			while (task.runs < cfg.maxSplats && splatsDone < cfg.splatBatch) {
+				task.RunSplat(threat, cfg.bodyWidth, cfg.bodyHeight);
+				splatsDone++;
+			}
+			if (task.runs >= cfg.maxSplats) {
+				finished.Add(task);
+				coverTasks.RemoveAt(i);
 			}
 		}
 		GraphWindow.AddToGraph("Splatting", (float)Ext.LogTime(t3, message: false));
 
 		GraphWindow.AddToGraph("Total FindCover", (float)Ext.LogTime(t, message: false));
-
-		if (cfg.doDebugs) {
-			Debug.Log($"NAV: {navQueue.Count}, tasks: {coverTasks.Count}, finished: {finished.Count}");
-			List<CoverTask> pool = new();
-			pool.AddRange(coverTasks);
-			pool.AddRange(finished);
-			foreach (CoverTask task in pool) { task.Debug(); }
-		}
 	}
 
-
-	public bool GetBestPoint(float urgency, float aggression, out Vector3 point) {
-		if (finished.Count == 0 || coverTasks.Count > 0 || navQueue.Count > 0 ) {
-			point = default;
+	public bool TryGetCover(out CoverTask cover) {
+		if (finished.Count == 0 || coverTasks.Count > 0 || navQueue.Count > 0) {
+			cover = default;
 			return false;
 		}
 
 		CoverTask best = null;
-		float maxQuality = float.NegativeInfinity;
+		float maxScore = float.NegativeInfinity;
 		foreach (CoverTask task in finished) {
+			float bias = 0;
+			if (cfg.posBias != null) { bias = 1 - Mathf.InverseLerp(0, cfg.navRange * cfg.navRange, (cfg.posBias.Value - task.point.position).sqrMagnitude); }
 			float distScore = 1 - Mathf.InverseLerp(0, cfg.navRange, task.distance);
-			float quality = task.Safety + task.Offense * aggression + distScore * urgency; 
-			if (quality > maxQuality) {
-				maxQuality = quality;
+			float score = task.Safety + task.Offense * cfg.aggression + distScore * cfg.urgency + bias;
+			if (score > maxScore) {
+				maxScore = score;
 				best = task;
 			}
 		}
 
-		point = best.cover.position;
+		cover = best;
 		return true;
+	}
+
+	public void ShowDebug(bool full) {
+		List<CoverTask> pool = new();
+		pool.AddRange(coverTasks);
+		pool.AddRange(finished);
+		foreach (CoverTask task in pool) { 
+			task.Debug(); 
+			if (full) {
+				float bias = 0;
+				if (cfg.posBias != null) { bias = 1 - Mathf.InverseLerp(0, cfg.navRange * cfg.navRange, (cfg.posBias.Value - task.point.position).sqrMagnitude); }
+				float distScore = 1 - Mathf.InverseLerp(0, cfg.navRange, task.distance);
+				float score = task.Safety + task.Offense * cfg.aggression + distScore * cfg.urgency + bias;
+				Ext.Label(task.point.position, @$"
+						Safety: {task.Safety:F2}
+						Offense: {task.Offense * cfg.aggression:f2}
+						Distance: {distScore * cfg.urgency:f2}
+						PosBias: {bias:f2}
+						Score: {score:f2}");
+			}
+		}
 	}
 }
 

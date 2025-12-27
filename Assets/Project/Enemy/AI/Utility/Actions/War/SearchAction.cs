@@ -1,4 +1,5 @@
 public class SearchAction : AIAction {
+	private Blackboard board => ctx.board;
 	private readonly Enemy ctx;
 
 	public SearchAction(Enemy ctx) {
@@ -6,11 +7,11 @@ public class SearchAction : AIAction {
 	}
 
 	public override float GetScore() {
-		return ctx.blackboard.targetLKP != null ? 0.55f : 0;
+		return board.targetLKP != null ? 0.55f : 0;
 	}
 
 	public override void Enter() {
-		ctx.locomotion.Move(ctx.blackboard.targetLKP.Value, Pace.Jog);
+		ctx.locomotion.Move(board.targetLKP.Value, Pace.Jog);
 	}
 	public override void Tick() {
 	}

@@ -1,59 +1,40 @@
 using UnityEngine;
 
 public class MoveUpAction : AIAction {
+	private Blackboard board => ctx.board;
 	private readonly Enemy ctx;
-	private CoverQuery query;
-	private Vector3 cover;
-	private bool inCover;
-	private bool peeking;
-	float t;
+	private Vector3 advance;
 
 	public MoveUpAction(Enemy ctx) {
 		this.ctx = ctx;
 	}
 
 	public override float GetScore() {
-		return (ctx.blackboard.targetLKP == null ? 0 : 1) * ctx.blackboard.confidence;
+		return (board.targetLKP == null ? 0 : 1) * board.confidence;
 	}
 
 	public override void Enter() {
 		ctx.locomotion.Stop();
-		query = new(ctx.transform.position, ctx.blackboard.targetLKP.Value, ctx.blackboard.seeker, CoverParams.Default);
+		advance = ctx.transform.position + (board.targetLKP.Value - ctx.transform.position).normalized * 5;
+		CoverParams cfg = CoverParams.Default;
+		ctx.handling.ADS(true);
+		cfg.urgency = 0;
+		cfg.posBias = advance;
+		board.cover = new(ctx.transform.position, board.targetLKP.Value, board.seeker, cfg);
 	}
 
 	public override void Tick() {
-		if (inCover) {
-			if (peeking) {
-				ctx.handling.FireAt(ctx.blackboard.targetLKP.Value);
-				if (t >= 4) {
-					t = 0;
-					peeking = false;
-					ctx.locomotion.Move(cover, Pace.Walk);
-				}
-			} else {
-				if (t >= 4) {
-					ctx.locomotion.Move(cover + ctx.transform.rotation * Vector3.right * 0.4f, Pace.Walk);
-					peeking = true;
-					t = 0;
-				}
-			}
-			t += Time.deltaTime;
+		Ext.DrawCube(advance, Quaternion.identity, Vector3.one * 0.25f, Color.gold);
+		if (board.cover.TryGetCover(out CoverTask cover)) {
+			ctx.locomotion.Move(cover.point.position, Pace.Jog);
+			ctx.handling.FireAt(board.targetLKP.Value);
+
+			if ((cover.point.position - ctx.transform.position).sqrMagnitude < 0.01f) { board.confidence -= 0.5f; }
 		} else {
-			if (query != null) {
-				query.FindCover();
-				if (query.GetBestPoint(1, 1, out cover)) {
-					ctx.locomotion.Move(cover, Pace.Run);
-					query = null;
-				}
-			} else if (ctx.locomotion.Arrived) { 
-				inCover = true; 
-				t = 3;
-			}
+			board.cover.Search();
 		}
 	}
 
-	public override void Exit() {
-		ctx.handling.ADS(false);
-	}
+	public override void Exit() { }
 }
 

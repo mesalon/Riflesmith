@@ -2,9 +2,21 @@ using UnityEngine;
 
 public class ShootAction : AIAction {
 	private readonly Enemy ctx;
-	private CoverQuery query;
-	private Vector3 cover;
-	private bool inCover;
+	private bool InCover {
+		get {
+			Vector3? cover = Cover;
+			if (cover == null) return false;
+			return (cover.Value - ctx.transform.position).sqrMagnitude < 1;
+		}
+	}
+	private Vector3? Cover {
+		get {
+			if (ctx.blackboard.cover != null && ctx.blackboard.cover.GetBestPoint(1, 1, out CoverTask task)) {
+				return task.cover.position;
+			}
+			return null;
+		}
+	}
 	private bool peeking;
 	float t;
 
@@ -18,17 +30,20 @@ public class ShootAction : AIAction {
 
 	public override void Enter() {
 		ctx.locomotion.Stop();
-		query = new(ctx.transform.position, ctx.blackboard.targetLKP.Value, ctx.blackboard.seeker, CoverParams.Default);
+		ctx.blackboard.cover = new(ctx.transform.position, ctx.blackboard.targetLKP.Value, ctx.blackboard.seeker, CoverParams.Default);
 	}
 
 	public override void Tick() {
+		ctx.blackboard.cover?.ShowDebug();
+		Vector3? cover = Cover;
+		Ext.Label(ctx.transform.position, $"{(cover != null ? (cover.Value - ctx.transform.position).sqrMagnitude : "No cover")}");
 		if (inCover) {
 			if (peeking) {
 				ctx.handling.FireAt(ctx.blackboard.targetLKP.Value);
 				if (t >= 4) {
 					t = 0;
 					peeking = false;
-					ctx.locomotion.Move(cover, Pace.Walk);
+					ctx.locomotion.Move(, Pace.Walk);
 				}
 			} else {
 				if (t >= 4) {
@@ -39,7 +54,7 @@ public class ShootAction : AIAction {
 			}
 			t += Time.deltaTime;
 		} else {
-			if (query != null) {
+			if (ctx.blackboard.cover != null) {
 				query.FindCover();
 				if (query.GetBestPoint(1, 1, out cover)) {
 					ctx.locomotion.Move(cover, Pace.Run);

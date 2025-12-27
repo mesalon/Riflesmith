@@ -13,6 +13,7 @@ public class UtilityAI {
 			new PatrolAction(ctx),
 			new ShootAction(ctx),
 			new SearchAction(ctx),
+			new MoveUpAction(ctx),
 		};
 	}
 

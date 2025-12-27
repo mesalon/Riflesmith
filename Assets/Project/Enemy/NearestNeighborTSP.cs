@@ -34,7 +34,6 @@ public class NearestNeighborTSP {
 	}
 
 	public Vector3[] GetPath(int start) {
-		long t = Ext.Timestamp;
 		var finalPath = new List<Vector3> { points[start] };
 		int n = points.Length;
 		var visited = new bool[n];
@@ -55,7 +54,6 @@ public class NearestNeighborTSP {
 			visited[currentIndex] = true;
 			finalPath.Add(points[currentIndex]);
 		}
-		Ext.LogTime(t);
 		return finalPath.ToArray();
 	}
 }

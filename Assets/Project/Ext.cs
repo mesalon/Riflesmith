@@ -219,6 +219,12 @@ public static class Ext {
 		int r = i % array.Length;
 		return array[r < 0 ? r + array.Length : r];
 	}
+
+	public static Vector3 AngleTo(this Vector3 current, Vector3 target, float degrees) {
+		Vector3 axis = Vector3.Cross(current, target);
+		if (axis == Vector3.zero) axis = Vector3.up; 
+    return Quaternion.AngleAxis(degrees, axis) * current;
+	}
 }
 
 public class LabelRequest {

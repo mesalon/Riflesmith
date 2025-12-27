@@ -99,7 +99,6 @@ public class PatrolGenerator : MonoBehaviour {
 			if (d < distance) { closest = i; distance = d; }
 		}
 		Vector3[] path = tsp.GetPath(closest);
-		print($"Asking tsp for {closest}, received {path.Length} points");
 		return path;
 	}
 

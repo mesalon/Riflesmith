@@ -21,21 +21,22 @@ public struct BodyCfg {
 public class EnemyBody {
 	public float Health { get; private set; }
 	public bool isUp { get; private set; } = true;
-	private readonly Blackboard ctx;
-	private BodyCfg cfg => ctx.cfg.body;
+	private Blackboard board => ctx.board;
+	private BodyCfg cfg => board.cfg.body;
+	private readonly Enemy ctx;
 	private Vector3[] axes;
 	private readonly float seed;
 	private float bleeding;
 	private float hitTime;
 	private float strength;
 
-	public EnemyBody(Blackboard ctx) {
+	public EnemyBody(Enemy ctx) {
 		this.ctx = ctx;
 		seed = ctx.transform.GetInstanceID();
 		Health = cfg.health;
 		strength = cfg.strength;
-		axes = new Vector3[ctx.joints.Count];
-		for (int i = 0; i < ctx.joints.Count; i++)
+		axes = new Vector3[board.joints.Count];
+		for (int i = 0; i < board.joints.Count; i++)
 			axes[i] = Random.onUnitSphere;
 		SetForce(1);
 	}
@@ -45,7 +46,7 @@ public class EnemyBody {
 		strength = Mathf.Min(100, strength + regenRate * (Health / 100) * Time.deltaTime);
 		bleeding = Mathf.Max(0, bleeding - bleeding * 0.1f * Time.deltaTime);
 		SetForce(Mathf.Min(strength, Health) / 100);
-		Health = Mathf.Clamp(Health - bleeding * Time.deltaTime, 0, 100);
+		Health = Mathf.Max(Health - bleeding * Time.deltaTime, 0);
 
 		if (!isUp && strength >= 100) { // Get up
 			bleeding = 0;
@@ -60,8 +61,8 @@ public class EnemyBody {
 			SetForce(0);
 		}
 
-		for (int i = 0; i < ctx.joints.Count; i++) { // todo, fix the animations and remove the random spinning
-			ctx.joints[i].targetRotation = Quaternion.Euler(
+		for (int i = 0; i < board.joints.Count; i++) { // todo, fix the animations and remove the random spinning
+			board.joints[i].targetRotation = Quaternion.Euler(
 					Mathf.PerlinNoise(Time.time * cfg.ragdollSpeed + i + seed, 0) * 360,
 					Mathf.PerlinNoise(0, Time.time * cfg.ragdollSpeed + i + seed) * 360,
 					Mathf.PerlinNoise(Time.time * cfg.ragdollSpeed + i * 10 + seed, Time.time * cfg.ragdollSpeed + i) * 360
@@ -72,7 +73,6 @@ public class EnemyBody {
 	}
 
 	public void Damage(float amount, float force) {
-		Debug.Log("Hello");
 		Health = Mathf.Max(0, Health - amount);
 		strength = Mathf.Max(0, strength - force);
 		bleeding += amount * 0.1f;
@@ -81,9 +81,9 @@ public class EnemyBody {
 
 	public void SetRagdoll(bool state) {
 		isUp = !state;
-		ctx.anim.enabled = !state;
-		ctx.weapon.enabled = !state;
-		foreach (ConfigurableJoint j in ctx.joints) {
+		board.anim.enabled = !state;
+		board.weapon.enabled = !state;
+		foreach (ConfigurableJoint j in board.joints) {
 			Rigidbody rag = j.GetComponent<Rigidbody>();
 			rag.isKinematic = !state;
 			if (!rag.isKinematic) {
@@ -94,21 +94,21 @@ public class EnemyBody {
 	}
 
 	public void SetForce(float scale) {
-		JointDrive drive = ctx.joints[0].angularXDrive;
+		JointDrive drive = board.joints[0].angularXDrive;
 		drive.positionSpring = scale * cfg.ragdollStrength;
 		drive.positionDamper = scale * cfg.ragdollDamper;
-		foreach (ConfigurableJoint j in ctx.joints) {
+		foreach (ConfigurableJoint j in board.joints) {
 			j.angularXDrive = drive;
 			j.angularYZDrive = drive;
 		}
 	}
 
 	private void Recenter() {
-		Vector3 original = ctx.coreRag.position;
-		ctx.transform.position = ctx.coreRag.position;
-		if (Physics.Raycast(ctx.coreRag.position, Vector3.down, out RaycastHit hitInfo, LayerMask.NameToLayer("Environment"))) {
+		Vector3 original = board.coreRag.position;
+		ctx.transform.position = board.coreRag.position;
+		if (Physics.Raycast(board.coreRag.position, Vector3.down, out RaycastHit hitInfo, LayerMask.NameToLayer("Environment"))) {
 			ctx.transform.position = new Vector3(ctx.transform.position.x, hitInfo.point.y, ctx.transform.position.z);
 		}
-		ctx.coreRag.position = Vector3.zero;
+		board.coreRag.position = Vector3.zero;
 	}
 }

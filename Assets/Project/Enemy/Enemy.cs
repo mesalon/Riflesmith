@@ -1,11 +1,18 @@
+/* AI Todo
+Change the reaction of shootaction based on alertness
+Modify vision by alertness
+The handling of the gun is really janky and so is the viewing. I should fix that
+
+ */
 using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityEditor;
 using System.Linq;
 #endif
 
 public class Enemy : MonoBehaviour {
-	public Blackboard blackboard;
+	public Blackboard board;
 	public EnemyLocomotion locomotion;
 	public EnemyVision vision;
 	public EnemyBody body;
@@ -14,34 +21,35 @@ public class Enemy : MonoBehaviour {
 	public bool runLocomotion = true, runVision = true, runBody = true, runBrain = true, runHandling = true;
 
 	private void Awake() {
-		locomotion = new(blackboard);
-		vision = new(blackboard);
-		body = new(blackboard);
+		locomotion = new(this);
+		vision = new(this);
+		body = new(this);
 		handling = new(this);
 		brain = new(this);
 	}
 
 	private void Update() {
+		if (board.coverDebug && board.cover != null && board.cover.TryGetCover(out CoverTask _)) { board.cover.ShowDebug(board.coverDebugFull); }
 		if (body.isUp) {
 			if (runLocomotion) locomotion.Tick();
-			if (runBody) body.Tick();
 			if (runHandling) handling.Tick();
 			if (runBrain) brain.Tick();
 		}
+		if (runBody) body.Tick();
 	}
 
 	private void FixedUpdate() {
-		if (blackboard.target) {
-			blackboard.targetLKP = blackboard.target.rig.head.position;
+		if (board.target) {
+			board.targetLKP = board.target.rig.head.position;
 		} else {
 			if (runVision && body.isUp && vision.Tick(out Player player)) { 
-				blackboard.target = player; 
-				blackboard.LKPAge = 0;
+				board.target = player; 
+				board.LKPAge = 0;
 			}
 		}
 		if (!vision.CanSeePlayer) {
-			blackboard.target = null;
-			blackboard.LKPAge += Time.fixedDeltaTime;
+			board.target = null;
+			if (board.expectsToSeeTarget) board.LKPAge += Time.fixedDeltaTime;
 		}
 	}
 
@@ -69,13 +77,15 @@ public class EnemyEditor : Editor {
 		base.OnInspectorGUI();
 		EditorGUILayout.Space();
 		Enemy e = (Enemy)target;
-		var topItems = e.brain.actions
-			.Select(a => new { Action = a, Score = a.GetScore() }) 
-			.OrderByDescending(x => x.Score)
-			.Take(5)
-			.ToList();
-		for (int i = 0; i < topItems.Count(); i++) {
-			EditorGUILayout.LabelField($"{i}: {topItems[i].Action} | {topItems[i].Score}");
+		if (e.brain != null) {
+			var topItems = e.brain.actions
+				.Select(a => new { Action = a, Score = a.GetScore() }) 
+				.OrderByDescending(x => x.Score)
+				.Take(5)
+				.ToList();
+			for (int i = 0; i < topItems.Count(); i++) {
+				EditorGUILayout.LabelField($"{i}: {topItems[i].Action} | {topItems[i].Score}");
+			}
 		}
 	}
 }

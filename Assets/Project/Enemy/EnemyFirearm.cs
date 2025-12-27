@@ -43,13 +43,13 @@ public class EnemyFirearm : MonoBehaviour {
 			rounds--;
 		}
 
-		transform.localPosition = Vector3.Lerp(transform.localPosition, Vector3.zero, Time.deltaTime * recoil.posRecovery);
-		transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.identity, Time.deltaTime * recoil.rotRecovery);
+		//transform.localPosition = Vector3.Lerp(transform.localPosition, Vector3.zero, Time.deltaTime * recoil.posRecovery);
+		//transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.identity, Time.deltaTime * recoil.rotRecovery);
 
 		Vector3 appliedPos = recoil.posSpeed * Time.deltaTime * kickPos;
 		Vector3 appliedRot = recoil.rotSpeed * Time.deltaTime * kickRot;
-		transform.localPosition += appliedPos;
-		transform.localRotation *= Quaternion.Euler(appliedRot);
+		//transform.localPosition += appliedPos;
+		//transform.localRotation *= Quaternion.Euler(appliedRot);
 		kickPos -= appliedPos;
 		kickRot -= appliedRot;
 

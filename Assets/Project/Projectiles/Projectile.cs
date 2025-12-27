@@ -71,11 +71,13 @@ public class Projectile {
 	
 	public void Draw(ProjectileManager p) {
 		Mesh quad = new() {
-			vertices = new Vector3[] { new(-0.5f, -0.5f, 0), new(0.5f, -0.5f, 0), new(-0.5f, 0.5f, 0), new(0.5f, 0.5f, 0)   },
+			vertices = new Vector3[] { new(-0.5f, -0.5f, 0), new(0.5f, -0.5f, 0), new(-0.5f, 0.5f, 0), new(0.5f, 0.5f, 0) },
 			uv = new Vector2[] { new(0, 0), new(1, 0), new(0, 1), new(1, 1) },
 			triangles = new int[] { 0, 2, 1, 2, 3, 1 },
 		};
-		Graphics.DrawMesh(quad, Matrix4x4.TRS(position, Quaternion.LookRotation(velocity), new(5, 0.2f, 1)), p.tailMat, 0);
-		Graphics.DrawMesh(quad, Matrix4x4.TRS(position + velocity.normalized * 2.5f, Quaternion.LookRotation(velocity), Vector3.one * 0.2f), p.headMat, 0);
+		Quaternion lookRot = Quaternion.LookRotation(velocity);
+		Vector3 scale = p.tailMat.GetVector("_Scale");
+		Graphics.DrawMesh(quad, Matrix4x4.TRS(position + (lookRot * Vector3.forward * scale.y / 2), lookRot * Quaternion.Euler(90, 0, 0), Vector3.one), p.tailMat, 0);
+		Graphics.DrawMesh(quad, Matrix4x4.TRS(position + (lookRot * Vector3.forward * scale.y), Quaternion.identity, Vector3.one * p.headMat.GetFloat("_Size")), p.headMat, 0);
 	}
 }

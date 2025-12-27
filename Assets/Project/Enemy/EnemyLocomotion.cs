@@ -21,56 +21,55 @@ public enum Pace { SlowWalk, Walk, Jog, Run, Sprint }
 
 public class EnemyLocomotion {
 	public bool Arrived => path == null;
-	private readonly Blackboard ctx;
-	private LocomotionCfg cfg => ctx.cfg.locomotion;
+	private Blackboard board => ctx.board;
+	private readonly Enemy ctx;
+	private LocomotionCfg cfg => board.cfg.locomotion;
 	private Vector3 lastPos;
 	private Vector3 destination;
-	private Vector3? lookTarget;
+	private float pitch, yaw;
+	private float pitchTarget, yawTarget;
 	private Path path;
 	private int cornerIdx;
 	private float verticalVelocity;
 	private float speed;
 	private bool isCrouching;
+	private bool isStrafing;
 
-	public EnemyLocomotion(Blackboard ctx) {
+	public EnemyLocomotion(Enemy ctx) {
 		this.ctx = ctx;
 		speed = cfg.walkSpeed;
+		Quaternion rot = ctx.transform.rotation;
+		pitch = rot.eulerAngles.x.NormalizeAngle();
+		yaw = rot.eulerAngles.y.NormalizeAngle();
 	}
 
 	public void Tick() {
-		if (Input.GetMouseButtonDown(0)) {
-			Ray ray = GameManager.Camera.ScreenPointToRay(Input.mousePosition);
-			if (Physics.Raycast(ray.origin, ray.direction * 1000, out RaycastHit hit)) {
-				Move(hit.point, Pace.Walk);
-			}
-		}
-
-		if (!ctx.cc.isGrounded) { verticalVelocity += Physics.gravity.y * Time.deltaTime; } 
+		if (!board.cc.isGrounded) { verticalVelocity += Physics.gravity.y * Time.deltaTime; } 
 		else if (verticalVelocity < 0) { verticalVelocity = -2f; }
-		ctx.cc.Move(new(0, verticalVelocity, 0));
+		board.cc.Move(new(0, verticalVelocity, 0));
 
+		Ext.Label(ctx.transform.position, $"Strafing? {isStrafing}");
 		if (path != null) {
 			if (cornerIdx < path.vectorPath.Count) {
 				Vector3 dir = (path.vectorPath[cornerIdx] - ctx.transform.position).FlattenY().normalized;
-				ctx.cc.Move(dir * (speed * Time.deltaTime));
+				board.cc.Move(dir * (speed * Time.deltaTime));
 				Vector3 pathDirection = (path.vectorPath[cornerIdx] - path.vectorPath[cornerIdx - 1]).FlattenY().normalized;
-				float dot = Vector3.Dot((ctx.transform.position - path.vectorPath[cornerIdx]).FlattenY().normalized, pathDirection);
-				if (dot >= 0) { cornerIdx++; }
-
-				if (lookTarget == null) { lookTarget = ctx.eyes.position + dir * cfg.minAimDistance; }
+				if (Vector3.Dot((ctx.transform.position - path.vectorPath[cornerIdx]).FlattenY().normalized, pathDirection) >= 0) { cornerIdx++; }
+				if (!isStrafing) FocusAt(pathDirection, false);
 			} else {
 				path = null;
 			}
 		}
-		if (lookTarget != null) {
-			Quaternion rot = Quaternion.LookRotation((lookTarget.Value - ctx.transform.position).FlattenY().normalized);
-			ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, rot, cfg.turnSpeed * Time.deltaTime);
-		}
-		ctx.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
-		ctx.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
-		ctx.anim.SetBool("Crouching", isCrouching); 
-		lookTarget = null; // Consume focus. It has to be set every frame.
+		pitch = Mathf.Lerp(pitch, pitchTarget, cfg.turnSpeed * Time.deltaTime);
+		yaw = Mathf.Lerp(yaw, yawTarget, cfg.turnSpeed * Time.deltaTime);
+		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, Quaternion.Euler(0, yaw, 0), cfg.turnSpeed * Time.deltaTime);
+		board.ikTarget.position = board.eyes.position + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * 5;
+		board.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
+		board.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
+		board.anim.SetBool("Crouching", isCrouching); 
 		lastPos = ctx.transform.position;
+
+		isStrafing = false;
 	}
 
 	public void Move(Vector3 destination, Pace pace) {
@@ -80,13 +79,14 @@ public class EnemyLocomotion {
 			Pace.Jog => cfg.jogSpeed,
 			Pace.Run => cfg.runSpeed,
 			Pace.Sprint => cfg.sprintSpeed,
+			_ => 0,
 		};
 		Move(destination, speed);
 	}
 	public void Move(Vector3 destination, float speed) {
 		if (this.destination != destination) {
+			board.seeker.StartPath(ctx.transform.position, destination, OnPathComplete);
 			this.destination = destination;
-			ctx.seeker.StartPath(ctx.transform.position, destination, OnPathComplete);
 			this.speed = speed;
 			cornerIdx = 1;
 		}
@@ -97,14 +97,15 @@ public class EnemyLocomotion {
 	}
 
 	private void OnPathComplete(Path p) {
-		if (!p.error) {
-			path = p;
-		} else {
-			Debug.Log($"Error occured during OnPathComplete ({p.error})");
-		}
+		if (!p.error) { path = p; }
+		else { Debug.Log($"Error occured during OnPathComplete ({p.error})"); }
 	}
 
-	public void Focus(Vector3 target) {
-		lookTarget = target;
+	public void FocusAt(Vector3 direction, bool engageStrafe = true) {
+		Quaternion rot = Quaternion.LookRotation(direction);
+		pitchTarget = rot.eulerAngles.x.NormalizeAngle();
+		yawTarget = rot.eulerAngles.y.NormalizeAngle();
+		if (engageStrafe) isStrafing = true;
 	}
+	public void Focus(Vector3 target, bool engageStrafe = true) { FocusAt(target - board.eyes.position, engageStrafe); }
 }
