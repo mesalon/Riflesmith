@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 29258b1336a580946bc144df00b74ac1
 timeCreated: 1453177025
-licenseType: Free
+licenseType: Store
 TextureImporter:
   fileIDToRecycleName: {}
   serializedVersion: 2
@@ -59,6 +59,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 161631
   packageName: FMOD for Unity (2.02)
-  packageVersion: 2.02.28
+  packageVersion: 2.02.32
   assetPath: Assets/Pkg/FMOD/images/TransportPlayButtonOff.png
-  uploadId: 745941
+  uploadId: 821718

@@ -11,10 +11,7 @@ public class ProjectileManager : MonoBehaviour {
 	public float debugTracerTime;
 	public Color debugTracerColor = Color.white;
 	public Material tailMat, headMat;
-	public GameObject concreteFX;
-	public GameObject woodFX;
-	public GameObject metalFX;
-	public GameObject dirtFX;
+	public GameObject genericFx;
 	
 	private void Awake() {
 		if (I == null) {

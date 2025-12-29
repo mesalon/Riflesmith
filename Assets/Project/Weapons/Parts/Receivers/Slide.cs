@@ -9,8 +9,8 @@ public class Slide : MonoBehaviour, IInteractable {
         set;
     }
 
-    public Hand Interactor { get; set; }
-    bool slideLockActive => doesLockBack && receiver.magwell.Magazine && receiver.magwell.Magazine.ammo.Count == 0; // An empty magazine is inside
+    public Interactor Interactor { get; set; }
+    bool SlideLockActive => doesLockBack && receiver.magwell.Magazine && receiver.magwell.Magazine.ammo.Count == 0; // An empty magazine is inside
     Transform Hand => Interactor.transform;
     public float backZ;
     [HideInInspector] public float fwdZ;
@@ -61,7 +61,7 @@ public class Slide : MonoBehaviour, IInteractable {
             receiver.Eject();
             receiver.hammerState = true;
         }
-        if (internalPosition.DidFail(lockPos, lastZ)) { slideLocked = slideLockActive; }
+        if (internalPosition.DidFail(lockPos, lastZ)) { slideLocked = SlideLockActive; }
 
         // Forward slide positions
         if (internalPosition.DidReach(0, lastZ)) {
@@ -73,7 +73,7 @@ public class Slide : MonoBehaviour, IInteractable {
             }
         }
         
-        if (receiver.grip.Input.farButton) { slideLocked = false; }
+        if (receiver.grip.input.farButton) { slideLocked = false; }
 
         animTime += Time.deltaTime;
         lastZ = internalPosition;
@@ -91,7 +91,7 @@ public class Slide : MonoBehaviour, IInteractable {
             animTime = 0;
             receiver.hammerState = true;
             receiver.Eject();
-            slideLocked = slideLockActive;
+            slideLocked = SlideLockActive;
             SetSlide(fwdZ);
             if (receiver.magwell.Magazine && receiver.magwell.Magazine.ammo.TryPop(out ProjectileData round)) {
                 receiver.chamber = round;
