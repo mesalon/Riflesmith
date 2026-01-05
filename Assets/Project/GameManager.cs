@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using UnityEditor;
 using Random = UnityEngine.Random;
 using UnityEngine;
@@ -10,16 +8,8 @@ public class GameManager : MonoBehaviour {
 		.Where(c => c.targetTexture == null)
 		.OrderByDescending(c => c.depth)
 		.FirstOrDefault();
-	[Range(0, 20)] public int var1;
 	public static GameManager I { get; private set; }
-	public WorldSettings settings;
-	public float enemyTier;
-	public List<Transform> patrolPoints = new();
-	
-	[SerializeField] float tierIncrease;
-	[SerializeField] List<Transform> spawnPoints;
-	public Player player;
-	[SerializeField] Enemy enemyPF;
+	private Enemy enemyPF;
 
 	private void Awake() {
 		if (I == null) {
@@ -27,15 +17,20 @@ public class GameManager : MonoBehaviour {
 			DontDestroyOnLoad(gameObject);
 		}
 		else { Destroy(gameObject); }
-		if (!player) player = FindFirstObjectByType<Player>();
 	}
 
 	void Update() {
 		if(Input.GetKeyDown(KeyCode.K)) {
-			foreach (Enemy enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None)) {
-				enemy.body.Damage(100, 0);
-			}
+			foreach (Enemy enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None)) { enemy.body.Damage(100, 0); }
 		}
+	}
+
+	private void LateUpdate() {
+		float dt = Time.deltaTime;
+		for (int i = Ext.labelQueue.Count - 1; i >= 0; i--) { Ext.labelQueue[i].lifespan -= dt; }
+		Ext.labelQueue.RemoveAll(r => r.lifespan <= 0);
+		for (int i = Ext.drawQueue.Count - 1; i >= 0; i--) { Ext.drawQueue[i].lifespan -= dt; }
+		Ext.drawQueue.RemoveAll(r => r.lifespan <= 0);
 	}
 
 	private void OnDrawGizmos() {
@@ -43,18 +38,8 @@ public class GameManager : MonoBehaviour {
 			Ext.labelQueue.Clear();
 			Ext.drawQueue.Clear();
 		}
-		for (int i = Ext.labelQueue.Count - 1; i >= 0; i--) { 
-			var label = Ext.labelQueue[i]; 
-			Handles.Label(label.position, label.text, label.style); 
-			label.lifespan -= Time.deltaTime;
-		}
-		for (int i = Ext.drawQueue.Count - 1; i >= 0; i--) { 
-			var draw = Ext.drawQueue[i]; 
-			draw.action(); 
-			draw.lifespan -= Time.deltaTime;
-		}
-		Ext.labelQueue.RemoveAll(r => r.lifespan <= 0);
-		Ext.drawQueue.RemoveAll(r => r.lifespan <= 0);
+		foreach (var label in Ext.labelQueue) { Handles.Label(label.position, label.text, label.style); }
+		foreach (var draw in Ext.drawQueue) { draw.action(); }
 	}
 
 	public static Enemy SpawnEnemy(Vector3 position) {
