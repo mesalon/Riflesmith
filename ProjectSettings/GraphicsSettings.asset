@@ -62,7 +62,7 @@ GraphicsSettings:
   m_RenderPipelineGlobalSettingsMap:
     UnityEngine.Rendering.HighDefinition.HDRenderPipeline: {fileID: 11400000, guid: 21e4bd004d278a9488fc4af9f71e09a1,
       type: 2}
-    UnityEngine.Rendering.Universal.UniversalRenderPipeline: {fileID: 11400000, guid: a832a4364ff06d93ca0a1f72836e1366,
+    UnityEngine.Rendering.Universal.UniversalRenderPipeline: {fileID: 11400000, guid: 44bc9b2a3eecb970db6108fae342767f,
       type: 2}
   m_ShaderBuildSettings:
     keywordDeclarationOverrides: []
