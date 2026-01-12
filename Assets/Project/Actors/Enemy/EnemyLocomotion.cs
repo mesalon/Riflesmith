@@ -4,14 +4,12 @@ using Pathfinding;
 [System.Serializable] public struct LocomotionCfg {
 	public float slowWalkSpeed, walkSpeed, jogSpeed, runSpeed, sprintSpeed;
 	public float turnSpeed;
-	public float aimSpeed;
 	public float lookSpeed;
 	public float minAimDistance;
 
 	public static readonly LocomotionCfg Default = new() {
 		slowWalkSpeed = 0.75f, walkSpeed = 1.25f, jogSpeed = 2, runSpeed = 3.5f, sprintSpeed = 6,
 		turnSpeed = 4,
-		aimSpeed = 2,
 		lookSpeed = 4,
 		minAimDistance = 2,
 	};
@@ -22,6 +20,7 @@ public enum Pace { SlowWalk, Walk, Jog, Run, Sprint }
 public class EnemyLocomotion {
 	public bool Arrived => path == null;
 	private LocomotionCfg cfg => ctx.cfg.locomotion;
+	private Seeker seeker;
 	private readonly Enemy ctx;
 	private Vector3 lastPos;
 	private Vector3 destination;
@@ -35,6 +34,7 @@ public class EnemyLocomotion {
 
 	public EnemyLocomotion(Enemy ctx) {
 		this.ctx = ctx;
+		seeker = ctx.GetComponent<Seeker>();
 		Quaternion rot = ctx.transform.rotation;
 		pitch = rot.eulerAngles.x.NormalizeAngle();
 		yaw = rot.eulerAngles.y.NormalizeAngle();
@@ -77,7 +77,7 @@ public class EnemyLocomotion {
 	}
 	public void Move(Vector3 destination, float speed) {
 		if (this.destination != destination) {
-			ctx.seeker.StartPath(ctx.transform.position, destination, OnPathComplete);
+			seeker.StartPath(ctx.transform.position, destination, OnPathComplete);
 			this.destination = destination;
 			this.speed = speed;
 			cornerIdx = 1;

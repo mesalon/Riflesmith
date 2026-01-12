@@ -2,35 +2,37 @@ using UnityEngine;
 
 public class MoveUpAction : AIAction {
 	private readonly Enemy ctx;
+	private readonly EnemyBrain brain;
 	private Vector3 advance;
 
 	public MoveUpAction(Enemy ctx) {
 		this.ctx = ctx;
+		brain = ctx.brain;
 	}
 
 	public override float GetScore() {
-		return (ctx.targetLKP == null ? 0 : 1) * ctx.confidence;
+		return (brain.targetLKP == null ? 0 : 1) * brain.confidence;
 	}
 
 	public override void Enter() {
 		ctx.motionController.Stop();
-		advance = ctx.transform.position + (ctx.targetLKP.Value - ctx.transform.position).normalized * 5;
+		advance = ctx.transform.position + (brain.targetLKP.Value - ctx.transform.position).normalized * 5;
 		CoverParams cfg = CoverParams.Default;
 		ctx.handling.ADS(true);
 		cfg.urgency = 0;
 		cfg.posBias = advance;
-		ctx.cover = new(ctx.transform.position, ctx.targetLKP.Value, ctx.seeker, cfg);
+		brain.cover = new(ctx.transform.position, brain.targetLKP.Value, null, cfg);
 	}
 
 	public override void Tick() {
 		Ext.DrawCube(advance, Quaternion.identity, Vector3.one * 0.25f, Color.gold);
-		if (ctx.cover.TryGetCover(out CoverTask cover)) {
+		if (brain.cover.TryGetCover(out CoverTask cover)) {
 			ctx.motionController.Move(cover.point.position, Pace.Jog);
-			ctx.handling.FireAt(ctx.targetLKP.Value);
+			ctx.handling.FireAt(brain.targetLKP.Value);
 
-			if ((cover.point.position - ctx.transform.position).sqrMagnitude < 0.01f) { ctx.confidence -= 0.5f; }
+			if ((cover.point.position - ctx.transform.position).sqrMagnitude < 0.01f) { brain.confidence -= 0.5f; }
 		} else {
-			ctx.cover.Search();
+			brain.cover.Search();
 		}
 	}
 

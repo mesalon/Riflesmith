@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public abstract class Actor : MonoBehaviour {
-	public float health;
+	public float health = 100;
 	public Vector3 Center => (LShoulder.position + RShoulder.position + LHip.position + RHip.position) / 4;
 	public Locomotion locomotion;
 	public GearManager gearManager;

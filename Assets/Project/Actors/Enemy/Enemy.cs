@@ -3,9 +3,7 @@ Change the reaction of shootaction based on alertness
 Modify vision by alertness
 The handling of the gun is really janky and so is the viewing. I should fix that
  */
-using System.Collections.Generic;
 using UnityEngine;
-using Pathfinding;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -17,66 +15,32 @@ public class Enemy : Actor {
 	public EnemyBody body;
 	public EnemyHandling handling;
 	public EnemyLocomotion motionController;
-	public UtilityAI brain;
+	public EnemyBrain brain;
 	public bool runLocomotion = true, runVision = true, runBody = true, runBrain = true, runHandling = true;
 
 	public EnemyConfig cfg;
-	public EnemyFirearm weapon;
+	public SimpleFirearm weapon;
 	public Transform eyes;
 	public Transform weaponAimPose, weaponRestPose;
 	public Transform weaponHandle;
 	public Transform ikTarget;
 	public Animator anim;
-	public AnimationClip getUpClip;
-	public Transform focus;
-	public Transform dingle;
-	public Seeker seeker;
-	public Transform coreRag;
-	public List<Transform> ragdollReference;
-	public List<ConfigurableJoint> joints;
-	public bool coverDebug, coverDebugFull;
-	public float aimError, fixAmount, fixVariance;
-
-	[HideInInspector] public CoverQuery cover;
-	[HideInInspector] public Actor target;
-	[HideInInspector] public Vector3? aimFocus;
-	[HideInInspector] public Vector3? targetLKP;
-	[HideInInspector] public float confidence, alertness, suppression;
-	[HideInInspector] public float LKPAge;
-	[HideInInspector] public bool expectsToSeeTarget;
 
 	private void Awake() {
 		motionController = new(this);
 		vision = new(this);
-		body = new(this);
 		handling = new(this);
 		brain = new(this);
 	}
 
 	private void Update() {
-		if (coverDebug && cover != null && cover.TryGetCover(out CoverTask _)) { cover.ShowDebug(coverDebugFull); }
 		if (body.isUp) {
 			if (runLocomotion) locomotion.Tick();
 			if (runHandling) handling.Tick();
 			if (runBrain) brain.Tick();
 		}
-		if (runBody) body.Tick();
 	}
 
-	private void FixedUpdate() {
-		if (target) {
-			targetLKP = target.Center;
-		} else {
-			if (runVision && body.isUp && vision.Tick(out Actor target)) { 
-				this.target = target; 
-				LKPAge = 0;
-			}
-		}
-		if (!vision.HasLOS(target)) {
-			target = null;
-			if (expectsToSeeTarget) LKPAge += Time.fixedDeltaTime;
-		}
-	}
 
 	public override void Damage(float amount) {
 		health = Mathf.Max(0, health - amount);

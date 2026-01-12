@@ -25,6 +25,7 @@ public class EnemyBody {
 	private float hitTime;
 	private readonly float seed;
 
+	/*
 	public EnemyBody(Enemy ctx) {
 		this.ctx = ctx;
 		seed = ctx.transform.GetInstanceID();
@@ -94,4 +95,5 @@ public class EnemyBody {
 		}
 		ctx.coreRag.position = Vector3.zero;
 	}
+	*/
 }

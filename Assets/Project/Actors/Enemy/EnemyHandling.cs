@@ -1,7 +1,12 @@
 using UnityEngine;
 
+[System.Serializable] public struct HandlingCfg {
+	public float aimError, fixAmount, fixVariance;
+	public float aimSpeed;
+}
+
 public class EnemyHandling {
-	private LocomotionCfg cfg => ctx.cfg.locomotion;
+	private HandlingCfg cfg => ctx.cfg.handling;
 	private Vector3 TargetDir => (target - ctx.weapon.transform.position).normalized;
 	private readonly Enemy ctx;
 	private bool isAiming;
@@ -19,12 +24,12 @@ public class EnemyHandling {
 		ADS(true);
 		if (this.target != target) {
 			this.target = target;
-			aimDir = (TargetDir + Random.insideUnitSphere * ctx.aimError).normalized;
+			aimDir = (TargetDir + Random.insideUnitSphere * cfg.aimError).normalized;
 		}
 		if (Vector3.Angle(ctx.weapon.transform.forward, aimDir) < 5 && !Physics.Linecast(ctx.weapon.muzzle.position, target, out var _, ProjectileManager.I.mask)) {
 			if (t > rest) {
-				ctx.weapon.FireOnce();
-				aimDir = (TargetDir + Random.insideUnitSphere * ctx.aimError).normalized;
+				ctx.weapon.triggerState = true;
+				aimDir = (TargetDir + Random.insideUnitSphere * cfg.aimError).normalized;
 				//ctx.confidence += 0.025f;
 				t -= 0.25f + 0.15f * (0.5f - Random.value);
 				burst++;
@@ -57,15 +62,4 @@ public class EnemyHandling {
 	}
 
 	public void ADS(bool state) { isAiming = state; }
-}
-
-[System.Serializable] public struct BurstCfg {
-	public bool enableFire;
-	[Range(0, 1)] public float range, skill, ammo, intent, recoil;
-	public IntRange burst;
-	public FloatRange delay;
-	public float rangeBurstWeight, skillBurstWeight, ammoBurstWeight, intentBurstWeight, recoilBurstWeight, panicBurstWeight;
-	public float rangeDelayWeight, skillDelayWeight, ammoDelayWeight, intentDelayWeight, recoilDelayWeight, panicDelayWeight;
-	public float burstWeightBase, delayWeightBase;
-	public float inconsistencyBase;
 }
