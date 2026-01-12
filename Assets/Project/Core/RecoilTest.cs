@@ -1,31 +1,40 @@
 using UnityEngine;
 
 public class RecoilTest : MonoBehaviour {
-	[SerializeField] float impulse;
-	[SerializeField] float damping;
-	[SerializeField] float frequency;
-	[SerializeField] float target;
-	private float velocity;
-	private float current;
+	[SerializeField] Vector3 impulse;
 
-	private Vector3 start;
-	private void Start() { start = transform.position; }
+	[SerializeField] SpringSystem x, y, z;
+
 	private void Update() {
-		if (Input.GetMouseButtonDown(0)) {
-			velocity += impulse;
+		if (Input.GetMouseButtonDown(0)) { 
+			x.velocity += impulse.x; 
+			y.velocity += impulse.y; 
+			z.velocity += impulse.z; 
 		}
-		float f = 1f + 2f * Time.deltaTime * damping * frequency;
-		float oo = frequency * frequency;
-		float ho = Time.deltaTime * oo;
-		float hhoo = Time.deltaTime * ho;
-		float det = f + hhoo;
+		x.Update();
+		y.Update();
+		z.Update();
+		transform.localRotation = Quaternion.Euler(new(x.position, y.position, z.position));
+	}
+}
 
-		float detInv = 1f / det;
-		float detX = f * current + Time.deltaTime * velocity + hhoo * target;
-		float detV = velocity + ho * (target - current);
+[System.Serializable]
+public class SpringSystem {
+	private float omega => 2f * Mathf.PI * frequency;
+	private float kDamping => 2f * damping / omega;
+	private float kMass => 1f / (omega * omega);
 
-		current = detX * detInv;
-		velocity = detV * detInv;
-		transform.position = start + new Vector3(0, current, 0);
+	[HideInInspector] public float position;
+	[HideInInspector] public float velocity;
+	[SerializeField] float frequency = 10; 
+	[SerializeField] float damping = 0.5f;  
+
+	public void Update() {
+		float stableMass = Mathf.Max(kMass, // Are you needed?
+				(Time.deltaTime * Time.deltaTime / 2f) + (Time.deltaTime * kDamping / 2f), 
+				Time.deltaTime * kDamping); 
+		float force = -position - (kDamping * velocity);
+		velocity += force / kMass * Time.deltaTime;
+		position += velocity * Time.deltaTime;
 	}
 }
