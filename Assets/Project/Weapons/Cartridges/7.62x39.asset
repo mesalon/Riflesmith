@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf7df83a328c7c14ebdd896c69db65a1, type: 3}
+  m_Name: 7.62x39
+  m_EditorClassIdentifier: Projectiles::ProjectileData
+  shotSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  tailMat: {fileID: 0}
+  headMat: {fileID: 0}
+  casing: {fileID: 0}
+  minSpeed: 0
+  maxSpeed: 0
+  damage: 0
+  force: 0
+  caliber: 

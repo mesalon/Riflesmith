@@ -22,8 +22,7 @@ public class Enemy : Actor {
 	public SimpleFirearm weapon;
 	public Transform eyes;
 	public Transform weaponAimPose, weaponRestPose;
-	public Transform weaponHandle;
-	public Transform ikTarget;
+	public Transform lookTarget;
 	public Animator anim;
 
 	private void Awake() {
@@ -31,11 +30,12 @@ public class Enemy : Actor {
 		vision = new(this);
 		handling = new(this);
 		brain = new(this);
+		body = new();
 	}
 
 	private void Update() {
 		if (body.isUp) {
-			if (runLocomotion) locomotion.Tick();
+			if (runLocomotion) motionController.Tick();
 			if (runHandling) handling.Tick();
 			if (runBrain) brain.Tick();
 		}
