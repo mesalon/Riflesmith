@@ -8,9 +8,6 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using System.Linq;
-enum w {
-	was
-}
 
 public static class Ext {
 	public static List<LabelRequest> labelQueue = new();
@@ -224,6 +221,20 @@ public static class Ext {
 		Vector3 axis = Vector3.Cross(current, target);
 		if (axis == Vector3.zero) axis = Vector3.up; 
     return Quaternion.AngleAxis(degrees, axis) * current;
+	}
+
+	public static Vector3 GetInertiaTensor(this Bounds shape, Vector3 pivot, float mass) {
+		Vector3 baseTensor = new(
+				1f / 12f * mass * (shape.size.y * shape.size.y + shape.size.z * shape.size.z),
+				1f / 12f * mass * (shape.size.x * shape.size.x + shape.size.z * shape.size.z),
+				1f / 12f * mass * (shape.size.x * shape.size.x + shape.size.y * shape.size.y));
+		Vector3 r = shape.center - pivot;
+		Vector3 rSquared = new Vector3(
+				r.y * r.y + r.z * r.z,
+				r.x * r.x + r.z * r.z,
+				r.x * r.x + r.y * r.y
+				);
+		return baseTensor + (mass * rSquared);
 	}
 }
 
