@@ -5,6 +5,7 @@ public abstract class Actor : MonoBehaviour {
 	public Vector3 Center => (LShoulder.position + RShoulder.position + LHip.position + RHip.position) / 4;
 	public Locomotion locomotion;
 	public GearManager gearManager;
+	public Animator anim;
 	public int IFF;
 	[SerializeField] Transform LShoulder, RShoulder, LHip, RHip;
 
