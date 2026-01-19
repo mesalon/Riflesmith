@@ -1,17 +1,11 @@
-using UnityEngine.InputSystem;
 using UnityEngine;
 
 public class Hand : Interactor {
-	public float Grip => gripAction.ReadValue<float>();
-	public float Trigger => triggerAction.ReadValue<float>();
-	public float NearButton => nearButtonAction.ReadValue<float>();
-	public float FarButton => farButtonAction.ReadValue<float>();
-	public Vector2 Stick => stickAction.ReadValue<Vector2>();
-	public InputAction gripAction;
-	public InputAction triggerAction;
-	public InputAction nearButtonAction;
-	public InputAction farButtonAction;
-	public InputAction stickAction;
+	public float Grip => default;
+	public float Trigger => default;
+	public float NearButton => default;
+	public float FarButton => default;
+	public Vector2 Stick => default;
 	[SerializeField] GameObject vis;
 	[SerializeField] Transform[] bones;
 	[SerializeField] HandPose idlePose, grippingPose;

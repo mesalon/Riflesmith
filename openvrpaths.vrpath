@@ -1,0 +1,14 @@
+{
+  "config": [
+    "/home/mesalon/xrizerconf"
+  ],
+  "external_drivers": [],
+  "jsonid": "vrpathreg",
+  "log": [
+    "/home/mesalon/xrizerlogs"
+  ],
+  "runtime": [
+    "/nix/store/mfj5jcff5a0g0s159k6wp7bjcqdv86wv-xrizer-0.3/lib/xrizer/"
+  ],
+  "version": 1
+}

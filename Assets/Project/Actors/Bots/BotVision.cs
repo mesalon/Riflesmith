@@ -43,7 +43,7 @@ using static UnityEngine.Vector3;
 }
 
 public class BotVision {
-	public bool HasLOS(Actor to) => !Physics.Linecast(ctx.eyes.position, to.Center, out var _, cfg.visionMask);
+	public bool HasLOS(Human to) => !Physics.Linecast(ctx.eyes.position, to.Center, out var _, cfg.visionMask);
 	private VisionCfg cfg => ctx.cfg.vision;
 	private Bot ctx;
 	private readonly float maxAngleCos;
@@ -55,12 +55,12 @@ public class BotVision {
 		maxAngleCos = Cos(cfg.FOVAngle * Deg2Rad);
 	}
 
-	public bool Tick(out Actor actor) {
+	public bool Tick(out Human actor) {
 		actor = null;
-		Actor target = null;
+		Human target = null;
 		Vector3 eyePos = ctx.eyes.position; 
 		foreach(Collider col in Physics.OverlapSphere(eyePos, cfg.sightRange)) {
-			if (col.TryGetComponent(out Actor a)) {
+			if (col.TryGetComponent(out Human a)) {
 				target = a;
 				break;
 			}

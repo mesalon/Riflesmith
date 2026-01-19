@@ -44,7 +44,7 @@ public class BotLocomotion {
 		if (path != null) {
 			if (cornerIdx < path.vectorPath.Count) {
 				Vector3 dir = (path.vectorPath[cornerIdx] - ctx.transform.position).FlattenY().normalized;
-				ctx.locomotion.Move(dir, speed);
+				ctx.self.locomotion.Move(dir, speed);
 				Vector3 pathDirection = (path.vectorPath[cornerIdx] - path.vectorPath[cornerIdx - 1]).FlattenY().normalized;
 				if (Vector3.Dot((ctx.transform.position - path.vectorPath[cornerIdx]).FlattenY().normalized, pathDirection) >= 0) { cornerIdx++; }
 				if (!isStrafing) FocusAt(pathDirection, false);
@@ -56,9 +56,9 @@ public class BotLocomotion {
 		yaw = Mathf.Lerp(yaw, yawTarget, cfg.turnSpeed * Time.deltaTime);
 		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, Quaternion.Euler(0, yaw, 0), cfg.turnSpeed * Time.deltaTime);
 		ctx.lookTarget.position = ctx.eyes.position + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * 5;
-		ctx.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
-		ctx.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
-		ctx.anim.SetBool("Crouching", isCrouching); 
+		ctx.self.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
+		ctx.self.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
+		ctx.self.anim.SetBool("Crouching", isCrouching); 
 		lastPos = ctx.transform.position;
 
 		isStrafing = false;

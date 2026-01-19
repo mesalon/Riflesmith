@@ -76,9 +76,9 @@ public class CoverQuery {
 			if (dist <= cfg.navRange) { coverTasks.Add(new(navQueue[i], dist, cfg)); }
 			navQueue.RemoveAt(i);
 		}
-
+#if UNITY_EDITOR
 		GraphWindow.AddToGraph("Nav", (float)Ext.LogTime(t2, message: false));
-
+#endif
 		// 4. Splatting
 		long t3 = Stopwatch.GetTimestamp();
 		int splatsDone = 0;
@@ -95,9 +95,10 @@ public class CoverQuery {
 				coverTasks.RemoveAt(i);
 			}
 		}
+#if UNITY_EDITOR
 		GraphWindow.AddToGraph("Splatting", (float)Ext.LogTime(t3, message: false));
-
 		GraphWindow.AddToGraph("Total FindCover", (float)Ext.LogTime(t, message: false));
+#endif
 	}
 
 	public bool TryGetCover(out CoverTask cover) {

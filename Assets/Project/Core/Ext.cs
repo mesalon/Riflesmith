@@ -81,10 +81,12 @@ public static class Ext {
 		}
 	}
 
+#if UNITY_EDITOR
 	public static void AddToPropertyList(this SerializedProperty list, Object value) {
 		list.arraySize++;
 		list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = value;
 	}
+#endif
 
 	public static void Label(Vector3 position, string text, float lifespan = 0, GUIStyle style = null, Color color = default) {
 		style ??= new() {

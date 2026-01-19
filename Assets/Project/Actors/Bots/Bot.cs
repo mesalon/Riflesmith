@@ -10,7 +10,8 @@ using UnityEditor;
 using System.Linq;
 #endif
 
-public class Bot : Actor {
+public class Bot : MonoBehaviour {
+	public Human self;
 	public BotConfig cfg;
 	public Transform eyes;
 	public Transform weaponAimPose, weaponRestPose;
@@ -39,8 +40,8 @@ public class Bot : Actor {
 		}
 	}
 
-	public override void Damage(float amount) {
-		health = Mathf.Max(0, health - amount);
+	public void Damage(float amount) {
+		Damage(amount);
 		body.strength = Mathf.Max(0, body.strength - amount);
 	}
 }

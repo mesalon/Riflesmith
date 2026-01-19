@@ -8,7 +8,7 @@ public class AIBrain {
 	private Bot ctx;
 
 	[HideInInspector] public CoverQuery cover;
-	[HideInInspector] public Actor target;
+	[HideInInspector] public Human target;
 	[HideInInspector] public Vector3? aimFocus;
 	[HideInInspector] public Vector3? targetLKP;
 	[HideInInspector] public float confidence, alertness, suppression;
@@ -30,7 +30,7 @@ public class AIBrain {
 		if (target) {
 			targetLKP = target.Center;
 		} else {
-			if (ctx.runVision && ctx.body.isUp && ctx.vision.Tick(out Actor target)) { 
+			if (ctx.runVision && ctx.body.isUp && ctx.vision.Tick(out Human target)) { 
 				this.target = target; 
 				LKPAge = 0;
 			}

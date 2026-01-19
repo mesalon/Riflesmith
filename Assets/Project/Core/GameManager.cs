@@ -1,7 +1,6 @@
-using UnityEditor;
-using Random = UnityEngine.Random;
 using UnityEngine;
 using System.Linq;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour {
 	public static Camera Camera => Camera.allCameras
@@ -26,6 +25,7 @@ public class GameManager : MonoBehaviour {
 		Ext.drawQueue.RemoveAll(r => r.lifespan <= 0);
 	}
 
+#if UNITY_EDITOR
 	private void OnDrawGizmos() {
 		if (!Application.isPlaying) {
 			Ext.labelQueue.Clear();
@@ -34,4 +34,5 @@ public class GameManager : MonoBehaviour {
 		foreach (var label in Ext.labelQueue) { Handles.Label(label.position, label.text, label.style); }
 		foreach (var draw in Ext.drawQueue) { draw.action(); }
 	}
+#endif
 }

@@ -1,9 +1,9 @@
 using UnityEngine;
 
 public class GearManager {
-	private readonly Actor ctx;
+	private readonly Human ctx;
 
-	public GearManager(Actor ctx) {
+	public GearManager(Human ctx) {
 		this.ctx = ctx;
 	}
 }

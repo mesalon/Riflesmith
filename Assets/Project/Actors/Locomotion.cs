@@ -4,7 +4,7 @@ public class Locomotion {
 	private CharacterController cc;
 	private float yVelocity;
 
-	public Locomotion(Actor ctx) {
+	public Locomotion(Human ctx) {
 		cc = ctx.GetComponent<CharacterController>();
 	}
 

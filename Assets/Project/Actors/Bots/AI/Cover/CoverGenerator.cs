@@ -1,6 +1,7 @@
 // Todo: nuke code and precompute safety and offense scores for each point
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using Pathfinding;
 using System.Linq;
 using System;
@@ -70,3 +71,18 @@ public struct CoverPoint {
 		this.normal = normal;
 	}
 }
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(CoverGenerator))]
+public class CoverGeneratorEditor : Editor {
+	public override void OnInspectorGUI() {
+		DrawDefaultInspector();
+		CoverGenerator generator = (CoverGenerator)target;
+		EditorGUILayout.Space();
+		if (GUILayout.Button("Bake Cover")) {
+			generator.Generate();
+			EditorUtility.SetDirty(generator);
+		}
+	}
+}
+#endif
