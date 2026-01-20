@@ -7,9 +7,13 @@ unity-env = pkgs.buildFHSEnv {
 			libxml2
 			SDL2
 			libGL
-			xorg.libX11
-			xorg.libXcursor
-			xorg.libXrandr
+			pkgs.xorg.libXi
+			pkgs.xorg.libXext
+			pkgs.xorg.libXcursor
+			pkgs.xorg.libXrandr
+			pkgs.xorg.libX11
+			pkgs.xorg.libXrender
+			pkgs.xorg.libXScrnSaver
 			udev
 			gtk3
 			gdk-pixbuf
