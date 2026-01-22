@@ -19,11 +19,11 @@ MonoBehaviour:
       Data3: 0
       Data4: 0
     Path: 
-  tailMat: {fileID: 0}
-  headMat: {fileID: 0}
+  tailMat: {fileID: 2100000, guid: 41191d4edc15e8a4bb1775bcba669553, type: 2}
+  headMat: {fileID: 2100000, guid: 468d97f300b225df58ae501c2dae83a5, type: 2}
   casing: {fileID: 0}
-  minSpeed: 0
-  maxSpeed: 0
-  damage: 0
-  force: 0
+  minSpeed: 715
+  maxSpeed: 715
+  damage: 60
+  force: 200
   caliber: 

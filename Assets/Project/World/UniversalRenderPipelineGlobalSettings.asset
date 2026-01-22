@@ -72,13 +72,17 @@ MonoBehaviour:
       - rid: 4298216691751976967
       - rid: 4298216691751976969
       - rid: 4298216691751976972
+      - rid: 4298216691751976973
       - rid: 4298216691751976974
       - rid: 4298216691751976977
+      - rid: 4298216691751976979
       - rid: 4298216691751976980
       - rid: 4298216691751976981
       - rid: 4298216691751976982
       - rid: 4298216691751976983
+      - rid: 4298216691751976984
       - rid: 4298216691751976987
+      - rid: 4298216691751976989
   m_AssetVersion: 9
   m_ObsoleteDefaultVolumeProfile: {fileID: 0}
   m_RenderingLayerNames:
@@ -293,7 +297,7 @@ MonoBehaviour:
         asm: Unity.RenderPipelines.Universal.Runtime}
       data:
         m_Version: 0
-        m_VolumeProfile: {fileID: 11400000, guid: eca490d8aa03c91fea204add22fb54d7,
+        m_VolumeProfile: {fileID: 11400000, guid: ce7352d149721ae0c864c1dc9f6a9ddb,
           type: 2}
     - rid: 4298216691751976973
       type: {class: ScreenSpaceAmbientOcclusionPersistentResources, ns: UnityEngine.Rendering.Universal,

@@ -10,5 +10,5 @@ AssetOrigin:
   productId: 275900
   packageName: Underground Facility Set
   packageVersion: 1.1
-  assetPath: Assets/UgFacility/Prefabs/Structures/ugColumnWallEdgeC.prefab
+  assetPath: Assets/Plugins/UgFacility/Prefabs/Structures/ugColumnWallEdgeC.prefab
   uploadId: 755031
