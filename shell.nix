@@ -41,7 +41,7 @@ unity-env = pkgs.buildFHSEnv {
 		export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 
 		export XR_LOADER_DEBUG=all
-		export RUST_LOG=debug,openvr_calls=trace
+		export VK_LOADER_DEBUG=all
 
 		export XR_RUNTIME_JSON=/home/mesalon/.config/openxr/1/active_runtime.json
 		'';

@@ -2,8 +2,8 @@ using UnityEngine;
 using Valve.VR;
 
 public class VRClient : MonoBehaviour {
-	TrackedDevicePose_t[] renderPoses = new TrackedDevicePose_t[3];
-	TrackedDevicePose_t[] gamePoses = new TrackedDevicePose_t[3];
+	[SerializeField] Camera cam;
+	private TrackedDevicePose_t[] renderPoses = new TrackedDevicePose_t[OpenVR.k_unMaxTrackedDeviceCount];
 
 	public void Awake() {
 		print("Boot");
@@ -13,27 +13,32 @@ public class VRClient : MonoBehaviour {
 	}
 
 	public void Update() {
+		TrackedDevicePose_t[] gamePoses = new TrackedDevicePose_t[OpenVR.k_unMaxTrackedDeviceCount];
 		EVRCompositorError error = OpenVR.Compositor.WaitGetPoses(renderPoses, gamePoses);
 		print($"Get Pose. Error? {error}");
-		PrintPose(renderPoses[0]);
-		PrintPose(renderPoses[1]);
-		PrintPose(renderPoses[2]);
-		return;
-
-		Texture_t tex = new() {
-			handle = Texture2D.redTexture.GetNativeTexturePtr(),
-			eType = ETextureType.Vulkan,
-			eColorSpace = EColorSpace.Auto
-		};
-		VRTextureBounds_t bounds = new() { uMin = 0, vMin = 0, uMax = 1, vMax = 1 };
-		EVRCompositorError LError = OpenVR.Compositor.Submit(EVREye.Eye_Left, ref tex, ref bounds, EVRSubmitFlags.Submit_Default);
-		EVRCompositorError RError = OpenVR.Compositor.Submit(EVREye.Eye_Right, ref tex, ref bounds, EVRSubmitFlags.Submit_Default);
-		print($"Submit. Error? {LError}, {RError}");
+		foreach (TrackedDevicePose_t pose in renderPoses) {
+			PrintPose(pose);
+		}
 
 		VREvent_t e = default;
 		if (OpenVR.System.PollNextEvent(ref e, (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(VREvent_t)))) {
 			print($"Event: {(EVREventType)e.eventType}");
 		}
+
+		Texture_t tex = new() {
+			handle = cam.activeTexture.GetNativeTexturePtr(),
+			eType = ETextureType.Vulkan,
+			eColorSpace = EColorSpace.Auto
+		};
+		Texture_t tex2 = new() {
+			handle = cam.activeTexture.GetNativeTexturePtr(),
+			eType = ETextureType.Vulkan,
+			eColorSpace = EColorSpace.Auto
+		};
+		VRTextureBounds_t bounds = new() { uMin = 0, uMax = 1, vMin = 0, vMax = 1 };
+		EVRCompositorError LError = OpenVR.Compositor.Submit(EVREye.Eye_Left, ref tex, ref bounds, EVRSubmitFlags.Submit_Default);
+		EVRCompositorError RError = OpenVR.Compositor.Submit(EVREye.Eye_Right, ref tex2, ref bounds, EVRSubmitFlags.Submit_Default);
+		print($"Submit. Error? {LError}, {RError}");
 	}
 
 	public void OnApplicationQuit() {
