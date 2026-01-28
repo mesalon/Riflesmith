@@ -1,0 +1,46 @@
+CMake Warning (dev) at CMakeLists.txt:24 (find_package):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+Package xdmcp was not found in the pkg-config search path.
+Perhaps you should add the directory containing `xdmcp.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'xdmcp', required by 'xcb', not found
+Package xdmcp was not found in the pkg-config search path.
+Perhaps you should add the directory containing `xdmcp.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'xdmcp', required by 'xcb', not found
+Package xdmcp was not found in the pkg-config search path.
+Perhaps you should add the directory containing `xdmcp.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'xdmcp', required by 'xcb', not found
+Package xdmcp was not found in the pkg-config search path.
+Perhaps you should add the directory containing `xdmcp.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'xdmcp', required by 'xcb', not found
+Package libffi was not found in the pkg-config search path.
+Perhaps you should add the directory containing `libffi.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'libffi', required by 'wayland-client', not found
+Package libffi was not found in the pkg-config search path.
+Perhaps you should add the directory containing `libffi.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'libffi', required by 'wayland-client', not found
+Package libffi was not found in the pkg-config search path.
+Perhaps you should add the directory containing `libffi.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'libffi', required by 'wayland-client', not found
+Package libffi was not found in the pkg-config search path.
+Perhaps you should add the directory containing `libffi.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'libffi', required by 'wayland-client', not found
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CMAKE_ASM_COMPILER
+    CMAKE_ASM_FLAGS
+
+

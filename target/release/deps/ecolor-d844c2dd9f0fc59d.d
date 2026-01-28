@@ -1,0 +1,12 @@
+/home/mesalon/xrizer/target/release/deps/ecolor-d844c2dd9f0fc59d.d: /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/lib.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/color32.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hsva_gamma.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hsva.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/rgba.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hex_color_runtime.rs
+
+/home/mesalon/xrizer/target/release/deps/libecolor-d844c2dd9f0fc59d.rlib: /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/lib.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/color32.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hsva_gamma.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hsva.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/rgba.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hex_color_runtime.rs
+
+/home/mesalon/xrizer/target/release/deps/libecolor-d844c2dd9f0fc59d.rmeta: /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/lib.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/color32.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hsva_gamma.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hsva.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/rgba.rs /home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hex_color_runtime.rs
+
+/home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/lib.rs:
+/home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/color32.rs:
+/home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hsva_gamma.rs:
+/home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hsva.rs:
+/home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/rgba.rs:
+/home/mesalon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.31.1/src/hex_color_runtime.rs:

@@ -35,15 +35,13 @@ unity-env = pkgs.buildFHSEnv {
 	profile = ''
 		mkdir -p /tmp/unity-libs
 		ln -sf /usr/lib/libxml2.so /tmp/unity-libs/libxml2.so.2
-		export LD_LIBRARY_PATH=/tmp/unity-libs:/run/opengl-driver/lib:/usr/lib:/lib:$LD_LIBRARY_PATH
+		export LD_LIBRARY_PATH=/home/mesalon/Projects/Riflesmith/target/release/:/tmp/unity-libs:/run/opengl-driver/lib:/usr/lib:/lib:$LD_LIBRARY_PATH
 		export UNITY_PATH="/home/mesalon/Applications/Unity/Editor/6000.3.2f1/Editor/Unity"
 		export SSL_CERT_FILE=/etc/ssl/certs/ca-bundle.crt
 		export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 
 		export XR_LOADER_DEBUG=all
 		export VK_LOADER_DEBUG=all
-
-		export XR_RUNTIME_JSON=/home/mesalon/.config/openxr/1/active_runtime.json
 		'';
 	runScript = "bash";
 };

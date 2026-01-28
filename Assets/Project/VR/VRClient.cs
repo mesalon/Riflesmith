@@ -4,16 +4,19 @@ using Valve.VR;
 public class VRClient : MonoBehaviour {
 	[SerializeField] Camera cam;
 	private TrackedDevicePose_t[] renderPoses = new TrackedDevicePose_t[OpenVR.k_unMaxTrackedDeviceCount];
+		TrackedDevicePose_t[] gamePoses = new TrackedDevicePose_t[0];
 
 	public void Awake() {
 		print("Boot");
 		EVRInitError initError = default;
-		OpenVR.Init(ref initError);
+		OpenVR.GetGenericInterface(OpenVR.IVRCompositor_Version, ref initError);
+
+		EVRInitError error = EVRInitError.None;
+		OpenVR.Init(ref error, EVRApplicationType.VRApplication_Overlay);
 		print(initError);
 	}
 
 	public void Update() {
-		TrackedDevicePose_t[] gamePoses = new TrackedDevicePose_t[OpenVR.k_unMaxTrackedDeviceCount];
 		EVRCompositorError error = OpenVR.Compositor.WaitGetPoses(renderPoses, gamePoses);
 		print($"Get Pose. Error? {error}");
 		foreach (TrackedDevicePose_t pose in renderPoses) {

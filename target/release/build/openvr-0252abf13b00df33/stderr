@@ -1,0 +1,5 @@
+clang diag: /home/mesalon/xrizer/openvr/openvr-0.9.12.h:784:10: warning: 'VR_CLANG_ATTR' macro redefined [-Wmacro-redefined]
+clang diag: /home/mesalon/xrizer/openvr/openvr-2.12.14.h:1:9: warning: #pragma once in main file [-Wpragma-once-outside-header]
+clang diag: /home/mesalon/xrizer/openvr/openvr-2.12.14.h:2258:10: warning: 'VR_CLANG_ATTR' macro redefined [-Wmacro-redefined]
+clang diag: /home/mesalon/xrizer/openvr/openvr-2.12.14.h:5619:9: warning: #pragma once in main file [-Wpragma-once-outside-header]
+clang diag: /home/mesalon/xrizer/openvr/openvr-2.12.14.h:5654:9: warning: #pragma once in main file [-Wpragma-once-outside-header]
