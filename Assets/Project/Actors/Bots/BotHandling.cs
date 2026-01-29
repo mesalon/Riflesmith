@@ -6,7 +6,7 @@ using UnityEngine;
 }
 
 public class BotHandling {
-	private SimpleFirearm weapon;
+	public SimpleFirearm weapon;
 	private HandlingCfg cfg => ctx.cfg.handling;
 	private Vector3 TargetDir => (target - weapon.transform.position).normalized;
 	private readonly Bot ctx;
@@ -17,7 +17,7 @@ public class BotHandling {
 
 	public BotHandling(Bot ctx) {
 		this.ctx = ctx;
-		weaponRotation = weapon.transform.rotation;
+		//weaponRotation = weapon.transform.rotation;
 	}
 
 	public void FireAt(Vector3 target) {
@@ -47,6 +47,9 @@ public class BotHandling {
 	int burst;
 	float rest;
 	public void Tick() {
+		ctx.brain.isArmed = weapon;
+		if (!weapon) return;
+
 		Debug.DrawRay(weapon.muzzle.position, TargetDir * 50, Color.red);
 		Debug.DrawRay(weapon.muzzle.position, aimDir * 50, Color.green);
 		Debug.DrawRay(weapon.muzzle.position, weapon.transform.forward * 50, Color.purple);

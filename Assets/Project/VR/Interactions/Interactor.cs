@@ -12,7 +12,7 @@ public abstract class Interactor : MonoBehaviour {
 	}
 	public virtual void Pick(IInteractable interactable) {
 		if (!interactable.PreventInteraction) {
-			if (interactable.Interactor) interactable.Interactor.Drop(); // Release if other controller is holding it
+			if (interactable.Interactor) interactable.Interactor.Drop(); // Release if something else is holding it
 			held = interactable;
 			held.Interactor = this;
 			held.OnPicked();

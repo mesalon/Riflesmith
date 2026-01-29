@@ -3,8 +3,6 @@ using UnityEngine;
 public class Rig {
 	public Transform head;
 	public Hand LHand, RHand;
-	[SerializeField] CharacterController cc;
-	[SerializeField] Transform gear;
 	private readonly Player ctx;
 
 	public Rig(Player ctx) {
@@ -12,9 +10,6 @@ public class Rig {
 	}
 
 	public void Tick() {
-		gear.localPosition = new(head.localPosition.x, head.localPosition.y - 0.5f, head.localPosition.z);
-		gear.localRotation = Quaternion.Euler(new(0, head.localRotation.eulerAngles.y, 0));
-
 		//LHand.transform.SetPose(new(ctx.controls.LHand.Pos.ReadValue<Vector3>(), ctx.controls.LHand.Rot.ReadValue<Quaternion>()), true);
 		//RHand.transform.SetPose(new(ctx.controls.RHand.Pos.ReadValue<Vector3>(), ctx.controls.RHand.Rot.ReadValue<Quaternion>()), true);
 
@@ -30,8 +25,8 @@ public class Rig {
 	}
 
 	void FixedUpdate() {
-		cc.height = head.localPosition.y;
-		cc.center = new(head.localPosition.x, cc.height / 2, head.localPosition.z);
+		ctx.cc.height = head.localPosition.y;
+		ctx.cc.center = new(head.localPosition.x, ctx.cc.height / 2, head.localPosition.z);
 	}
 
 	[BeforeRenderOrder(-30000)]

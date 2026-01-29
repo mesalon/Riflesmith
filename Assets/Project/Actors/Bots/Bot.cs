@@ -1,8 +1,8 @@
 /* AI Todo
-Change the reaction of shootaction based on alertness
-Modify vision by alertness
-The handling of the gun is really janky and so is the viewing. I should fix that
- */
+	 Change the reaction of shootaction based on alertness
+	 Modify vision by alertness
+	 The handling of the gun is really janky and so is the viewing. I should fix that
+	 */
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -10,8 +10,7 @@ using UnityEditor;
 using System.Linq;
 #endif
 
-public class Bot : MonoBehaviour {
-	public Human self;
+public class Bot : Interactor {
 	public BotConfig cfg;
 	public Transform eyes;
 	public Transform weaponAimPose, weaponRestPose;
@@ -23,8 +22,10 @@ public class Bot : MonoBehaviour {
 	public BotHandling handling;
 	public BotLocomotion motionController;
 	public AIBrain brain;
+	[HideInInspector] public Human self;
 
 	private void Awake() {
+		self = GetComponent<Human>();
 		motionController = new(this);
 		vision = new(this);
 		handling = new(this);
@@ -33,6 +34,12 @@ public class Bot : MonoBehaviour {
 	}
 
 	private void Update() {
+		if (!handling.weapon) {
+			Collider[] overlap = Physics.OverlapSphere(transform.position, 5);
+			foreach (Collider col in overlap) {
+				if (col.TryGetComponent(out SimpleFirearm gun)) { handling.weapon = gun; }
+			}
+		}
 		if (body.isUp) {
 			if (runLocomotion) motionController.Tick();
 			if (runHandling) handling.Tick();

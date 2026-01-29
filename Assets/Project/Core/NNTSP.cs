@@ -9,15 +9,9 @@ public class NNTSP {
 
 	public NNTSP(Vector3[] points) {
 		this.points = points;
-	}
-
-	public void Compute() {
 		int n = points.Length;
-
 		distMap = new float[n * n];
-
 		var tempPathList = new List<Vector3>();
-
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				if (i == j) continue;
@@ -25,7 +19,6 @@ public class NNTSP {
 				var path = ABPath.Construct(points[i], points[j], null);
 				AstarPath.StartPath(path);
 				path.BlockUntilCalculated();
-
 				if (path.error) { distMap[flatIndex] = float.PositiveInfinity; }
 				distMap[flatIndex] = path.GetTotalLength();
 			}

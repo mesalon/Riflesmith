@@ -7,13 +7,14 @@ public class AIBrain {
 	private AIAction current;
 	private Bot ctx;
 
-	[HideInInspector] public CoverQuery cover;
-	[HideInInspector] public Human target;
-	[HideInInspector] public Vector3? aimFocus;
-	[HideInInspector] public Vector3? targetLKP;
-	[HideInInspector] public float confidence, alertness, suppression;
-	[HideInInspector] public float LKPAge;
-	[HideInInspector] public bool expectsToSeeTarget;
+	public CoverQuery cover;
+	public Human target;
+	public Vector3? aimFocus;
+	public Vector3? targetLKP;
+	public float confidence, alertness, suppression;
+	public float LKPAge;
+	public bool isArmed;
+	public bool expectsToSeeTarget;
 	public bool coverDebug, coverDebugFull;
 
 	public AIBrain(Bot ctx) {

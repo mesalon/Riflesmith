@@ -1,6 +1,7 @@
 using UnityEngine;
 
 public class VRInputProvider {
+	
 }
 
 public struct VRInput {

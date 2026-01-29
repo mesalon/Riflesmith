@@ -1,23 +1,19 @@
 using UnityEngine;
 
 public class Player : MonoBehaviour {
-	[SerializeField] Human self;
-	private Rig rig;
+	 public CharacterController cc;
+	[SerializeField] Transform lookSource;
+	 Rig rig;
 
-	private void OnEnable() {
-		Application.onBeforeRender += UpdateHead;
-	}
-
-	private void OnDisable() {
-		Application.onBeforeRender -= UpdateHead;
-	}
 
 	public void Awake() {
+		rig = new(this);
 	}
+	private void OnEnable() { Application.onBeforeRender += rig.UpdateHead; }
+	private void OnDisable() { Application.onBeforeRender -= rig.UpdateHead; }
 
 	private void Update() {
 	}
 
-	public void UpdateHead() {
-	}
+	void UpdateHead() {}
 }

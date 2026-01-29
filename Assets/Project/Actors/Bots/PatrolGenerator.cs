@@ -21,48 +21,61 @@ public class PatrolGenerator : MonoBehaviour {
 		I = this;
 	}
 
-	public void GeneratePatrolPoints() {
+	void Clear() {
 		patrolPoints.Clear();
-		long witnessTimestamp = Ext.Timestamp;
 		witnesses.Clear();
-		Bounds bounds = AstarPath.active.data.recastGraph.bounds;
-		NearestNodeConstraint constraint = NearestNodeConstraint.Walkable;
-		constraint.maxDistanceSqr = voxelSize;
-		if (voxelSize > 0) {
+	}
+
+	public void GeneratePatrolPoints() {
+		long t = Ext.Timestamp;
+		if (voxelSize > 0 && AstarPath.active.data.recastGraph.isScanned) {
+			Clear();
+			Bounds bounds = AstarPath.active.data.recastGraph.bounds;
+			NearestNodeConstraint constraint = NearestNodeConstraint.Walkable;
+			constraint.maxDistanceSqr = voxelSize;
+			int total1 = (int)(Mathf.Ceil((bounds.max.x - bounds.min.x) / voxelSize) *
+					Mathf.Ceil((bounds.max.y - bounds.min.y) / voxelSize) *
+					Mathf.Ceil((bounds.max.z - bounds.min.z) / voxelSize));
+			int i = 0;
 			for (float x = bounds.min.x; x < bounds.max.x; x += voxelSize) {
 				for (float y = bounds.min.y; y < bounds.max.y; y += voxelSize) {
 					for (float z = bounds.min.z; z < bounds.max.z; z += voxelSize) {
+						i++;
+						if (i % 100 == 0) EditorUtility.DisplayProgressBar("Bar", $"Generating witnesses... {i} / {total1}", (float)i / total1);
 						NNInfo info = AstarPath.active.GetNearest(new Vector3(x, y, z), constraint);
 						if (info.node != null) witnesses.Add(info.position + height * Vector3.up);
 					}
 				}
 			}
+		} else {
+			Debug.Log("Unable to generate witness points.");
+			return;
 		}
-		Ext.LogTime(witnessTimestamp, "witness generation");
-		if (witnesses.Count == 0) return;
 
-		long matrixTimestamp = Ext.Timestamp;
 		var visibilityMatrix = new Dictionary<Vector3, List<Vector3>>(witnesses.Count);
+		int total2 = witnesses.Count * witnesses.Count;
+		int j = 0;
 		foreach (Vector3 from in witnesses) {
 			var visible = new List<Vector3>();
 			foreach (Vector3 to in witnesses) {
-				if (!Physics.Linecast(from, to, ~0, QueryTriggerInteraction.Ignore)) {
-					visible.Add(to);
-				}
+				j++;
+				if (j % 100 == 0) EditorUtility.DisplayProgressBar("Patrol Generator", $"Caclulating visibility... {j} / {total2}", (float)j / total2);
+				if (!Physics.Linecast(from, to, ~0, QueryTriggerInteraction.Ignore)) { visible.Add(to); }
 			}
 			visibilityMatrix[from] = visible;
 		}
-		Ext.LogTime(matrixTimestamp, "visibility matrix");
 
-		long selectionTimestamp = Ext.Timestamp;
 		var unseen = new HashSet<Vector3>(witnesses);
-
+		int total3 = unseen.Count * unseen.Count;
+		int l = 0;
 		while (unseen.Count > 0) {
 			Vector3 bestPatrolPoint = default;
 			List<Vector3> bestVisibleSet = null;
 			int maxCoverage = 0;
 
 			foreach (var entry in visibilityMatrix) {
+				l++;
+				if (l % 100 == 0) EditorUtility.DisplayProgressBar("Patrol Generator", $"Calculating coverage... {l} / {total3}", (float)l / total3);
 				int coverage = 0;
 				foreach (Vector3 point in entry.Value) {
 					if (unseen.Contains(point)) {
@@ -87,7 +100,7 @@ public class PatrolGenerator : MonoBehaviour {
 				unseen.Remove(newlySeenPoint);
 			}
 		}
-		Ext.LogTime(selectionTimestamp, "patrol selection");
+		Ext.LogTime(t, "witness generation");
 	}
 
 	public Vector3[] GetPatrolPath(Vector3 from) {
@@ -121,14 +134,19 @@ public class PatrolGenerator : MonoBehaviour {
 			PatrolGenerator generator = (PatrolGenerator)target;
 			EditorGUILayout.Space();
 			if (GUILayout.Button("Generate Patrol Points")) {
-				generator.GeneratePatrolPoints();
-				EditorUtility.SetDirty(generator);
+				try {
+					generator.GeneratePatrolPoints();
+					EditorUtility.SetDirty(generator);
+				} finally {
+					EditorUtility.ClearProgressBar();
+				}
 			}
 			if (GUILayout.Button("Make TSP")) {
-				long tspTimestamp = Ext.Timestamp;
+				long t = Ext.Timestamp;
 				generator.tsp = new NNTSP(generator.patrolPoints.ToArray());
-				generator.tsp.Compute();
-				Ext.LogTime(tspTimestamp, "TSP");
+				EditorUtility.SetDirty(generator);
+				EditorUtility.ClearProgressBar();
+				Ext.LogTime(t, "TSP");
 			}
 		}
 	}
