@@ -52,6 +52,8 @@ public class GrabInteractable : MonoBehaviour, IInteractable {
 
 	public void AttachTo(Transform t) {
 		root.SetParent(t);
+		root.localPosition = Vector3.zero;
+		root.localRotation = Quaternion.identity;
 		rb.isKinematic = t != null;
 	}
 }
