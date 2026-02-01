@@ -22,6 +22,9 @@ public class Locomotion {
 	}
 
 	public void Move(Vector3 direction, float speed) {
-		cc.Move(direction * (speed * Time.deltaTime));
+		MoveDirect(direction * (speed * Time.deltaTime));
+	}
+	public void MoveDirect(Vector3 motion) {
+		cc.Move(motion);
 	}
 }

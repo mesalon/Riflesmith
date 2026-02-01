@@ -41,10 +41,11 @@ public class BotLocomotion {
 	}
 
 	public void Tick() {
+		Vector3 moveInput = Vector3.zero;
 		if (path != null) {
 			if (cornerIdx < path.vectorPath.Count) {
 				Vector3 dir = (path.vectorPath[cornerIdx] - ctx.transform.position).FlattenY().normalized;
-				ctx.self.locomotion.Move(dir, speed);
+				moveInput = dir * speed;
 				Vector3 pathDirection = (path.vectorPath[cornerIdx] - path.vectorPath[cornerIdx - 1]).FlattenY().normalized;
 				if (Vector3.Dot((ctx.transform.position - path.vectorPath[cornerIdx]).FlattenY().normalized, pathDirection) >= 0) { cornerIdx++; }
 				if (!isStrafing) FocusAt(pathDirection, false);
@@ -52,16 +53,23 @@ public class BotLocomotion {
 				path = null;
 			}
 		}
-		pitch = Mathf.Lerp(pitch, pitchTarget, cfg.turnSpeed * Time.deltaTime);
-		yaw = Mathf.Lerp(yaw, yawTarget, cfg.turnSpeed * Time.deltaTime);
-		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, Quaternion.Euler(0, yaw, 0), cfg.turnSpeed * Time.deltaTime);
-		ctx.lookTarget.position = ctx.eyes.position + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * 5;
-		ctx.self.anim.SetFloat("MoveX", Mathf.Clamp(Vector3.Dot(ctx.transform.right, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
-		ctx.self.anim.SetFloat("MoveY", Mathf.Clamp(Vector3.Dot(ctx.transform.forward, ctx.transform.position - lastPos) / Time.deltaTime, -1, 1), 0.1f, Time.deltaTime);
-		ctx.self.anim.SetBool("Crouching", isCrouching); 
+		Debug.DrawRay(ctx.transform.position, moveInput * 5, Color.green);
+		moveInput = ctx.transform.InverseTransformDirection(moveInput);
+		Debug.DrawRay(ctx.transform.position, moveInput * 5, Color.blue);
+		ctx.self.anim.SetFloat("MoveX", moveInput.x, 0.1f, Time.deltaTime);
+		ctx.self.anim.SetFloat("MoveY", moveInput.z, 0.1f, Time.deltaTime);
+		//ctx.self.anim.SetBool("Crouching", isCrouching); 
 		lastPos = ctx.transform.position;
 
 		isStrafing = false;
+	}
+
+	public void AnimatorMove() {
+		pitch = Mathf.Lerp(pitch, pitchTarget, cfg.turnSpeed * Time.deltaTime);
+		yaw = Mathf.Lerp(yaw, yawTarget, cfg.turnSpeed * Time.deltaTime);
+		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, Quaternion.Euler(0, yaw, 0), cfg.turnSpeed * Time.deltaTime);
+		ctx.ikLookTarget.position = ctx.eyes.position + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * 5;
+		ctx.self.locomotion.MoveDirect(ctx.self.anim.deltaPosition);
 	}
 
 	public void Move(Vector3 destination, Pace pace) {

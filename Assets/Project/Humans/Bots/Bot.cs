@@ -11,10 +11,11 @@ using System.Linq;
 #endif
 
 public class Bot : Interactor {
+	public Vector3 test;
 	public BotConfig cfg;
 	public Transform eyes;
 	public Transform weaponHolster, weaponAimPose, weaponRestPose;
-	public Transform lookTarget;
+	public Transform ikLookTarget;
 	public bool runLocomotion = true, runVision = true, runBody = true, runBrain = true, runHandling = true;
 
 	public BotVision vision;
@@ -53,6 +54,10 @@ public class Bot : Interactor {
 	public void Damage(float amount) {
 		Damage(amount);
 		body.strength = Mathf.Max(0, body.strength - amount);
+	}
+
+	void OnAnimatorMove() {
+		motionController.AnimatorMove();
 	}
 }
 
