@@ -12,36 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b5406367583e1c4ea52691fbd20d78b, type: 3}
   m_Name: BotConfig
   m_EditorClassIdentifier: Assembly-CSharp::EnemyConfig
-  enemy:
-    enableFire: 0
-    range: 0
-    skill: 0
-    ammo: 0
-    intent: 0
-    recoil: 0
-    burst:
-      Min: 0
-      Max: 0
-    delay:
-      Min: 0
-      Max: 0
-    rangeBurstWeight: 0
-    skillBurstWeight: 0
-    ammoBurstWeight: 0
-    intentBurstWeight: 0
-    recoilBurstWeight: 0
-    panicBurstWeight: 0
-    rangeDelayWeight: 0
-    skillDelayWeight: 0
-    ammoDelayWeight: 0
-    intentDelayWeight: 0
-    recoilDelayWeight: 0
-    panicDelayWeight: 0
-    burstWeightBase: 0
-    delayWeightBase: 0
-    inconsistencyBase: 0
+  handling:
+    aimError: 0
+    fixAmount: 0
+    fixVariance: 0
+    aimSpeed: 0
   body:
-    health: 100
     strength: 100
     recovery: 10
     recoveryDelay: 8
@@ -63,7 +39,6 @@ MonoBehaviour:
     accumulatorDecay: 0.25
     rangeDecay: 0.001
     visualDebug: 1
-    textDebug: 0
     heatmap:
       serializedVersion: 2
       key0: {r: 1, g: 0, b: 0, a: 1}
@@ -96,15 +71,13 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
     simMotion: 1
     maxHeatmapTime: 30
-    debugSmoothing: 1
   locomotion:
     slowWalkSpeed: 0.75
-    walkSpeed: 1.1
+    walkSpeed: 1
     jogSpeed: 2
     runSpeed: 3.5
     sprintSpeed: 6
     turnSpeed: 4
-    aimSpeed: 6
     lookSpeed: 2
     minAimDistance: 2
   cover:

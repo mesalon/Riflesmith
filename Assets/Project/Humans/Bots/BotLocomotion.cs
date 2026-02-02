@@ -54,10 +54,10 @@ public class BotLocomotion {
 			}
 		}
 		Debug.DrawRay(ctx.transform.position, moveInput * 5, Color.green);
-		moveInput = ctx.transform.InverseTransformDirection(moveInput);
-		Debug.DrawRay(ctx.transform.position, moveInput * 5, Color.blue);
-		ctx.self.anim.SetFloat("MoveX", moveInput.x, 0.1f, Time.deltaTime);
-		ctx.self.anim.SetFloat("MoveY", moveInput.z, 0.1f, Time.deltaTime);
+		Vector3 movement = ctx.transform.InverseTransformDirection(moveInput);
+		Debug.DrawRay(ctx.transform.position + Vector3.up * 0.1f, movement * 5, Color.blue);
+		ctx.self.anim.SetFloat("MoveX", movement.x, 0.1f, Time.deltaTime);
+		ctx.self.anim.SetFloat("MoveY", movement.z, 0.1f, Time.deltaTime);
 		//ctx.self.anim.SetBool("Crouching", isCrouching); 
 		lastPos = ctx.transform.position;
 
@@ -67,7 +67,7 @@ public class BotLocomotion {
 	public void AnimatorMove() {
 		pitch = Mathf.Lerp(pitch, pitchTarget, cfg.turnSpeed * Time.deltaTime);
 		yaw = Mathf.Lerp(yaw, yawTarget, cfg.turnSpeed * Time.deltaTime);
-		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, Quaternion.Euler(0, yaw, 0), cfg.turnSpeed * Time.deltaTime);
+		//ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, Quaternion.Euler(0, yaw, 0), cfg.turnSpeed * Time.deltaTime);
 		ctx.ikLookTarget.position = ctx.eyes.position + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * 5;
 		ctx.self.locomotion.MoveDirect(ctx.self.anim.deltaPosition);
 	}
