@@ -4,8 +4,10 @@ using UnityEngine;
 public class GearItem : MonoBehaviour {
 	public List<Material> skins;
 	[HideInInspector] public SkinnedMeshRenderer smr;
+	[HideInInspector] public Transform root;
 
-	void Awake() {
-		smr = GetComponent<SkinnedMeshRenderer>();
+	public void Init() {
+		smr = GetComponentInChildren<SkinnedMeshRenderer>();
+		root = transform.Find("root");
 	}
 }

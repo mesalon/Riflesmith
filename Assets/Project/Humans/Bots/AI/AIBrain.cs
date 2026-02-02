@@ -59,10 +59,10 @@ public class AIBrain {
 			}
 		}
 		if (action != current) {
-			if (current != null) current.Exit();
+			current?.Exit();
 			current = action;
 			current.Enter();
 		}
-		current.Tick();
+		current?.Tick();
 	}
 }

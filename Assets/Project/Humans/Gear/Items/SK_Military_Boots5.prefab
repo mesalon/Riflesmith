@@ -59,11 +59,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100106, guid: 7b7a0dd67d231f44db6f61b68ca76028,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1052559945614481870}
+      addedObject: {fileID: -8529778184410410670}
   m_SourcePrefab: {fileID: 100100000, guid: 7b7a0dd67d231f44db6f61b68ca76028, type: 3}
---- !u!137 &6806722650577360369 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 13700000, guid: 7b7a0dd67d231f44db6f61b68ca76028,
+--- !u!4 &6806722650582533305 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400104, guid: 7b7a0dd67d231f44db6f61b68ca76028,
     type: 3}
   m_PrefabInstance: {fileID: 6806722650582670929}
   m_PrefabAsset: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 6806722650582670929}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1052559945614481870
+--- !u!114 &-8529778184410410670
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,4 +86,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Actors::GearItem
   skins: []
-  smr: {fileID: 6806722650577360369}
+  smr: {fileID: 0}
+  root: {fileID: 6806722650582533305}

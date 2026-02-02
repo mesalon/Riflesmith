@@ -11,7 +11,7 @@ public class PatrolAction : AIAction {
 	}
 
 	public override float GetScore() {
-		return 0.5f;
+		return 0.0f;
 	}
 
 	public override void Enter() {

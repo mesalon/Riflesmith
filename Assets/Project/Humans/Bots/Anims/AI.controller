@@ -315,4 +315,4 @@ BlendTree:
   m_MaxThreshold: 0.8541666
   m_UseAutomaticThresholds: 1
   m_NormalizedBlendValues: 0
-  m_BlendType: 3
+  m_BlendType: 1

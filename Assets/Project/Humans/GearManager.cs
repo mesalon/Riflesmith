@@ -7,8 +7,8 @@ using UnityEditor;
 public class GearManager : MonoBehaviour {
 	[SerializeField] List<GearItem> items;
 	[SerializeField] Transform root;
+	[SerializeField] Transform container;
 	private Dictionary<string, Transform> boneMap = new();
-	private List<Transform> current = new();
 	private Human ctx;
 
 	void Awake() {
@@ -16,18 +16,17 @@ public class GearManager : MonoBehaviour {
 	}
 
 	public void Build() {
-		foreach (Transform item in current) { 
-			if (item != null) { DestroyImmediate(item.gameObject); }
+		for (int i = container.childCount - 1; i >= 0; i--) {
+			Undo.DestroyObjectImmediate(container.GetChild(i).gameObject);
 		}
-		current.Clear();
 		boneMap.Clear();
 		boneMap.Add(root.name, root);
 		Traverse(root);
 		foreach (GearItem entry in items) {
-			GearItem item = Instantiate(entry, transform);
-			current.Add(item.transform);
+			GearItem item = Instantiate(entry, container);
+			item.Init(); // todo: Fuck this for release
 			if (item.skins.Count > 0) { item.smr.material = item.skins.GetRandom(); }
-			Attach(item.smr);
+			Attach(item);
 		}
 	}
 
@@ -38,18 +37,19 @@ public class GearManager : MonoBehaviour {
 		}
 	}
 
-	void Attach(SkinnedMeshRenderer smr) {
+	void Attach(GearItem item) {
+		SkinnedMeshRenderer smr = item.smr;
 		Transform[] newBones = new Transform[smr.bones.Length];
-		foreach(Transform bone in smr.bones) { print(bone.name); }
 		for (int i = 0; i < smr.bones.Length; i++) {
 			if (boneMap.TryGetValue(smr.bones[i].name, out Transform newBone)) {
 				newBones[i] = newBone;
-			} else {
-				print($"Could not match {smr.bones[i].name} to anything.");
 			}
 		}
 		smr.bones = newBones;
-		smr.rootBone = root;
+		if (boneMap.TryGetValue(smr.rootBone.name, out Transform newRoot)) {
+			Undo.DestroyObjectImmediate(item.root.gameObject);
+			smr.rootBone = newRoot;
+		}
 		smr.updateWhenOffscreen = true;
 	}
 }

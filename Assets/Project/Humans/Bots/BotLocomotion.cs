@@ -18,17 +18,16 @@ using Pathfinding;
 public enum Pace { SlowWalk, Walk, Jog, Run, Sprint }
 
 public class BotLocomotion {
-	public bool Arrived => path == null;
 	private LocomotionCfg cfg => ctx.cfg.locomotion;
-	private Seeker seeker;
 	private readonly Bot ctx;
-	private Vector3 lastPos;
+
+	public bool Arrived => path == null;
+	private Seeker seeker;
+	private Path path;
 	private Vector3 destination;
 	private float pitch, yaw;
 	private float pitchTarget, yawTarget;
-	private Path path;
 	private int cornerIdx;
-	private bool isCrouching;
 	private bool isStrafing;
 	private float speed;
 
@@ -36,8 +35,8 @@ public class BotLocomotion {
 		this.ctx = ctx;
 		seeker = ctx.GetComponent<Seeker>();
 		Quaternion rot = ctx.transform.rotation;
-		pitch = rot.eulerAngles.x.NormalizeAngle();
-		yaw = rot.eulerAngles.y.NormalizeAngle();
+		pitch = pitchTarget = rot.eulerAngles.x.NormalizeAngle();
+		yaw = yawTarget = rot.eulerAngles.y.NormalizeAngle();
 	}
 
 	public void Tick() {
@@ -58,8 +57,6 @@ public class BotLocomotion {
 		Debug.DrawRay(ctx.transform.position + Vector3.up * 0.1f, movement * 5, Color.blue);
 		ctx.self.anim.SetFloat("MoveX", movement.x, 0.1f, Time.deltaTime);
 		ctx.self.anim.SetFloat("MoveY", movement.z, 0.1f, Time.deltaTime);
-		//ctx.self.anim.SetBool("Crouching", isCrouching); 
-		lastPos = ctx.transform.position;
 
 		isStrafing = false;
 	}
@@ -67,8 +64,8 @@ public class BotLocomotion {
 	public void AnimatorMove() {
 		pitch = Mathf.Lerp(pitch, pitchTarget, cfg.turnSpeed * Time.deltaTime);
 		yaw = Mathf.Lerp(yaw, yawTarget, cfg.turnSpeed * Time.deltaTime);
-		//ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, Quaternion.Euler(0, yaw, 0), cfg.turnSpeed * Time.deltaTime);
 		ctx.ikLookTarget.position = ctx.eyes.position + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * 5;
+		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, Quaternion.Euler(0, yaw, 0), cfg.turnSpeed * Time.deltaTime);
 		ctx.self.locomotion.MoveDirect(ctx.self.anim.deltaPosition);
 	}
 
