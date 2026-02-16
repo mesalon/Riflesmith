@@ -3,8 +3,12 @@
 		let
 		system = "x86_64-linux";
 	pkgs = nixpkgs.legacyPackages.${system};
+	letmyxml2 = pkgs.runCommandNoCC "libxml2forunity" {} ''
+		mkdir -p $out/lib
+		ln -s ${pkgs.libxml2.out}/lib/libxml2.so $out/lib/libxml2.so.2
+		'';
 	libraries = with pkgs; [
-			at-spi2-atk
+		at-spi2-atk
 			cairo
 			fontconfig
 			gtk3
@@ -17,10 +21,11 @@
 			udev
 			libx11
 			libxcursor
-			libxml2
 			libxrandr
 			zlib
-			];
+			libxml2
+			letmyxml2
+	];
 	in {
 		devShells.${system}.default = pkgs.mkShell {
 			packages = libraries;
