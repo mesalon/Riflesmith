@@ -6,12 +6,13 @@ public class ProjectileManager : MonoBehaviour {
 	public static ProjectileManager I { get; private set; }
 
 	public LayerMask mask;
+	public Material tailMat, headMat;
+	public GameObject genericFx;
+
 	[Header("Debug Tracers")]
 	public bool showDebugTracers;
 	public float debugTracerTime;
 	public Color debugTracerColor = Color.white;
-	public Material tailMat, headMat;
-	public GameObject genericFx;
 	
 	private void Awake() {
 		if (I == null) {

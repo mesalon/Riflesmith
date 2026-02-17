@@ -5,7 +5,6 @@ public class Human : MonoBehaviour {
 	public Locomotion locomotion;
 	public float health = 100;
 	public int IFF;
-	public Animator anim;
 	[SerializeField] Transform LShoulder, RShoulder, LHip, RHip;
 
 	private void Awake() {
@@ -19,4 +18,5 @@ public class Human : MonoBehaviour {
 	public void Damage(float amount) {
 		health = Mathf.Max(0, health - amount);
 	}
+
 }

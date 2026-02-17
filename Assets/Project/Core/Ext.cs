@@ -66,9 +66,11 @@ public static class Ext {
 		else { transform.SetPositionAndRotation(pos, rot); }
 	} 
 	public static void SetPose(this Transform transform, Pose pose, bool isLocal = false) {
-		if (isLocal) { transform.SetLocalPositionAndRotation(pose.position, pose.rotation); }
-		else { transform.SetPositionAndRotation(pose.position, pose.rotation); }
+		transform.SetPose(pose.position, pose.rotation, isLocal);
 	} 
+	public static void SetPose(this Transform transform, Transform target) {
+		transform.SetPose(target.localPosition, target.localRotation, true);
+	}
 
 	public static void SetLayerRecursive(this GameObject gameObject, int layer) {
 		foreach (Transform child in gameObject.transform) { child.gameObject.SetLayerRecursive(layer); }
@@ -237,6 +239,12 @@ public static class Ext {
 				r.x * r.x + r.y * r.y
 				);
 		return baseTensor + (mass * rSquared);
+	}
+
+	public static void Reset(this Transform transform) {
+		transform.localPosition = Vector3.zero;
+		transform.localRotation = Quaternion.identity;
+		transform.localScale = Vector3.one;
 	}
 }
 

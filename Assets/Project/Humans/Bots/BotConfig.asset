@@ -16,7 +16,7 @@ MonoBehaviour:
     aimError: 0
     fixAmount: 0
     fixVariance: 0
-    aimSpeed: 0
+    aimSpeed: 4
   body:
     strength: 100
     recovery: 10

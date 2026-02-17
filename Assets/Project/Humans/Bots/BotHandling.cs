@@ -1,3 +1,4 @@
+using RootMotion.FinalIK;
 using UnityEngine;
 
 [System.Serializable] public struct HandlingCfg {
@@ -10,14 +11,28 @@ public class BotHandling {
 	private HandlingCfg cfg => ctx.cfg.handling;
 	private Vector3 TargetDir => (target - weapon.transform.position).normalized;
 	private readonly Bot ctx;
-	private bool isAiming;
+	private bool isEquipped, isAiming;
 	private Quaternion weaponRotation;
 	private Vector3 aimDir;
 	private Vector3 target;
+	private float t;
+	private int burst;
+	private float rest;
 
 	public BotHandling(Bot ctx) {
 		this.ctx = ctx;
-		//weaponRotation = weapon.transform.rotation;
+		ctx.equipWeapon.Events.SetCallback(0, () => {
+				AttachToHand();
+				});
+		ctx.equipWeapon.Events.OnEnd = () => { // Todo: make these transitions nicer
+			weapon.transform.SetParent(ctx.weaponContainer); 
+			ctx.upperLayer.StartFade(0);
+			ctx.ik.solver.IKPositionWeight = 1;
+			UpdateWeapon();
+			isEquipped = true;
+		};
+
+		ctx.dequipWeapon.Events.SetCallback(0, Holster);
 	}
 
 	public void FireAt(Vector3 target) {
@@ -31,7 +46,6 @@ public class BotHandling {
 			if (t > rest) {
 				weapon.triggerState = true;
 				aimDir = (TargetDir + Random.insideUnitSphere * cfg.aimError).normalized;
-				//ctx.confidence += 0.025f;
 				t -= 0.25f + 0.15f * (0.5f - Random.value);
 				burst++;
 				if (burst == 3) { 
@@ -43,26 +57,77 @@ public class BotHandling {
 		t += Time.deltaTime;
 	}
 
-	float t;
-	int burst;
-	float rest;
 	public void Tick() {
-		ctx.brain.isArmed = weapon;
-		if (!weapon) return;
+		if (Input.GetKeyDown(KeyCode.X)) {
+			if (isEquipped) { Dequip(); }
+			else { Equip(); }
+		}
+		if (Input.GetKeyDown(KeyCode.Z)) { isAiming = !isAiming; }
 
-		Debug.DrawRay(weapon.muzzle.position, TargetDir * 50, Color.red);
-		Debug.DrawRay(weapon.muzzle.position, aimDir * 50, Color.green);
-		Debug.DrawRay(weapon.muzzle.position, weapon.transform.forward * 50, Color.purple);
-		Transform weaponTarget = ctx.weaponAimPose;
-		//weapon.transform.localPosition = Vector3.Lerp(weapon.transform.localPosition, weaponTarget.localPosition, cfg.aimSpeed * Time.deltaTime);
+		if (!weapon) {
+			Collider[] overlap = Physics.OverlapSphere(ctx.self.Center, 1f); // todo: optimize this
+
+			foreach (Collider col in overlap) {
+				if (col.TryGetComponent(out SimpleFirearm gun)) { 
+					weapon = gun; 
+					weapon.SetDormant(true);
+					ctx.ik.solver.leftHandEffector.target = weapon.foregrip;
+					ctx.ik.solver.rightHandEffector.target = weapon.grip;
+					Holster();
+					ctx.brain.isArmed = true;
+				}
+			}
+		} else if (isEquipped) {
+			Debug.DrawRay(weapon.muzzle.position, TargetDir * 50, Color.red);
+			Debug.DrawRay(weapon.muzzle.position, aimDir * 50, Color.green);
+			Debug.DrawRay(weapon.muzzle.position, weapon.transform.forward * 50, Color.purple);
+			UpdateWeapon();
+		}
+		//isAiming = false; // Must be constantly updated.
+	}
+
+	private void UpdateWeapon() {
+		Transform weaponTarget;
 		if (isAiming) {
+			weaponTarget = ctx.weaponAimPose;
 			Quaternion globalLookRot = Quaternion.LookRotation(aimDir != Vector3.zero ? aimDir : ctx.transform.forward);
 			weaponRotation = Quaternion.Slerp(weaponRotation, globalLookRot, cfg.aimSpeed * Time.deltaTime);
 			ctx.motionController.Focus(target);
 		} else {
+			weaponTarget = ctx.weaponRestPose;
 			weaponRotation = Quaternion.Slerp(weaponRotation, weaponTarget.rotation, cfg.aimSpeed * Time.deltaTime);
 		}
-		//weapon.transform.rotation = weaponRotation;
+		weapon.transform.localPosition = Vector3.Lerp(weapon.transform.localPosition, weaponTarget.localPosition, cfg.aimSpeed * Time.deltaTime);
+		weapon.transform.rotation = weaponRotation;
+	}
+
+	private void Holster() {
+		weapon.transform.SetParent(ctx.weaponContainer);
+		weapon.transform.SetPose(ctx.weaponHolster);
+	}
+
+	private void AttachToHand() {
+		weapon.transform.SetParent(ctx.ik.solver.rightHandEffector.bone);
+		Debug.Log(weapon.transform.parent);
+		Quaternion rotOffset = Quaternion.Inverse(weapon.transform.rotation) * weapon.grip.rotation;
+		weapon.transform.localRotation = Quaternion.Inverse(rotOffset);
+		Vector3 posOffset = weapon.transform.InverseTransformPoint(weapon.grip.position);
+		weapon.transform.localPosition = -(weapon.transform.localRotation * posOffset);
+	}
+
+	public void Dequip() {
+		if (isEquipped) {
+			isEquipped = false;
+			ctx.upperLayer.Play(ctx.dequipWeapon);
+			ctx.ik.solver.IKPositionWeight = 0;
+			AttachToHand();
+		} 
+	}
+
+	public void Equip() {
+		if (!isEquipped) {
+			ctx.upperLayer.Play(ctx.equipWeapon);
+		}
 	}
 
 	public void ADS(bool state) { isAiming = state; }

@@ -9,6 +9,7 @@ public class SimpleFirearm : GrabInteractable {
 	[SerializeField] int capacity;
 	[SerializeField] EventReference shot;
 	[SerializeField] ProjectileData projectile;
+	public Transform grip, foregrip;
 	private float fireTime;
 
 	private void Awake() {

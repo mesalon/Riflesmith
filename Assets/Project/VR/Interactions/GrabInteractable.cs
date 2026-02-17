@@ -56,6 +56,9 @@ public class GrabInteractable : MonoBehaviour, IInteractable {
 		root.localRotation = Quaternion.identity;
 		rb.isKinematic = t != null;
 	}
+	public void SetDormant(bool state) {
+		rb.isKinematic = state;
+	}
 }
 		//        if (Interactor.other.held is GrabInteractable s && s.transform.root == transform.root && priority > s.priority) {
 		//            Vector3 gripOffset = s.grabPoint.position - grabPoint.position;

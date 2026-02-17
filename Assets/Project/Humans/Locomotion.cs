@@ -1,10 +1,12 @@
 using UnityEngine;
 
 public class Locomotion {
+	private Human ctx;
 	private CharacterController cc;
 	private float yVelocity;
 
 	public Locomotion(Human ctx) {
+		this.ctx = ctx;
 		cc = ctx.GetComponent<CharacterController>();
 	}
 

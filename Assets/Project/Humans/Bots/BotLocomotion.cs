@@ -40,6 +40,7 @@ public class BotLocomotion {
 	}
 
 	public void Tick() {
+		return;
 		Vector3 moveInput = Vector3.zero;
 		if (path != null) {
 			if (cornerIdx < path.vectorPath.Count) {
@@ -55,18 +56,17 @@ public class BotLocomotion {
 		Debug.DrawRay(ctx.transform.position, moveInput * 5, Color.green);
 		Vector3 movement = ctx.transform.InverseTransformDirection(moveInput);
 		Debug.DrawRay(ctx.transform.position + Vector3.up * 0.1f, movement * 5, Color.blue);
-		ctx.self.anim.SetFloat("MoveX", movement.x, 0.1f, Time.deltaTime);
-		ctx.self.anim.SetFloat("MoveY", movement.z, 0.1f, Time.deltaTime);
 
 		isStrafing = false;
 	}
+
 
 	public void AnimatorMove() {
 		pitch = Mathf.Lerp(pitch, pitchTarget, cfg.turnSpeed * Time.deltaTime);
 		yaw = Mathf.Lerp(yaw, yawTarget, cfg.turnSpeed * Time.deltaTime);
 		ctx.ikLookTarget.position = ctx.eyes.position + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * 5;
 		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, Quaternion.Euler(0, yaw, 0), cfg.turnSpeed * Time.deltaTime);
-		ctx.self.locomotion.MoveDirect(ctx.self.anim.deltaPosition);
+		//ctx.self.locomotion.MoveDirect(ctx.self.anim.deltaPosition);
 	}
 
 	public void Move(Vector3 destination, Pace pace) {

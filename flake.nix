@@ -17,7 +17,7 @@
 			libGL
 			harfbuzz
 			pango
-			libgcc
+			stdenv.cc.cc.lib
 			udev
 			libx11
 			libxcursor
