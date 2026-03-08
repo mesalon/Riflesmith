@@ -1,6 +1,6 @@
+using UnityEditor;
 using UnityEngine;
 using System.Linq;
-using UnityEditor;
 
 public class GameManager : MonoBehaviour {
 	public static Camera Camera => Camera.allCameras
@@ -19,10 +19,10 @@ public class GameManager : MonoBehaviour {
 
 	private void LateUpdate() {
 		float dt = Time.deltaTime;
+		Ext.labelQueue.RemoveAll(r => r.lifespan < 0);
 		for (int i = Ext.labelQueue.Count - 1; i >= 0; i--) { Ext.labelQueue[i].lifespan -= dt; }
-		Ext.labelQueue.RemoveAll(r => r.lifespan <= 0);
+		Ext.drawQueue.RemoveAll(r => r.lifespan < 0);
 		for (int i = Ext.drawQueue.Count - 1; i >= 0; i--) { Ext.drawQueue[i].lifespan -= dt; }
-		Ext.drawQueue.RemoveAll(r => r.lifespan <= 0);
 	}
 
 #if UNITY_EDITOR

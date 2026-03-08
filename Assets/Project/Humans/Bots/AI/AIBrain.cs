@@ -28,18 +28,18 @@ public class AIBrain {
 		};
 	}
 
-	private void FixedUpdate() {
+	public void FixedTick() {
 		if (target) {
 			targetLKP = target.Center;
+			if (!ctx.vision.HasLOS(target)) {
+				target = null;
+				if (expectsToSeeTarget) LKPAge += Time.fixedDeltaTime;
+			}
 		} else {
 			if (ctx.runVision && ctx.body.isUp && ctx.vision.Tick(out Human target)) { 
 				this.target = target; 
 				LKPAge = 0;
 			}
-		}
-		if (!ctx.vision.HasLOS(target)) {
-			target = null;
-			if (expectsToSeeTarget) LKPAge += Time.fixedDeltaTime;
 		}
 	}
 

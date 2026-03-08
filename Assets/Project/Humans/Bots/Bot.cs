@@ -23,18 +23,18 @@ public class Bot : Interactor {
 	public Transform rightHand;
 	public bool runLocomotion = true, runVision = true, runBody = true, runBrain = true, runHandling = true;
 
+	public FullBodyBipedIK ik;
+
+	public AnimancerComponent anim;
 	public TransitionAsset mixer;
 	public SmoothedVector2Parameter moveParam;
-	public AnimancerComponent anim;
 	public AnimancerLayer upperLayer;
 	public AnimancerLayer lowerLayer;
 	public ClipTransition equipWeapon;
 	public ClipTransition dequipWeapon;
-	public FullBodyBipedIK ik;
-	[SerializeField] ClipTransition aim;
-	[SerializeField] AvatarMask mask;
-	[SerializeField] StringAsset moveX, moveY;
-	public StringAsset eqDequip;
+	public ClipTransition aim;
+	public AvatarMask mask;
+	public StringAsset moveX, moveY;
 
 	public BotVision vision;
 	public BotBody body;
@@ -42,47 +42,19 @@ public class Bot : Interactor {
 	public BotLocomotion motionController;
 	public AIBrain brain;
 	[HideInInspector] public Human self;
+	[SerializeField] RootMotionRedirect redirect;
 
 	private void Awake() {
-		lowerLayer = anim.Layers[0];
-		upperLayer = anim.Layers[1];
-		upperLayer.Mask = mask;
-		equipWeapon.Events.OnEnd = dequipWeapon.Events.OnEnd = OnActionEnd;
-    moveParam = new SmoothedVector2Parameter(
-        anim,
-        moveX,
-        moveY,
-        0.1f);
 		self = GetComponent<Human>();
 		motionController = new(this);
 		vision = new(this);
 		handling = new(this);
 		brain = new(this);
 		body = new();
-
+		redirect.target = motionController;
 	}
 
 	private void Update() {
-		//upperLayer.Play(aim);
-		anim.Play(mixer);
-
-		//pitch += Input.GetAxis("Mouse Y");
-		//yaw += Input.GetAxis("Mouse X");
-		Vector2 moveDir = new Vector2(
-				-(Input.GetKey(KeyCode.A) ? 1 : 0) + (Input.GetKey(KeyCode.D) ? 1 : 0),
-				-(Input.GetKey(KeyCode.S) ? 1 : 0) + (Input.GetKey(KeyCode.W) ? 1 : 0));
-		//moveDir = Vector2.ClampMagnitude(moveDir, 1);
-
-		moveParam.TargetValue = moveDir;
-
-		float maxComponent = Mathf.Max(Mathf.Abs(moveDir.x), Mathf.Abs(moveDir.y));
-		if (maxComponent > float.Epsilon) {
-			float speedMultiplier = moveDir.magnitude / maxComponent;
-			mixer.Speed = speedMultiplier;
-		}
-		else {
-			mixer.Speed = 1f;
-		}
 		if (body.isUp) {
 			if (runLocomotion) motionController.Tick();
 			if (runHandling) handling.Tick();
@@ -90,14 +62,15 @@ public class Bot : Interactor {
 		}
 	}
 
+	private void FixedUpdate() {
+		if (runBrain) brain.FixedTick();
+	}
+
 	public void Damage(float amount) {
 		Damage(amount);
 		body.strength = Mathf.Max(0, body.strength - amount);
 	}
 
-	private void OnActionEnd() {
-		upperLayer.StartFade(0, 0.25f);
-	}
 }
 
 #if UNITY_EDITOR
