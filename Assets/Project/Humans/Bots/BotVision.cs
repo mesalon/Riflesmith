@@ -44,8 +44,9 @@ using static UnityEngine.Vector3;
 
 public class BotVision {
 	public bool HasLOS(Human to) => !Physics.Linecast(ctx.eyes.position, to.Center, out var _, cfg.visionMask);
+
 	private VisionCfg cfg => ctx.cfg.vision;
-	private Bot ctx;
+	private readonly Bot ctx;
 	private readonly float maxAngleCos;
 	private float accumulator;
 	private Vector3? lastPlayerPos;
@@ -60,8 +61,8 @@ public class BotVision {
 		Human target = null;
 		Vector3 eyePos = ctx.eyes.position; 
 		foreach(Collider col in Physics.OverlapSphere(eyePos, cfg.sightRange)) {
-			if (col.TryGetComponent(out Human a)) {
-				target = a;
+			if (col.TryGetComponent(out Human h) && h != ctx.self) {
+				target = h;
 				break;
 			}
 		}

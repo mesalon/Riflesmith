@@ -36,7 +36,6 @@ public class BotHandling {
 	}
 
 	public void FireAt(Vector3 target) {
-		Debug.Log("Firing!");
 		ADS(true);
 		if (this.target != target) {
 			this.target = target;
@@ -58,12 +57,6 @@ public class BotHandling {
 	}
 
 	public void Tick() {
-		if (Input.GetKeyDown(KeyCode.X)) {
-			if (isEquipped) { Dequip(); }
-			else { Equip(); }
-		}
-		if (Input.GetKeyDown(KeyCode.Z)) { isAiming = !isAiming; }
-
 		if (!weapon) {
 			Collider[] overlap = Physics.OverlapSphere(ctx.self.Center, 1f); // todo: optimize this
 
@@ -73,8 +66,9 @@ public class BotHandling {
 					weapon.SetDormant(true);
 					ctx.ik.solver.leftHandEffector.target = weapon.foregrip;
 					ctx.ik.solver.rightHandEffector.target = weapon.grip;
-					Holster();
 					ctx.brain.isArmed = true;
+					Holster();
+					Equip();
 				}
 			}
 		} else if (isEquipped) {
@@ -108,7 +102,6 @@ public class BotHandling {
 
 	private void AttachToHand() {
 		weapon.transform.SetParent(ctx.ik.solver.rightHandEffector.bone);
-		Debug.Log(weapon.transform.parent);
 		Quaternion rotOffset = Quaternion.Inverse(weapon.transform.rotation) * weapon.grip.rotation;
 		weapon.transform.localRotation = Quaternion.Inverse(rotOffset);
 		Vector3 posOffset = weapon.transform.InverseTransformPoint(weapon.grip.position);

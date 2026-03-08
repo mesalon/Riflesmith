@@ -1,5 +1,6 @@
 using UnityEngine;
 using Pathfinding;
+using Animancer;
 
 [System.Serializable] public struct LocomotionCfg {
 	public float slowWalkSpeed, walkSpeed, jogSpeed, runSpeed, sprintSpeed;
@@ -19,6 +20,16 @@ public enum Pace { SlowWalk, Walk, Jog, Run, Sprint }
 
 public class BotLocomotion {
 	private LocomotionCfg cfg => ctx.cfg.locomotion;
+	private AnimancerComponent anim => ctx.anim;
+	private AnimancerLayer upperLayer => ctx.upperLayer;
+	private ClipTransition equipWeapon => ctx.equipWeapon;
+	private ClipTransition dequipWeapon => ctx.dequipWeapon;
+	private SmoothedVector2Parameter moveParam => ctx.moveParam;
+	private AvatarMask mask => ctx.mask;
+	private StringAsset moveX => ctx.moveX;
+	private StringAsset moveY => ctx.moveY;
+	private TransitionAsset mixer => ctx.mixer;
+
 	private readonly Bot ctx;
 
 	public bool Arrived => path == null;
@@ -37,10 +48,19 @@ public class BotLocomotion {
 		Quaternion rot = ctx.transform.rotation;
 		pitch = pitchTarget = rot.eulerAngles.x.NormalizeAngle();
 		yaw = yawTarget = rot.eulerAngles.y.NormalizeAngle();
+
+		ctx.lowerLayer = anim.Layers[0];
+		ctx.upperLayer = anim.Layers[1];
+		upperLayer.Mask = mask;
+		equipWeapon.Events.OnEnd = dequipWeapon.Events.OnEnd = OnActionEnd;
+    ctx.moveParam = new SmoothedVector2Parameter(
+        anim,
+        moveX,
+        moveY,
+        0.1f);
 	}
 
 	public void Tick() {
-		return;
 		Vector3 moveInput = Vector3.zero;
 		if (path != null) {
 			if (cornerIdx < path.vectorPath.Count) {
@@ -53,20 +73,28 @@ public class BotLocomotion {
 				path = null;
 			}
 		}
+		moveInput = ctx.transform.InverseTransformDirection(moveInput);
 		Debug.DrawRay(ctx.transform.position, moveInput * 5, Color.green);
-		Vector3 movement = ctx.transform.InverseTransformDirection(moveInput);
-		Debug.DrawRay(ctx.transform.position + Vector3.up * 0.1f, movement * 5, Color.blue);
+		ctx.anim.Play(ctx.mixer);
+		moveParam.TargetValue = new(moveInput.x, moveInput.z);
 
+		// Fix diagonal speed.... I think
+		float maxComponent = Mathf.Max(Mathf.Abs(moveInput.x), Mathf.Abs(moveInput.z));
+		if (maxComponent > float.Epsilon) {
+			float speedMultiplier = moveInput.magnitude / maxComponent;
+			mixer.Speed = speedMultiplier;
+		}
+		else { mixer.Speed = 1f; }
 		isStrafing = false;
 	}
 
 
-	public void AnimatorMove() {
+	public void AnimatorMove(Animator anim) {
 		pitch = Mathf.Lerp(pitch, pitchTarget, cfg.turnSpeed * Time.deltaTime);
 		yaw = Mathf.Lerp(yaw, yawTarget, cfg.turnSpeed * Time.deltaTime);
 		ctx.ikLookTarget.position = ctx.eyes.position + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * 5;
 		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, Quaternion.Euler(0, yaw, 0), cfg.turnSpeed * Time.deltaTime);
-		//ctx.self.locomotion.MoveDirect(ctx.self.anim.deltaPosition);
+		ctx.self.locomotion.MoveDirect(anim.deltaPosition);
 	}
 
 	public void Move(Vector3 destination, Pace pace) {
@@ -104,5 +132,10 @@ public class BotLocomotion {
 		yawTarget = rot.eulerAngles.y.NormalizeAngle();
 		if (engageStrafe) isStrafing = true;
 	}
+
 	public void Focus(Vector3 target, bool engageStrafe = true) { FocusAt(target - ctx.eyes.position, engageStrafe); }
+
+	private void OnActionEnd() {
+		upperLayer.StartFade(0, 0.25f);
+	}
 }

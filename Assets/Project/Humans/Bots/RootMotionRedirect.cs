@@ -1,16 +1,14 @@
 using UnityEngine;
 
-public class RootMotionRedirect : MonoBehaviour
-{
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+public class RootMotionRedirect : MonoBehaviour {
+	public BotLocomotion target;
+	private Animator anim;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	private void Awake() {
+		anim = GetComponent<Animator>();
+	}
+
+	public void OnAnimatorMove() {
+		target.AnimatorMove(anim);
+	}
 }
