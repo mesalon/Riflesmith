@@ -8,7 +8,8 @@ public class AIBrain {
 	private Bot ctx;
 
 	public CoverQuery cover;
-	public Human target;
+	public Human targetInSight;
+	public Vector3? currentCover;
 	public Vector3? aimFocus;
 	public Vector3? targetLKP;
 	public float confidence, alertness, suppression;
@@ -29,15 +30,15 @@ public class AIBrain {
 	}
 
 	public void FixedTick() {
-		if (target) {
-			targetLKP = target.Center;
-			if (!ctx.vision.HasLOS(target)) {
-				target = null;
+		if (targetInSight) {
+			targetLKP = targetInSight.Center;
+			if (!ctx.vision.HasLOS(targetInSight)) {
+				targetInSight = null;
 				if (expectsToSeeTarget) LKPAge += Time.fixedDeltaTime;
 			}
 		} else {
 			if (ctx.runVision && ctx.body.isUp && ctx.vision.Tick(out Human target)) { 
-				this.target = target; 
+				this.targetInSight = target; 
 				LKPAge = 0;
 			}
 		}

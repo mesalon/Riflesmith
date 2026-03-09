@@ -1,26 +1,28 @@
 using UnityEngine;
 
-public class ShootAction : AIAction {
+public class MoveToCoverAction : AIAction {
 	private readonly Bot ctx;
 	private AIBrain brain => ctx.brain;
-
-	public ShootAction(Bot ctx) {
+	public MoveToCoverAction(Bot ctx) {
 		this.ctx = ctx;
 	}
 
 	public override float GetScore() {
-		return brain.targetInSight ? 1 : 0;
+		return 0;
 	}
 
 	public override void Enter() {
-		ctx.motionController.Stop();
 	}
 
 	public override void Tick() {
-		ctx.handling.FireAt(brain.targetInSight.Center); 
+		if (brain.currentCover == null) {
+			if (brain.cover.TryGetCover(out CoverTask cover)) {
+			} else {
+				brain.cover.Search();
+			}
+		}
 	}
 
 	public override void Exit() {
-		ctx.handling.ADS(false);
 	}
 }

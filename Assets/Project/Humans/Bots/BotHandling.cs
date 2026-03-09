@@ -1,4 +1,3 @@
-using RootMotion.FinalIK;
 using UnityEngine;
 
 [System.Serializable] public struct HandlingCfg {
@@ -72,10 +71,11 @@ public class BotHandling {
 				}
 			}
 		} else if (isEquipped) {
+			UpdateWeapon();
+			return;
 			Debug.DrawRay(weapon.muzzle.position, TargetDir * 50, Color.red);
 			Debug.DrawRay(weapon.muzzle.position, aimDir * 50, Color.green);
 			Debug.DrawRay(weapon.muzzle.position, weapon.transform.forward * 50, Color.purple);
-			UpdateWeapon();
 		}
 		//isAiming = false; // Must be constantly updated.
 	}

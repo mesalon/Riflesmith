@@ -49,7 +49,7 @@ public class BotVision {
 	private readonly Bot ctx;
 	private readonly float maxAngleCos;
 	private float accumulator;
-	private Vector3? lastPlayerPos;
+	private Vector3? lastTargetPos;
 
 	public BotVision(Bot ctx) {
 		this.ctx = ctx;
@@ -68,14 +68,15 @@ public class BotVision {
 		}
 
 		if (target && target.isActiveAndEnabled) {
-			Vector3 playerPos = target.Center;
-			Vector3 playerDir = (playerPos - eyePos).normalized;
+			Vector3 targetPos = target.Center;
+			Vector3 targetDir = (targetPos - eyePos).normalized;
 			if (HasLOS(target)) {
-				Vector3 lpd = lastPlayerPos.HasValue ? (lastPlayerPos.Value - eyePos).normalized : playerDir;
-				float motion = InverseLerp(0, cfg.maxAngleDetection, Angle(playerDir, lpd) / Time.fixedDeltaTime);
-				float angle = Angle(ctx.eyes.forward, playerDir);
-				if (ComputeRate(Distance(eyePos, playerPos), Dot(ctx.eyes.forward, playerDir), angle, motion, out float rate)) {
-					lastPlayerPos = playerPos;
+				Vector3 lpd = lastTargetPos.HasValue ? (lastTargetPos.Value - eyePos).normalized : targetDir;
+				float motion = InverseLerp(0, cfg.maxAngleDetection, Angle(targetDir, lpd) / Time.fixedDeltaTime);
+				float angle = Angle(ctx.eyes.forward, targetDir);
+				Debug.DrawRay(ctx.eyes.position, ctx.eyes.forward, Color.green);
+				if (ComputeRate(Distance(eyePos, targetPos), Dot(ctx.eyes.forward, targetDir), angle, motion, out float rate)) {
+					lastTargetPos = targetPos;
 					accumulator += rate * Time.fixedDeltaTime;
 					if (accumulator >= 1) {
 						accumulator = 0;
@@ -86,11 +87,11 @@ public class BotVision {
 					if (cfg.visualDebug) {
 						Color alpha = new(1, 1, 1, 0.5f);
 						Color c = ColorForRate(rate);
-						Ext.DrawCubeLine(ctx.eyes.position, playerPos, c * alpha, Time.fixedDeltaTime);
+						Ext.DrawCubeLine(ctx.eyes.position, targetPos, c * alpha, Time.fixedDeltaTime);
 						Ext.DrawCubeRay(target.transform.position, accumulator * (2 * up), c, Time.fixedDeltaTime, 0.5f);
 					}
 				} else {
-					lastPlayerPos = null;
+					lastTargetPos = null;
 				}
 			}
 		}
