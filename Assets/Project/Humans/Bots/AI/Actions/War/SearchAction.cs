@@ -12,7 +12,7 @@ public class SearchAction : AIAction {
 	}
 
 	public override void Enter() {
-		ctx.motionController.Move(brain.targetLKP.Value, Pace.Jog);
+		ctx.motion.Move(brain.targetLKP.Value, Pace.Jog);
 	}
 	public override void Tick() {
 	}

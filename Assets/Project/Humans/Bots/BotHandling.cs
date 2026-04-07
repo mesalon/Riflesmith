@@ -86,7 +86,7 @@ public class BotHandling {
 			weaponTarget = ctx.weaponAimPose;
 			Quaternion globalLookRot = Quaternion.LookRotation(aimDir != Vector3.zero ? aimDir : ctx.transform.forward);
 			weaponRotation = Quaternion.Slerp(weaponRotation, globalLookRot, cfg.aimSpeed * Time.deltaTime);
-			ctx.motionController.Focus(target);
+			ctx.motion.Focus(target);
 		} else {
 			weaponTarget = ctx.weaponRestPose;
 			weaponRotation = Quaternion.Slerp(weaponRotation, weaponTarget.rotation, cfg.aimSpeed * Time.deltaTime);

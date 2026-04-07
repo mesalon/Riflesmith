@@ -13,7 +13,7 @@ public class ShootAction : AIAction {
 	}
 
 	public override void Enter() {
-		ctx.motionController.Stop();
+		ctx.motion.Stop();
 	}
 
 	public override void Tick() {

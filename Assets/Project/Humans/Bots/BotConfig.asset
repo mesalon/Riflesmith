@@ -77,9 +77,11 @@ MonoBehaviour:
     jogSpeed: 2
     runSpeed: 3.5
     sprintSpeed: 6
-    turnSpeed: 4
+    turnSpeed: 0.6
     lookSpeed: 2
     minAimDistance: 2
+    bodyTurnTrigger: 60
+    bodyTurnCorrection: 1
   cover:
     range: 10
     navRange: 15

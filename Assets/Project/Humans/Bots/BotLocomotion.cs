@@ -7,12 +7,15 @@ using Animancer;
 	public float turnSpeed;
 	public float lookSpeed;
 	public float minAimDistance;
+	public float bodyTurnTrigger, bodyTurnCorrection;
 
 	public static readonly LocomotionCfg Default = new() {
 		slowWalkSpeed = 0.75f, walkSpeed = 1.25f, jogSpeed = 2, runSpeed = 3.5f, sprintSpeed = 6,
 		turnSpeed = 4,
 		lookSpeed = 4,
 		minAimDistance = 2,
+		bodyTurnCorrection = 50,
+		bodyTurnTrigger = 1.8f,
 	};
 }
 
@@ -36,18 +39,16 @@ public class BotLocomotion {
 	private Seeker seeker;
 	private Path path;
 	private Vector3 destination;
-	private float pitch, yaw;
-	private float pitchTarget, yawTarget;
 	private int cornerIdx;
 	private bool isStrafing;
 	private float speed;
+	private Vector3 lookDirection;
 
 	public BotLocomotion(Bot ctx) {
 		this.ctx = ctx;
 		seeker = ctx.GetComponent<Seeker>();
 		Quaternion rot = ctx.transform.rotation;
-		pitch = pitchTarget = rot.eulerAngles.x.NormalizeAngle();
-		yaw = yawTarget = rot.eulerAngles.y.NormalizeAngle();
+		lookDirection = ctx.transform.forward;
 
 		ctx.lowerLayer = anim.Layers[0];
 		ctx.upperLayer = anim.Layers[1];
@@ -68,7 +69,8 @@ public class BotLocomotion {
 				moveInput = dir * speed;
 				Vector3 pathDirection = (path.vectorPath[cornerIdx] - path.vectorPath[cornerIdx - 1]).FlattenY().normalized;
 				if (Vector3.Dot((ctx.transform.position - path.vectorPath[cornerIdx]).FlattenY().normalized, pathDirection) >= 0) { cornerIdx++; }
-				if (!isStrafing) FocusAt(pathDirection, false);
+				ctx.transform.rotation = Quaternion.RotateTowards(ctx.transform.rotation, Quaternion.LookRotation(pathDirection), cfg.turnSpeed);
+				FocusAt(pathDirection, false);
 			} else {
 				path = null;
 			}
@@ -85,16 +87,15 @@ public class BotLocomotion {
 			mixer.Speed = speedMultiplier;
 		}
 		else { mixer.Speed = 1f; }
-		isStrafing = false;
 	}
-
-
+	
 	public void AnimatorMove(Animator anim) {
-		pitch = Mathf.Lerp(pitch, pitchTarget, cfg.turnSpeed * Time.deltaTime);
-		yaw = Mathf.Lerp(yaw, yawTarget, cfg.turnSpeed * Time.deltaTime);
-		ctx.ikLookTarget.position = ctx.eyes.position + Quaternion.Euler(pitch, yaw, 0) * Vector3.forward * 5;
-		ctx.transform.rotation = Quaternion.Lerp(ctx.transform.rotation, Quaternion.Euler(0, yaw.NormalizeAngle(), 0), cfg.turnSpeed * Time.deltaTime);
 		ctx.self.locomotion.MoveDirect(anim.deltaPosition);
+		Quaternion rotTarget = Quaternion.Euler(0, lookDirection.y, 0);
+		ctx.ikLookTarget.position = ctx.eyes.position + rotTarget * Vector3.forward * 5;
+		if (!isStrafing) { ctx.transform.rotation = Quaternion.RotateTowards(ctx.transform.rotation, rotTarget, cfg.turnSpeed); }
+		isStrafing = false;
+		Debug.DrawRay(ctx.eyes.position, lookDirection, Color.blue);
 	}
 
 	public void Move(Vector3 destination, Pace pace) {
@@ -108,7 +109,12 @@ public class BotLocomotion {
 		};
 		Move(destination, speed);
 	}
-	public void Move(Vector3 destination, float speed) {
+
+	public void MoveDirect(Vector2 input) {
+		moveParam.TargetValue = new(input.x, input.y);
+	}
+
+	private void Move(Vector3 destination, float speed) {
 		if (this.destination != destination) {
 			seeker.StartPath(ctx.transform.position, destination, OnPathComplete);
 			this.destination = destination;
@@ -126,14 +132,11 @@ public class BotLocomotion {
 		else { Debug.Log($"Error occured during OnPathComplete ({p.error})"); }
 	}
 
+	public void Focus(Vector3 target, bool engageStrafe = true) { FocusAt(target - ctx.transform.position, engageStrafe); }
 	public void FocusAt(Vector3 direction, bool engageStrafe = true) {
-		Quaternion rot = Quaternion.LookRotation(direction);
-		pitchTarget = rot.eulerAngles.x.NormalizeAngle();
-		yawTarget = rot.eulerAngles.y.NormalizeAngle();
+		lookDirection = direction;
 		if (engageStrafe) isStrafing = true;
 	}
-
-	public void Focus(Vector3 target, bool engageStrafe = true) { FocusAt(target - ctx.eyes.position, engageStrafe); }
 
 	private void OnActionEnd() {
 		upperLayer.StartFade(0, 0.25f);

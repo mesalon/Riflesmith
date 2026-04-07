@@ -15,7 +15,7 @@ public class MoveUpAction : AIAction {
 	}
 
 	public override void Enter() {
-		ctx.motionController.Stop();
+		ctx.motion.Stop();
 		advance = ctx.transform.position + (brain.targetLKP.Value - ctx.transform.position).normalized * 5;
 		CoverParams cfg = CoverParams.Default;
 		ctx.handling.ADS(true);
@@ -27,7 +27,7 @@ public class MoveUpAction : AIAction {
 	public override void Tick() {
 		Ext.DrawCube(advance, Quaternion.identity, Vector3.one * 0.25f, Color.gold);
 		if (brain.cover.TryGetCover(out CoverTask cover)) {
-			ctx.motionController.Move(cover.point.position, Pace.Jog);
+			ctx.motion.Move(cover.point.position, Pace.Jog);
 			ctx.handling.FireAt(brain.targetLKP.Value);
 
 			if ((cover.point.position - ctx.transform.position).sqrMagnitude < 0.01f) { brain.confidence -= 0.5f; }

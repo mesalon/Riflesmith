@@ -39,27 +39,33 @@ public class Bot : Interactor {
 	public BotVision vision;
 	public BotBody body;
 	public BotHandling handling;
-	public BotLocomotion motionController;
+	public BotLocomotion motion;
 	public AIBrain brain;
 	[HideInInspector] public Human self;
 	[SerializeField] RootMotionRedirect redirect;
 
 	private void Awake() {
 		self = GetComponent<Human>();
-		motionController = new(this);
+		motion = new(this);
 		vision = new(this);
 		handling = new(this);
 		brain = new(this);
 		body = new();
-		redirect.target = motionController;
+		redirect.target = motion;
 	}
 
 	private void Update() {
+		//motion.pitch += Input.GetAxis("Mouse Y") * 3;
+		//Ext.Label(eyes.position + Vector3.up * 0.1f, $"pitch: {motion.pitch} yaw: {motion.yaw} bod: {transform.rotation.eulerAngles.y}");
+		Vector2 moveDir = new Vector2(
+				-(Input.GetKey(KeyCode.A) ? 1 : 0) + (Input.GetKey(KeyCode.D) ? 1 : 0),
+				-(Input.GetKey(KeyCode.S) ? 1 : 0) + (Input.GetKey(KeyCode.W) ? 1 : 0));
 		if (body.isUp) {
-			if (runLocomotion) motionController.Tick();
+			if (runLocomotion) motion.Tick();
 			if (runHandling) handling.Tick();
 			if (runBrain) brain.Tick();
 		}
+		motion.MoveDirect(moveDir);
 	}
 
 	private void FixedUpdate() {
