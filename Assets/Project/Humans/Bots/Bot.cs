@@ -56,16 +56,17 @@ public class Bot : Interactor {
 
 	private void Update() {
 		//motion.pitch += Input.GetAxis("Mouse Y") * 3;
-		//Ext.Label(eyes.position + Vector3.up * 0.1f, $"pitch: {motion.pitch} yaw: {motion.yaw} bod: {transform.rotation.eulerAngles.y}");
-		Vector2 moveDir = new Vector2(
+		motion.MoveDirect(new Vector2(
 				-(Input.GetKey(KeyCode.A) ? 1 : 0) + (Input.GetKey(KeyCode.D) ? 1 : 0),
-				-(Input.GetKey(KeyCode.S) ? 1 : 0) + (Input.GetKey(KeyCode.W) ? 1 : 0));
+				-(Input.GetKey(KeyCode.S) ? 1 : 0) + (Input.GetKey(KeyCode.W) ? 1 : 0)));
+		if (Input.GetMouseButtonDown(0) && Physics.Raycast(GameManager.Camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit)) {
+			motion.Move(hit.point, Pace.Jog);
+		}
 		if (body.isUp) {
 			if (runLocomotion) motion.Tick();
 			if (runHandling) handling.Tick();
 			if (runBrain) brain.Tick();
 		}
-		motion.MoveDirect(moveDir);
 	}
 
 	private void FixedUpdate() {

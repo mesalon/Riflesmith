@@ -54,14 +54,16 @@ public class BotLocomotion {
 		ctx.upperLayer = anim.Layers[1];
 		upperLayer.Mask = mask;
 		equipWeapon.Events.OnEnd = dequipWeapon.Events.OnEnd = OnActionEnd;
-    ctx.moveParam = new SmoothedVector2Parameter(
-        anim,
-        moveX,
-        moveY,
-        0.1f);
+		ctx.moveParam = new SmoothedVector2Parameter(
+				anim,
+				moveX,
+				moveY,
+				0.1f);
 	}
 
+	bool state = false;
 	public void Tick() {
+		Debug.DrawRay(ctx.eyes.position, lookDirection.normalized, Color.blue);
 		Vector3 moveInput = Vector3.zero;
 		if (path != null) {
 			if (cornerIdx < path.vectorPath.Count) {
@@ -69,14 +71,18 @@ public class BotLocomotion {
 				moveInput = dir * speed;
 				Vector3 pathDirection = (path.vectorPath[cornerIdx] - path.vectorPath[cornerIdx - 1]).FlattenY().normalized;
 				if (Vector3.Dot((ctx.transform.position - path.vectorPath[cornerIdx]).FlattenY().normalized, pathDirection) >= 0) { cornerIdx++; }
-				ctx.transform.rotation = Quaternion.RotateTowards(ctx.transform.rotation, Quaternion.LookRotation(pathDirection), cfg.turnSpeed);
-				FocusAt(pathDirection, false);
+				if (Input.GetKeyDown(KeyCode.L)) { state = !state; }
+				if (state) {
+					lookDirection = Quaternion.AngleAxis(180 * Time.deltaTime, Vector3.up) * lookDirection;
+				} else {
+					ctx.transform.rotation = Quaternion.RotateTowards(ctx.transform.rotation, Quaternion.LookRotation(pathDirection), cfg.turnSpeed);
+				}
+				//FocusAt(pathDirection, false);
 			} else {
 				path = null;
 			}
 		}
 		moveInput = ctx.transform.InverseTransformDirection(moveInput);
-		Debug.DrawRay(ctx.transform.position, moveInput * 5, Color.green);
 		ctx.anim.Play(ctx.mixer);
 		moveParam.TargetValue = new(moveInput.x, moveInput.z);
 
@@ -88,14 +94,15 @@ public class BotLocomotion {
 		}
 		else { mixer.Speed = 1f; }
 	}
-	
+
 	public void AnimatorMove(Animator anim) {
 		ctx.self.locomotion.MoveDirect(anim.deltaPosition);
-		Quaternion rotTarget = Quaternion.Euler(0, lookDirection.y, 0);
-		ctx.ikLookTarget.position = ctx.eyes.position + rotTarget * Vector3.forward * 5;
-		if (!isStrafing) { ctx.transform.rotation = Quaternion.RotateTowards(ctx.transform.rotation, rotTarget, cfg.turnSpeed); }
+		ctx.ikLookTarget.position = ctx.eyes.position + lookDirection * 5;
+		if (!isStrafing) {
+			ctx.transform.rotation = Quaternion.RotateTowards(ctx.transform.rotation, Quaternion.LookRotation(lookDirection), cfg.turnSpeed);
+			Ext.Label(ctx.eyes.position, $"spinning? {state}");
+		}
 		isStrafing = false;
-		Debug.DrawRay(ctx.eyes.position, lookDirection, Color.blue);
 	}
 
 	public void Move(Vector3 destination, Pace pace) {
