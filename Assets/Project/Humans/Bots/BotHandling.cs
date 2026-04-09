@@ -40,7 +40,7 @@ public class BotHandling {
 			this.target = target;
 			aimDir = (TargetDir + Random.insideUnitSphere * cfg.aimError).normalized;
 		}
-		if (Vector3.Angle(weapon.transform.forward, aimDir) < 5 && !Physics.Linecast(weapon.muzzle.position, target, out var _, ProjectileManager.I.mask)) {
+		if (Vector3.Angle(weapon.transform.forward, aimDir) < 5 && !Physics.Raycast(weapon.muzzle.position, weapon.muzzle.forward, out var _, ProjectileManager.I.mask)) {
 			if (t > rest) {
 				weapon.triggerState = true;
 				aimDir = (TargetDir + Random.insideUnitSphere * cfg.aimError).normalized;
@@ -72,7 +72,6 @@ public class BotHandling {
 			}
 		} else if (isEquipped) {
 			UpdateWeapon();
-			return;
 			Debug.DrawRay(weapon.muzzle.position, TargetDir * 50, Color.red);
 			Debug.DrawRay(weapon.muzzle.position, aimDir * 50, Color.green);
 			Debug.DrawRay(weapon.muzzle.position, weapon.transform.forward * 50, Color.purple);

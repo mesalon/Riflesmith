@@ -13,27 +13,27 @@ public class Projectile {
 		velocity = direction.normalized * data.maxSpeed;
 	}
 
-	public void Tick(ProjectileManager p, out bool destroyProjectile) {
+	public void Tick(ProjectileManager pm, out bool destroyProjectile) {
 		destroyProjectile = false;
 		lastPosition = position;
 		velocity += Physics.gravity * Time.deltaTime;
 		position += velocity * Time.deltaTime;
 
-		if (p.showDebugTracers) {
-			float time = p.debugTracerTime == 0 ? Time.deltaTime : p.debugTracerTime;
-			Color col = Physics.Linecast(lastPosition, position, out _) ? Color.red : p.debugTracerColor;
+		if (pm.showDebugTracers) {
+			float time = pm.debugTracerTime == 0 ? Time.deltaTime : pm.debugTracerTime;
+			Color col = Physics.Linecast(lastPosition, position, out _) ? Color.red : pm.debugTracerColor;
 			Debug.DrawLine(lastPosition, position, col, time);
 		}
 
 		Vector3 end = position - lastPosition;
-		RaycastHit[] hits = Physics.RaycastAll(lastPosition, end, end.magnitude, p.mask);
+		RaycastHit[] hits = Physics.RaycastAll(lastPosition, end, end.magnitude, pm.mask);
 		
 		foreach (RaycastHit hit in hits) {
 			if (hit.transform.TryGetComponent(out IDamageable dmg)) { dmg.Damage(data.damage); }
 			if (hit.transform.TryGetComponent(out Rigidbody rb)) { rb.AddForceAtPosition(velocity.normalized * data.force, hit.point); }
 			if (hit.collider.sharedMaterial) {
-				p.CreateFX(hit.collider.sharedMaterial.name switch {
-						_ => p.genericFx,
+				pm.CreateFX(hit.collider.sharedMaterial.name switch {
+						_ => pm.genericFx,
 						}, hit.point, hit.normal);
 			}
 			destroyProjectile = true;

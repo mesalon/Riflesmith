@@ -87,6 +87,7 @@ public class BotVision {
 					if (cfg.visualDebug) {
 						Color alpha = new(1, 1, 1, 0.5f);
 						Color c = ColorForRate(rate);
+						Debug.DrawRay(ctx.eyes.position, ctx.eyes.forward * 50, Color.blue);
 						Ext.DrawCubeLine(ctx.eyes.position, targetPos, c * alpha, Time.fixedDeltaTime);
 						Ext.DrawCubeRay(target.transform.position, accumulator * (2 * up), c, Time.fixedDeltaTime, 0.5f);
 					}
@@ -105,8 +106,7 @@ public class BotVision {
 		if (dot > maxAngleCos && range < cfg.sightRange) {
 			float rangeScore = 1 / (1 + cfg.rangeDecay * (range * range));
 			float stillScore = Exp(-cfg.stillPeripheryDecay * angle) * cfg.stillSensitivity;
-			float motionDecay = Exp(-cfg.motionPeripheryDecay * angle);
-			float motionScore = motionDecay * motion * cfg.motionSensitivity;
+			float motionScore = Exp(-cfg.motionPeripheryDecay * angle) * motion * cfg.motionSensitivity;
 			rate = cfg.detectionSpeed * rangeScore * Max(stillScore, motionScore);
 			return true;
 		}

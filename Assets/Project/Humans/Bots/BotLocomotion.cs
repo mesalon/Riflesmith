@@ -85,6 +85,7 @@ public class BotLocomotion {
 		moveInput = ctx.transform.InverseTransformDirection(moveInput);
 		ctx.anim.Play(ctx.mixer);
 		moveParam.TargetValue = new(moveInput.x, moveInput.z);
+		
 
 		// Fix diagonal speed.... I think
 		float maxComponent = Mathf.Max(Mathf.Abs(moveInput.x), Mathf.Abs(moveInput.z));
