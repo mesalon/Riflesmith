@@ -1,4 +1,5 @@
 ﻿<Solution>
+  <Project Path="Unity.VisualEffectGraph.Editor.csproj" />
   <Project Path="Unity.ShaderGraph.Editor.csproj" />
   <Project Path="Unity.RenderPipelines.GPUDriven.Runtime.csproj" />
   <Project Path="AstarPathfindingProject.csproj" />
@@ -34,6 +35,7 @@
   <Project Path="Unity.UnifiedRayTracing.Runtime.csproj" />
   <Project Path="Unity.InternalAPIEngineBridge.004.csproj" />
   <Project Path="Core.csproj" />
+  <Project Path="Unity.VisualEffectGraph.Runtime.csproj" />
   <Project Path="Unity.Burst.CodeGen.csproj" />
   <Project Path="Unity.RenderPipeline.Universal.ShaderLibrary.csproj" />
   <Project Path="Unity.PerformanceTesting.csproj" />
