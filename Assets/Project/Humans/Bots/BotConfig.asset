@@ -81,7 +81,7 @@ MonoBehaviour:
     lookSpeed: 2
     minAimDistance: 2
     bodyTurnTrigger: 60
-    bodyTurnCorrection: 1
+    bodyTurnCorrection: 1.5
   cover:
     range: 10
     navRange: 15
