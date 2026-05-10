@@ -61,15 +61,15 @@ public static class Ext {
 
 	public static float Remap(this float value, float min, float max, float newMin, float newMax) => Mathf.Lerp(newMin, newMax, Mathf.InverseLerp(min, max, value));
 
-	public static void SetPose(this Transform transform, Vector3 pos, Quaternion rot, bool isLocal = false) {
-		if (isLocal) { transform.SetLocalPositionAndRotation(pos, rot); }
+	public static void SetPose(this Transform transform, Vector3 pos, Quaternion rot, Space space = Space.World) {
+		if (space == Space.Self) { transform.SetLocalPositionAndRotation(pos, rot); }
 		else { transform.SetPositionAndRotation(pos, rot); }
 	} 
-	public static void SetPose(this Transform transform, Pose pose, bool isLocal = false) {
-		transform.SetPose(pose.position, pose.rotation, isLocal);
+	public static void SetPose(this Transform transform, Pose pose, Space space = Space.World) {
+		transform.SetPose(pose.position, pose.rotation, space);
 	} 
 	public static void SetPose(this Transform transform, Transform target) {
-		transform.SetPose(target.localPosition, target.localRotation, true);
+		transform.SetPose(target.localPosition, target.localRotation, Space.Self);
 	}
 
 	public static void SetLayerRecursive(this GameObject gameObject, int layer) {
@@ -118,9 +118,9 @@ public static class Ext {
 		Vector3 right = rotation * Vector3.right;
 		Vector3 up = rotation * Vector3.up;
 		Vector3 forward = rotation * Vector3.forward;
-		Gizmos.DrawRay(position - radius * right, radius * 2 * right);
-		Gizmos.DrawRay(position - radius * up, radius * 2 * up);
-		Gizmos.DrawRay(position - radius * forward, radius * 2 * forward);
+		Debug.DrawRay(position - radius * right, radius * 2 * right);
+		Debug.DrawRay(position - radius * up, radius * 2 * up);
+		Debug.DrawRay(position - radius * forward, radius * 2 * forward);
 	}
 
 	public static void DrawPath(IEnumerable<Vector3> path, Gradient gradient = null, float offset = 0) {

@@ -1,59 +1,28 @@
+using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.XR;
 
-
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour, IVRAnchorProvider {
 	public CharacterController cc;
 	[SerializeField] Transform head;
 	[SerializeField] Hand LHand, RHand;
+	[SerializeField] Transform headForward;
 
-	private Controls controls;
+	public Vector3 Anchor => head.position;
+
 	void Start() {
-		controls = new();
-		//controls.Player.Enable();
-	}
-
-	public void OnEnable() {
-		Application.onBeforeRender += UpdateHead;
-		controls ??= new Controls();
-		controls.Enable();
-	}
-
-	public void OnDisable() {
-		Application.onBeforeRender -= UpdateHead;
-		controls.Disable();
+		VRPlayer.anchorProvider = this;
 	}
 
 	void Update() {
-		print(controls.LHand.Position.ReadValue<Vector3>());
-		print(controls.LHand.Rotation.ReadValue<Vector3>());
-		print(controls.LHand.Grip.ReadValue<float>());
-		print(controls.LHand.Trigger.ReadValue<float>());
-		print(controls.LHand.PrimaryButton.ReadValue<bool>());
-		print(controls.LHand.SecondaryButton.ReadValue<bool>());
-		LHand.transform.SetPose(new(), true);
-		RHand.transform.SetPose(new(), true);
-
-		// Recenter
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			Vector3 adjustment = new Vector3(head.position.x, 0, head.position.z) -
-				new Vector3(transform.position.x, 0, transform.position.z);
-			transform.position += adjustment;
-			head.localPosition -= transform.InverseTransformVector(adjustment);
-			LHand.transform.localPosition -= transform.InverseTransformVector(adjustment);
-			RHand.transform.localPosition -= transform.InverseTransformVector(adjustment);
-		}
+		Vector3 delta = VRPlayer.Input.head.position - VRPlayer.LastInput.head.position;
+		transform.position += new Vector3(delta.x, 0, delta.z);
+		head.localPosition = new Vector3(0, VRPlayer.Input.head.position.y, 0);
+		head.rotation = VRPlayer.Input.head.rotation * Quaternion.Inverse(headForward.localRotation);
 	}
 
 	void FixedUpdate() {
 		cc.height = head.localPosition.y;
 		cc.center = new(head.localPosition.x, cc.height / 2, head.localPosition.z);
 	}
-
-	[BeforeRenderOrder(-30000)]
-	public void UpdateHead() {
-		head.localPosition = default;
-		head.localRotation = default;
-	}
 }
+

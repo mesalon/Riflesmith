@@ -1,50 +1,28 @@
 using UnityEngine;
 
 public class Hand : Interactor {
-	public float Grip => default;
-	public float Trigger => default;
-	public float NearButton => default;
-	public float FarButton => default;
-	public Vector2 Stick => default;
-	[SerializeField] GameObject vis;
-	[SerializeField] Transform[] bones;
+	private HandInput Input => side == Side.Left ? VRPlayer.Input.LHand : VRPlayer.Input.RHand;
+	[SerializeField] Side side;
 	[SerializeField] HandPose idlePose, grippingPose;
-	[SerializeField] bool hideOnGrab;
-	private Quaternion[] poseBuffer;
+	[SerializeField] Transform[] bones;
+	[SerializeField] Transform forward;
+	[SerializeField] Transform controller;
 
-	/* todo: needed?
-	private void OnEnable() {
-		gripAction.performed += _ => GripHand();
-		gripAction.canceled += _ => Drop();
+	public override void Update() {
+		base.Update();
+		HandPose.Lerp(idlePose, grippingPose, Input.grip, bones);
+		Vector3 pos = Input.position - VRPlayer.Input.head.position.FlattenY();
+		Quaternion rot = Input.rotation * Quaternion.Inverse(forward.localRotation);
+		transform.SetPose(pos - rot * forward.localPosition, rot, Space.Self);
+		controller.SetPose(pos, Input.rotation, Space.Self);
 	}
 
-	private void OnDisable() {
-		gripAction.performed -= _ => GripHand();
-		gripAction.canceled -= _ => Drop();
-	}
-	*/
-
-	public void GripHand() {
+	public void Grip() {
 		Collider[] overlap = Physics.OverlapSphere(holdPoint.position, 0.01f);
 		foreach (Collider col in overlap) {
 			if (held == null && col.TryGetComponent(out IInteractable interactable)) { Pick(interactable); }
 		}
 	}
-
-	public override void Update() {
-		base.Update();
-		HandPose.Lerp(idlePose, grippingPose, Grip, poseBuffer);
-		for (int i = 0; i < bones.Length; i++) { bones[i].localRotation = poseBuffer[i]; }
-	}
-
-	public override void Pick(IInteractable interactable) {
-		base.Pick(interactable);
-		vis.SetActive(!hideOnGrab);
-	}
-
-	public override void Drop() {
-		base.Drop();
-		vis.SetActive(true);
-	}
 }
 
+public enum Side { Left, Right }
