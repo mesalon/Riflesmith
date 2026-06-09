@@ -1,5 +1,6 @@
 using UnityEngine;
 
+/*
 public class Backpack : MonoBehaviour {
 	private void OnTriggerEnter(Collider other) {
 		if (other.TryGetComponent(out GrabInteractable grab)) { grab.onDropped += Attach; }

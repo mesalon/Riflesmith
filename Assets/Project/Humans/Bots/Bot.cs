@@ -35,6 +35,7 @@ public class Bot : Interactor {
 	public ClipTransition aim;
 	public AvatarMask mask;
 	public StringAsset moveX, moveY;
+	public CharacterController cc;
 
 	public BotVision vision;
 	public BotBody body;
@@ -46,6 +47,7 @@ public class Bot : Interactor {
 
 	private void Awake() {
 		self = GetComponent<Human>();
+		cc = GetComponent<CharacterController>();
 		motion = new(this);
 		vision = new(this);
 		handling = new(this);

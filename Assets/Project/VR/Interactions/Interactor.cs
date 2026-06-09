@@ -1,7 +1,8 @@
 using UnityEngine;
 
 public abstract class Interactor : MonoBehaviour {
-	public Transform holdPoint;
+	public Transform grabPoint;
+	public Rigidbody rb;
 	public IInteractable held;
 
 	public virtual void Update() {

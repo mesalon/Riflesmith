@@ -17,14 +17,14 @@ public class GearManager : MonoBehaviour {
 
 	public void Build() {
 		for (int i = container.childCount - 1; i >= 0; i--) {
-			Undo.DestroyObjectImmediate(container.GetChild(i).gameObject);
+			DestroyImmediate(container.GetChild(i).gameObject);
 		}
 		boneMap.Clear();
 		boneMap.Add(root.name, root);
 		Traverse(root);
 		foreach (GearItem entry in items) {
 			GearItem item = Instantiate(entry, container);
-			item.Init(); // todo: Fuck this for release
+			item.Init(); // todo: Fuck this for release <- what did he mean by this
 			if (item.skins.Count > 0) { item.smr.material = item.skins.GetRandom(); }
 			Attach(item);
 		}
@@ -47,7 +47,7 @@ public class GearManager : MonoBehaviour {
 		}
 		smr.bones = newBones;
 		if (boneMap.TryGetValue(smr.rootBone.name, out Transform newRoot)) {
-			Undo.DestroyObjectImmediate(item.root.gameObject);
+			DestroyImmediate(item.root.gameObject);
 			smr.rootBone = newRoot;
 		}
 		smr.updateWhenOffscreen = true;

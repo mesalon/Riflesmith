@@ -62,7 +62,7 @@ public class BotHandling {
 			foreach (Collider col in overlap) {
 				if (col.TryGetComponent(out SimpleFirearm gun)) { 
 					weapon = gun; 
-					weapon.SetDormant(true);
+					//weapon.SetDormant(true);
 					ctx.ik.solver.leftHandEffector.target = weapon.foregrip;
 					ctx.ik.solver.rightHandEffector.target = weapon.grip;
 					ctx.brain.isArmed = true;

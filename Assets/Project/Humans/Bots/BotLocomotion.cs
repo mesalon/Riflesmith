@@ -32,6 +32,7 @@ public class BotLocomotion {
 	private StringAsset moveX => ctx.moveX;
 	private StringAsset moveY => ctx.moveY;
 	private TransitionAsset mixer => ctx.mixer;
+	private CharacterController cc => ctx.cc;
 
 	private readonly Bot ctx;
 
@@ -43,6 +44,7 @@ public class BotLocomotion {
 	private bool isStrafing;
 	private float speed;
 	private Vector3 lookDirection;
+	private float yVelocity;
 
 	public BotLocomotion(Bot ctx) {
 		this.ctx = ctx;
@@ -63,7 +65,6 @@ public class BotLocomotion {
 
 	bool state = false;
 	public void Tick() {
-		Debug.DrawRay(ctx.eyes.position, lookDirection.normalized, Color.blue);
 		Vector3 moveInput = Vector3.zero;
 		if (path != null) {
 			if (cornerIdx < path.vectorPath.Count) {
@@ -94,10 +95,14 @@ public class BotLocomotion {
 			mixer.Speed = speedMultiplier;
 		}
 		else { mixer.Speed = 1f; }
+
+		if (!cc.isGrounded) { yVelocity += Physics.gravity.y * Time.deltaTime; } 
+		else if (yVelocity < 0) { yVelocity = -2f; }
+		cc.Move(new(0, yVelocity, 0));
 	}
 
 	public void AnimatorMove(Animator anim) {
-		ctx.self.locomotion.MoveDirect(anim.deltaPosition);
+		ctx.cc.Move(anim.deltaPosition);
 		ctx.ikLookTarget.position = ctx.eyes.position + lookDirection * 5;
 		if (!isStrafing) {
 			ctx.transform.rotation = Quaternion.RotateTowards(ctx.transform.rotation, Quaternion.LookRotation(lookDirection), cfg.turnSpeed);
@@ -105,6 +110,7 @@ public class BotLocomotion {
 		}
 		isStrafing = false;
 	}
+
 
 	public void Move(Vector3 destination, Pace pace) {
 		float speed = pace switch {

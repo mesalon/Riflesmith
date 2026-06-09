@@ -1,7 +1,7 @@
 using FMODUnity;
 using UnityEngine;
 
-public class SimpleFirearm : GrabInteractable {
+public class SimpleFirearm : MonoBehaviour {
 	public Transform muzzle;
 	[HideInInspector] public int rounds;
 	[HideInInspector] public bool triggerState;
@@ -13,7 +13,6 @@ public class SimpleFirearm : GrabInteractable {
 	private float fireTime;
 
 	private void Awake() {
-		base.Awake();
 		rounds = capacity;
 	}
 

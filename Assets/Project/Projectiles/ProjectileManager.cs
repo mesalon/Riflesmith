@@ -14,16 +14,11 @@ public class ProjectileManager : MonoBehaviour {
 	public float debugTracerTime;
 	public Color debugTracerColor = Color.white;
 	
-	private void Awake() {
-		if (I == null) {
-			I = this;
-			DontDestroyOnLoad(gameObject);
-		}
-		else { Destroy(gameObject); }
-	}
+	private void Awake() { I = this; }
+	private void OnDestroy() { I = null; }
 	
 	private void Update() {
-		for(int i = projectiles.Count - 1; i >= 0; i--) { // Count backwards as to not make the gods angry
+		for(int i = projectiles.Count - 1; i >= 0; i--) {
 			projectiles[i].Draw(this);
 			projectiles[i].Tick(this, out bool destroyProjectile);
 			if(destroyProjectile) {

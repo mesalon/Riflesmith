@@ -8,6 +8,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public static class Ext {
 	public static List<LabelRequest> labelQueue = new();
@@ -23,6 +24,19 @@ public static class Ext {
 
 	public static T? TryIndex<T>(this T[] array, int index) {
 		return (index >= 0 && index < array.Length) ? array[index] : default;
+	}
+
+	public static void SetActive(this Scene scene, bool state) {
+		foreach (GameObject go in scene.GetRootGameObjects()) { go.SetActive(state); }
+	}
+
+	public static void DrawSkeleton(Transform root, Color col) {
+		foreach (Transform t in root.GetComponentsInChildren<Transform>()) {
+			if (t != root)  {
+				Debug.DrawLine(t.position, t.parent.position, col);
+				VRGizmos.Line(t.position, t.parent.position, col);
+			}
+		}
 	}
 
 	public static double LogTime(this long stamp, string msg = "", bool message = true) {
@@ -60,6 +74,17 @@ public static class Ext {
 	}
 
 	public static float Remap(this float value, float min, float max, float newMin, float newMax) => Mathf.Lerp(newMin, newMax, Mathf.InverseLerp(min, max, value));
+	public static float Deadzone(this float value, float threshold = 0.5f) {
+		if (Mathf.Abs(value) <= threshold) return 0;
+		float sign = Mathf.Sign(value);
+		return sign * (Mathf.Abs(value) - threshold) / (1 - threshold);
+	}
+	public static float DeadzoneBounds(float value, float min, float max) {
+		if (value > min && value < max) return 0f;
+		if (value >= max) return Mathf.InverseLerp(max, 1f, value);
+		if (value <= min) return -Mathf.InverseLerp(min, -1f, value);
+		return 0f;
+	}
 
 	public static void SetPose(this Transform transform, Vector3 pos, Quaternion rot, Space space = Space.World) {
 		if (space == Space.Self) { transform.SetLocalPositionAndRotation(pos, rot); }
@@ -77,7 +102,7 @@ public static class Ext {
 		gameObject.layer = layer;
 	}
 
-	public static void IgnoreCollisionsBetween(List<Collider> first, List<Collider> second, bool ignore) {
+	public static void IgnoreCollisionsBetween(IEnumerable<Collider> first, IEnumerable<Collider> second, bool ignore) {
 		foreach (Collider col in first) {
 			foreach (Collider other in second) { Physics.IgnoreCollision(col, other, ignore); }
 		}
@@ -90,10 +115,14 @@ public static class Ext {
 	}
 #endif
 
+	public static T Label<T>(Vector3 position, T obj, float lifespan = 0, GUIStyle style = null, Color color = default) { 
+		Label(position, obj.ToString(), lifespan, style, color);
+		return obj;
+	}
 	public static void Label(Vector3 position, string text, float lifespan = 0, GUIStyle style = null, Color color = default) {
 		style ??= new() {
 			alignment = TextAnchor.MiddleCenter, 
-			normal = new() { textColor = color == default ? Color.white : color },
+			normal = new() { textColor = DefaultWhite(color) },
 			fontSize = 12,
 		};
 		labelQueue.Add(new() { position = position, text = text, lifespan = lifespan, style = style, color = color });
@@ -113,8 +142,7 @@ public static class Ext {
 
 	public static void PrintAll<T>(this IEnumerable<T> objects) { Debug.Log(string.Join(", ", objects)); }
 
-	public static void DrawAxis(Vector3 position, float radius, Quaternion rotation = default, Color color = default) {
-		if (color == default) { color = Color.white; }
+	public static void DrawAxis(Vector3 position, float radius, Quaternion rotation = default) {
 		Vector3 right = rotation * Vector3.right;
 		Vector3 up = rotation * Vector3.up;
 		Vector3 forward = rotation * Vector3.forward;
@@ -133,28 +161,37 @@ public static class Ext {
 	}
 
 	public static void Draw(Action action, float lifespan = 0) { drawQueue.Add(new() { action = action, lifespan = lifespan }); }
+	public static Color DefaultWhite(Color c) => c == default ? Color.white : c;
 
-	public static void DrawCube(Vector3 position, Quaternion rotation, Vector3 scale, Color color) {
+	public static void DrawSphere(Vector3 position, float radius, Color color = default) {
 		Draw(() => {
-				Gizmos.color = color;
+				Gizmos.color = DefaultWhite(color);
+				Gizmos.DrawSphere(position, radius); 
+				});
+	}
+	public static void DrawCube(Vector3 position, Vector3 scale, Color color = default) => 
+		DrawCube(position, Quaternion.identity, scale, color);
+	public static void DrawCube(Vector3 position, Quaternion rotation, Vector3 scale, Color color = default) {
+		Draw(() => {
+				Gizmos.color = DefaultWhite(color);
 				Gizmos.matrix = Matrix4x4.TRS(position, rotation, scale);
 				Gizmos.DrawCube(Vector3.zero, Vector3.one); 
 				Gizmos.matrix = Matrix4x4.identity;
 				});
 	}
 
-	public static void DrawCubeLine(Vector3 start, Vector3 end, Color color, float lifespan = 0, float thickness = 0.05f) {
+	public static void DrawCubeLine(Vector3 start, Vector3 end, Color color = default, float lifespan = 0, float thickness = 0.05f) {
 		Draw(() => {
 				Vector3 dir = (end - start).normalized;
 				Quaternion rotation = dir != Vector3.zero ? Quaternion.LookRotation(dir, Vector3.up) : Quaternion.identity;
 				Gizmos.matrix = Matrix4x4.TRS((start + end) / 2f, rotation, Vector3.one);
-				Gizmos.color = color;
+				Gizmos.color = DefaultWhite(color);
 				Gizmos.DrawCube(Vector3.zero, new Vector3(thickness, thickness, (end - start).magnitude));
 				Gizmos.matrix = Matrix4x4.identity;
 				}, lifespan);
 	}
 
-	public static void DrawCubeRay(Vector3 start, Vector3 dir, Color color, float lifespan = 0, float thickness = 0.05f) {
+	public static void DrawCubeRay(Vector3 start, Vector3 dir, Color color = default, float lifespan = 0, float thickness = 0.05f) {
 		Vector3 end = start + dir;
 		DrawCubeLine(start, end, color, lifespan, thickness);
 	}
@@ -224,7 +261,7 @@ public static class Ext {
 	public static Vector3 AngleTo(this Vector3 current, Vector3 target, float degrees) {
 		Vector3 axis = Vector3.Cross(current, target);
 		if (axis == Vector3.zero) axis = Vector3.up; 
-    return Quaternion.AngleAxis(degrees, axis) * current;
+		return Quaternion.AngleAxis(degrees, axis) * current;
 	}
 
 	public static Vector3 GetInertiaTensor(this Bounds shape, Vector3 pivot, float mass) {
