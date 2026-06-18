@@ -27,7 +27,7 @@ public class Bolt : Part {
 	}
 
 	public void DeliverForce() {
-		if(Interactor) Interactor.Drop();
+		//if(Interactor) Interactor.Drop();
 		chamber.Eject(ejectPoint.position);
 		fcg.ResetHammer();
 		if (conf.hasSpring) {

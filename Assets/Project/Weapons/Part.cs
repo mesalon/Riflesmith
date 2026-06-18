@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class Part : GrabInteractable {
+public abstract class Part : MonoBehaviour {
 	public Mount mount;
 	public Transform mountPoint;
 	public string mountType;
@@ -10,8 +10,7 @@ public abstract class Part : GrabInteractable {
 	public abstract void Reset();
 	public abstract void OnAssemble(Receiver receiver);
 
-	public override void OnHoldFixed() {
-		base.OnHoldFixed();
+	public void OnHoldFixed() {
 		detectedMount = null;
 		if (!mount) {
 			Collider[] overlap = Physics.OverlapSphere(mountPoint.position, 0.02f);
@@ -25,7 +24,7 @@ public abstract class Part : GrabInteractable {
 		}
 	}
 
-	public override void OnDropped() {
+	public void OnDropped() {
 		if (detectedMount) { detectedMount.Attach(this); }
 
 		/* Detach code

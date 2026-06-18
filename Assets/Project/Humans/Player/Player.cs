@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
-// use the VRIK to inform an a partial active ragdoll and kill yourself
 // todo: add easing to the player's leg springs
 // todo: reverse order so that springing a jump prevents you from running, and not the other way around
 
@@ -11,10 +10,9 @@ public class Player : Human, IVRAnchorProvider {
 	public CharacterController cc;
 	[SerializeField] Transform eyes;
 	[SerializeField] Transform eyesForward;
-	[SerializeField] Transform targetRoot, actualRoot;
+	[SerializeField] Transform debugSkeleton;
 	[SerializeField] LayerMask groundMask;
 	[SerializeField] Rigidbody rb;
-	[SerializeField] CustomJoint headJoint;
 	[SerializeField] Renderer[] toHide;
 	[SerializeField] CapsuleCollider bodyCollider;
 	[SerializeField] float speed, runSpeed;
@@ -23,9 +21,8 @@ public class Player : Human, IVRAnchorProvider {
 	[SerializeField] float maxLegLength, legForce, legDamper, legResistance;
 	[SerializeField] float jumpForce, sprintJumpForce, jumpSpeed, jumpBrace, jumpInputMin, jumpInputMax, jumpHeightMin, sprintJumpSpeed, sprintJumpRecovery;
 	[SerializeField] float footRadius;
-	[SerializeField] List<Transform> muscleKeys;
-	[SerializeField] List<Muscle> muscleValues;
-	private Dictionary<Transform, Muscle> muscles = new();
+	[SerializeField] List<Transform> targetBones;
+	[SerializeField] List<Transform> actualBones;
 	private float jumpInputAccumulation;
 	private float sprintJumpT;
 	private bool isSprintJumping;
@@ -45,16 +42,11 @@ public class Player : Human, IVRAnchorProvider {
 	public Pose Anchor => new(eyes.position, transform.rotation);
 
 	void Awake() {
-		for (int i = 0; i < muscleKeys.Count; i++) { 
-			muscleValues[i].initRot = muscleValues[i].joint.transform.localRotation;
-			muscles.Add(muscleKeys[i], muscleValues[i]); 
-		}
 		VRPlayer.anchorProvider = this;
 	}
 
 	void Update() {
-		Ext.DrawSkeleton(targetRoot, Color.white);
-		Ext.DrawSkeleton(actualRoot, Color.cyan);
+		Ext.DrawSkeleton(debugSkeleton, Color.white);
 
 		Quaternion rot = Input.rotation * Quaternion.Inverse(eyesForward.localRotation);
 		eyes.SetPose(new(0, Input.position.y, 0), rot, Space.Self);
@@ -70,22 +62,9 @@ public class Player : Human, IVRAnchorProvider {
 		bodyCollider.center = new(0, Mathf.Min(eyes.localPosition.y, midpoint), 0);
 		bodyCollider.radius = footRadius * 1.5f;
 
-		Transform[] actual = actualRoot.GetComponentsInChildren<Transform>();
-		Transform[] target = targetRoot.GetComponentsInChildren<Transform>();
-		for (int i = 0; i < actual.Length; i++) {
-			if (muscles.TryGetValue(actual[i], out Muscle m)) {
-				Quaternion initRot = Quaternion.Inverse(m.initRot);
-				if (m.isRoot) {
-					m.joint.targetPosition = initRot * transform.InverseTransformPoint(target[i].position);
-					m.joint.targetRotation = initRot * Quaternion.Inverse(transform.rotation) * target[i].rotation;
-				} else {
-					m.joint.targetRotation = initRot * target[i].localRotation;
-				}
-				actual[i].SetPose(m.joint.transform.position, m.joint.transform.rotation);
-			} else {
-				if (actual[i].name.Contains("pelvis") || actual[i] == actualRoot) { actual[i].localPosition = target[i].localPosition; }
-				actual[i].localRotation = target[i].localRotation;
-			}
+		for (int i = 0; i < actualBones.Count; i++) {
+			actualBones[i].localPosition = targetBones[i].localPosition; 
+			actualBones[i].localRotation = targetBones[i].localRotation;
 		}
 
 		float length = Mathf.Clamp(eyes.localPosition.y, 0, maxLegLength) - footRadius;
@@ -138,11 +117,4 @@ public class Player : Human, IVRAnchorProvider {
 		jumpInputAccumulation -= applied;
 		return applied;
 	}
-}
-
-[Serializable]
-public class Muscle {
-	public ConfigurableJoint joint;
-	public Quaternion initRot;
-	public bool isRoot;
 }

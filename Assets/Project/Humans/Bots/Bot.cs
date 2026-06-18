@@ -13,7 +13,7 @@ using System.Linq;
 	 The handling of the gun is really janky and so is the viewing. I should fix that
 	 */
 
-public class Bot : Interactor {
+public class Bot : MonoBehaviour {
 	public Vector3 test;
 	public BotConfig cfg;
 	public Transform eyes;

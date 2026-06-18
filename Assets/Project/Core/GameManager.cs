@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour {
 		.FirstOrDefault();
 	public static GameManager I { get; private set; }
 	private Scene loading;
-	private bool isLoading ;
+	private bool isLoading;
 
 	void Awake() {
 		if (I == null) {

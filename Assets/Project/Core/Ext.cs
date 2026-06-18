@@ -97,10 +97,16 @@ public static class Ext {
 		transform.SetPose(target.localPosition, target.localRotation, Space.Self);
 	}
 
-	public static void SetLayerRecursive(this GameObject gameObject, int layer) {
-		foreach (Transform child in gameObject.transform) { child.gameObject.SetLayerRecursive(layer); }
-		gameObject.layer = layer;
+	public static void SetLayerRecursive(this GameObject go, int layer) {
+		go.layer = layer;
+		foreach (Transform child in go.transform) {
+			child.gameObject.layer = layer;
+			Transform HasChildren = child.GetComponentInChildren<Transform>();
+			if (HasChildren != null) { SetLayerRecursive(child.gameObject, layer); }
+		}
 	}
+
+	public static float Sqr(this float f) => f * f;
 
 	public static void IgnoreCollisionsBetween(IEnumerable<Collider> first, IEnumerable<Collider> second, bool ignore) {
 		foreach (Collider col in first) {
