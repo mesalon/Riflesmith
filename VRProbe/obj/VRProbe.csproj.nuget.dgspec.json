@@ -1,0 +1,86 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/mesalon/Projects/Riflesmith/VRProbe/VRProbe.csproj": {}
+  },
+  "projects": {
+    "/home/mesalon/Projects/Riflesmith/VRProbe/VRProbe.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/mesalon/Projects/Riflesmith/VRProbe/VRProbe.csproj",
+        "projectName": "VRProbe",
+        "projectPath": "/home/mesalon/Projects/Riflesmith/VRProbe/VRProbe.csproj",
+        "packagesPath": "/home/mesalon/.nuget/packages/",
+        "outputPath": "/home/mesalon/Projects/Riflesmith/VRProbe/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/mesalon/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[9.0.15, 9.0.15]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[9.0.15, 9.0.15]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[9.0.15, 9.0.15]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/nix/store/3cnsry1n3d9p8lb8lcqhymmmcfnr06jc-dotnet-sdk-9.0.313/share/dotnet/sdk/9.0.313/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

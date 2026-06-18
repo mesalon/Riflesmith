@@ -6,19 +6,27 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Project/World/Loading/Day One.unity
+    guid: c3af0248e060b399e8bc960f61a35847
+  - enabled: 1
+    path: Assets/Project/World/Loading/Loading.unity
+    guid: 597327707b65e45b18a3db382393ec64
+  - enabled: 1
+    path: Assets/Project/World/Main/Main.unity
+    guid: 64c6357532bb3dc4ea7140beac8d50f8
+  - enabled: 1
     path: Assets/Project/World/Facility/Facility.unity
     guid: 16c0f04f7d8e3e3ea871cfedb299984f
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: d11842ab46b0cd1489679bad1e810afc,
       type: 2}
-    Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: 2ea5c128e75c1af6c8632979e6c04838,
+    Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: af52cf6a5c960ce118216f3e6fc9bf13,
       type: 2}
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f,
       type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 6768aec475a0e40fc9def97ed003f499,
       type: 3}
-    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 78c733868c4b4be768ac5c76596e0283,
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: e834dabeb78f09b4bbd4160a7c662d03,
       type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 86fe2927bd050bfd8bbecd331cce653a,
       type: 2}
-  m_UseUCBPForAssetBundles: 0

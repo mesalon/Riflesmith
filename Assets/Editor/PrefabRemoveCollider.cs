@@ -5,10 +5,7 @@ public static class MeshColliderAffixer {
     [MenuItem("Tools/Affix Mesh Colliders")]
     private static void Affix() {
         foreach (var root in Selection.gameObjects) {
-            if (root.GetComponent<Collider>()) continue;
-
             Mesh foundMesh = null;
-            // Iterate Renderers to find the absolute first mesh occurrence (LOD0 usually first)
             foreach (var r in root.GetComponentsInChildren<Renderer>(true)) {
                 if (r is MeshRenderer && r.TryGetComponent<MeshFilter>(out var mf) && mf.sharedMesh) { foundMesh = mf.sharedMesh; break; }
                 if (r is SkinnedMeshRenderer smr && smr.sharedMesh) { foundMesh = smr.sharedMesh; break; }

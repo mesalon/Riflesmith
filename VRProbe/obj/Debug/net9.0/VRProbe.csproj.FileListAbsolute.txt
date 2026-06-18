@@ -1,0 +1,16 @@
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/obj/Debug/net9.0/VRProbe.GeneratedMSBuildEditorConfig.editorconfig
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/obj/Debug/net9.0/VRProbe.AssemblyInfoInputs.cache
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/obj/Debug/net9.0/VRProbe.AssemblyInfo.cs
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/obj/Debug/net9.0/VRProbe.csproj.CoreCompileInputs.cache
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/obj/Debug/net9.0/VRProbe.sourcelink.json
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/bin/Debug/net9.0/VRProbe
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/bin/Debug/net9.0/VRProbe.deps.json
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/bin/Debug/net9.0/VRProbe.runtimeconfig.json
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/bin/Debug/net9.0/VRProbe.dll
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/bin/Debug/net9.0/VRProbe.pdb
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/obj/Debug/net9.0/VRProbe.dll
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/obj/Debug/net9.0/refint/VRProbe.dll
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/obj/Debug/net9.0/VRProbe.pdb
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/obj/Debug/net9.0/VRProbe.genruntimeconfig.cache
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/obj/Debug/net9.0/ref/VRProbe.dll
+/home/mesalon/Projects/Riflesmith/Assets/VRProbe/bin/Debug/net9.0/libopenvr_api.so

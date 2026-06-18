@@ -12,7 +12,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Player
+  - Body
   - Water
   - UI
   - Interactable
@@ -25,7 +25,7 @@ TagManager:
   - Walkable
   - Obstacle
   - Ragdoll
-  - Enemy
+  - 
   - 
   - 
   - Light

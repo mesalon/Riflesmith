@@ -1,0 +1,5 @@
+1. Get the openvr unity plugin from valve https://github.com/ValveSoftware/unity-xr-plugin
+2. Get xr plugin management so you can check the 'openvr loader' and enable vr
+
+To solve: DllNotFoundException: XRSDKOpenVR (or any other DLL)
+Symlink /home/mesalon/Projects/Riflesmith/Packages/com.valvesoftware.openvr/Runtime/x64/ to Assets/Plugins/x86_64
