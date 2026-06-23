@@ -1,18 +1,13 @@
 // todo: hand stretching
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-using UnityEditor.UIElements;
-using UnityEngine.UIElements;
-#endif
-
 public class Hand : MonoBehaviour {
 	public ConfigurableJoint joint => handMuscle.joint;
 	public DeviceInput Input => (side == Side.Left ? VRPlayer.Input.LHand : VRPlayer.Input.RHand).RelativeTo(HeadOffset);
 	public DeviceInput LastInput => (side == Side.Left ? VRPlayer.LastInput.LHand : VRPlayer.LastInput.RHand).RelativeTo(HeadOffset);
 	private Vector3 HeadOffset => VRPlayer.Input.head.position.FlattenY();
 
+	[SerializeField] HandPoseObject neutralPose, gripPose, triggerPose;
 	public IInteractable held;
 	public Transform palm;
 	public Rigidbody rb;
@@ -52,6 +47,8 @@ public class Hand : MonoBehaviour {
 		controllerVisual.SetPose(pos, Input.rotation, Space.Self);
 
 		held?.OnHold();
+
+		neutralPose.data.Apply(bones);
 	}
 
 
@@ -117,79 +114,6 @@ public class Hand : MonoBehaviour {
 			held = null;
 		}
 	}
-
-	private void ApplyPose(Quaternion[] pose, bool mirrored = false) {
-		for (int i = 0; i < bones.Length; i++) { 
-			bones[i].localRotation = mirrored ? new Quaternion(-pose[i].x, pose[i].y, pose[i].z, -pose[i].w): pose[i]; 
-		}
-	}
-
-	private static Quaternion[] LerpPose(Quaternion[] a, Quaternion[] b, float t) {
-		if (a.Length != b.Length) {
-			Debug.LogError("Length mismatch for hand pose! Stinky! This should never happen.");
-			return a;
-		}
-		var blend = new Quaternion[a.Length];
-		for (int i = 0; i < a.Length; i++) { blend[i] = Quaternion.Lerp(a[i], b[i], t); }
-		return blend;
-	}
-
-#if UNITY_EDITOR
-	[CustomEditor(typeof(Hand)), CanEditMultipleObjects]
-	public class HandEditor : Editor {
-		public override VisualElement CreateInspectorGUI() {
-			VisualElement container = new();
-			InspectorElement.FillDefaultInspector(container, serializedObject, this);
-
-			ObjectField slot = new("Pose") {
-				objectType = typeof(HandPose),
-				allowSceneObjects = false,
-			};
-
-			VisualElement row = new();
-			row.style.flexDirection = FlexDirection.Row;
-			row.style.marginTop = 4;
-			Button createNew = new(() => {
-					var pose = CreateInstance<HandPose>();
-					pose.poses = ((Hand)target).Capture();
-					AssetDatabase.CreateAsset(pose, "Assets/Project/Humans/Player/NewPose.asset");
-					AssetDatabase.SaveAssets();
-					if (slot.value == null) slot.value = pose;
-					}) { text = "Create new" };
-			Button update = new(() => {
-					if (slot.value != null) {
-					((HandPose)slot.value).poses = ((Hand)target).Capture();
-					EditorUtility.SetDirty(slot.value);
-					AssetDatabase.SaveAssets();
-					}
-					}) { text = "Update" };
-			Button apply = new(() => {
-					if (slot.value != null) ((Hand)target).ApplyPose(((HandPose)slot.value).poses);
-					EditorUtility.SetDirty(target);
-					}) { text = "Apply to hand" };
-			update.style.flexGrow = createNew.style.flexGrow = apply.style.flexGrow = 1;
-			row.Add(update);
-			row.Add(createNew);
-			row.Add(apply);
-
-			Foldout foldout = new() { text = "Pose Editor" };
-			foldout.style.marginTop = 8;
-			foldout.Add(slot);
-			foldout.Add(row);
-			container.Add(foldout);
-
-			return container;
-		}
-	}
-
-	private Quaternion[] Capture() {
-		Quaternion[] rots = new Quaternion[bones.Length];
-		for (int i = 0; i < bones.Length; i++) {
-			rots[i] = bones[i].localRotation;
-		}
-		return rots;
-	}
-#endif
 }
 
 public enum Side { Left, Right }

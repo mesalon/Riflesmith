@@ -4,7 +4,7 @@ using UnityEngine;
 public class GrabInteractable : MonoBehaviour, IInteractable {
 	public Hand Interactor { get; set; }
 	public bool PreventInteraction { get; set; }
-	[SerializeField] Transform pose;
+	[SerializeField] HandPoseObject hp;
 	private Rigidbody rb;
 	private Quaternion initRot, targetRot, actualRot;
 
