@@ -4,9 +4,9 @@ using UnityEngine;
 public class Mount : MonoBehaviour {
 	public string mountType;
 	[SerializeField] Receiver receiver;
+	[SerializeField] Part attached;
 	[SerializeField] Mount parent;
 	[SerializeField] List<Mount> mounts;
-	[SerializeField] Part attached;
 
 	public void Attach(Part part) {
 		receiver.parts.Add(part);

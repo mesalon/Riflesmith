@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour {
 		.OrderByDescending(c => c.depth)
 		.FirstOrDefault();
 	public static GameManager I { get; private set; }
+	public GameConfig config;
 	private Scene loading;
 	private bool isLoading;
 
@@ -38,9 +39,6 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void LateUpdate() {
-		if (Input.GetKeyDown(KeyCode.Alpha1)) { TransitionScene("Main"); }
-		if (Input.GetKeyDown(KeyCode.Alpha2)) { TransitionScene("Facility"); }
-
 		float dt = Time.deltaTime;
 		Ext.labelQueue.RemoveAll(r => r.lifespan < 0);
 		for (int i = Ext.labelQueue.Count - 1; i >= 0; i--) { Ext.labelQueue[i].lifespan -= dt; }

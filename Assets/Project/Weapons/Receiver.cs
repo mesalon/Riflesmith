@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using UnityEngine;
 
-public class Receiver : MonoBehaviour {
-	public List<Mount> mounts;
-	public List<Part> parts;
+public class Receiver : GrabInteractable {
+	public List<Part> parts = new();
 
 	public void Reassemble() {
 		foreach (Part part in parts) { part.Reset(); }

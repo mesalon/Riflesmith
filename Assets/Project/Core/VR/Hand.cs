@@ -8,7 +8,7 @@ public class Hand : MonoBehaviour {
 	private Vector3 HeadOffset => VRPlayer.Input.head.position.FlattenY();
 
 	[SerializeField] HandPoseObject neutralPose, gripPose, triggerPose;
-	public IInteractable held;
+	public GrabInteractable held;
 	public Transform palm;
 	public Rigidbody rb;
 	public Hand other;
@@ -38,7 +38,6 @@ public class Hand : MonoBehaviour {
 
 	void Update() {
 		Ext.DrawSkeleton(upperMuscle.joint.transform, Color.cyan);
-		Ext.Label(Vector3.zero, "Hi!");
 		VRGizmos.Axis(transform.position, transform.rotation, 0.05f);
 
 		Vector3 pos = Input.position; // Keep the hand positions relative to the head until they have a real input
@@ -46,9 +45,9 @@ public class Hand : MonoBehaviour {
 		transform.SetPose(Input.position, Input.rotation, Space.Self);
 		controllerVisual.SetPose(pos, Input.rotation, Space.Self);
 
-		held?.OnHold();
+		if (held) held.OnHold();
 
-		neutralPose.data.Apply(bones);
+		//neutralPose.data.Apply(bones);
 	}
 
 
@@ -63,30 +62,25 @@ public class Hand : MonoBehaviour {
 				if (gripTime < gripLeniency) { 
 					Collider[] overlap = Physics.OverlapSphere(palm.position, reach, grabLayer);
 					if (overlap.Length > 0) {
-						foreach (Collider col in overlap) { 
-							if (col.transform.root.TryGetComponent(out Rigidbody grabbable)) {
-								Ext.IgnoreCollisionsBetween(associatedColliders, grabbable.GetComponentsInChildren<Collider>(), true);
-								grabJoint = grabbable.gameObject.AddComponent<ConfigurableJoint>();
+						foreach (Collider col in overlap) {
+							if (col.transform.root.TryGetComponent(out Rigidbody objectRb)) {
+								Ext.IgnoreCollisionsBetween(associatedColliders, objectRb.GetComponentsInChildren<Collider>(), true);
+								grabJoint = objectRb.gameObject.AddComponent<ConfigurableJoint>();
 								grabJoint.connectedBody = rb;
 								grabJoint.autoConfigureConnectedAnchor = false;
-								grabJoint.anchor = grabbable.transform.InverseTransformPoint(rb.position);
+								grabJoint.anchor = objectRb.transform.InverseTransformPoint(rb.position);
 								grabJoint.xDrive = grabJoint.yDrive = grabJoint.zDrive = heldDrive;
 								grabJoint.rotationDriveMode = RotationDriveMode.Slerp;
 								grabJoint.slerpDrive = heldDrive;
+
+								if (col.transform.root.TryGetComponent(out GrabInteractable gi)) { Pick(gi); } 
 								break;
-							} 
-						}
-						foreach (Collider col in overlap) { 
-							if (col.transform.TryGetComponent(out IInteractable i)) {
-								Pick(i);
-								break;
-							} 
+							}
 						}
 					}
 				}
 			} 		
-		} else if (grabJoint) {
-			if(lockit) return;
+		} else if (grabJoint && !lockit) {
 			Drop();
 			Ext.IgnoreCollisionsBetween(associatedColliders, grabJoint.transform.GetComponentsInChildren<Collider>(), false); // todo: this fucking sucks
 			Destroy(grabJoint);
@@ -94,14 +88,12 @@ public class Hand : MonoBehaviour {
 			gripTime = 0;
 		}
 
-
-		held?.OnHoldFixed();
+		if (held) held.OnHoldFixed();
 	}
 
-	public void Pick(IInteractable i) {
-		if (!i.PreventInteraction) {
-			if (i.Interactor) i.Interactor.Drop(); // Release if something else is holding it
-			held = i;
+	public void Pick(GrabInteractable gi) {
+		if (gi.enabled) {
+			held = gi;
 			held.Interactor = this;
 			held.OnPicked();
 		}
