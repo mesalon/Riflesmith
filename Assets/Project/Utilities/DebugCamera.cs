@@ -27,7 +27,7 @@ public class DebugCamera : MonoBehaviour {
 			transform.position += transform.rotation * movement * flySpeed * Time.deltaTime;
 
 			if (projectile && Input.GetKeyDown(KeyCode.Space)) 
-				ProjectileManager.CreateProjectile(new(projectile, transform.position - transform.rotation * new Vector3(0, 0, -0.01f), transform.forward));
+				ProjectileManager.CreateProjectile(new(projectile, transform.position - transform.rotation * new Vector3(0, 0, -0.01f), transform.forward, projectile.maxSpeed));
 		}
 
 		if (Input.GetKeyDown(KeyCode.X)) {

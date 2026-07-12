@@ -19,7 +19,7 @@ public class SimpleFirearm : MonoBehaviour {
 	private void Update() {
 		if (triggerState && fireTime > 1 / (cyclicRate / 60) && rounds > 0) {
 			RuntimeManager.PlayOneShot(shot, muzzle.position);
-			ProjectileManager.CreateProjectile(new(projectile, muzzle.position, muzzle.forward));
+			ProjectileManager.CreateProjectile(new(projectile, muzzle.position, muzzle.forward, projectile.maxSpeed));
 			fireTime = 0;
 			rounds--;
 		}

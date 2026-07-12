@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public class FireControlGroup : Part {
+public class FireControlGroup : FixedPart {
 	[Serializable] public struct Config {
 		public float triggerThreshold;
 		public bool isFullAuto;
@@ -14,8 +14,9 @@ public class FireControlGroup : Part {
 	private bool disconnectorState;
 	private Chamber chamber;
 
-	public override void Reset() {
+	public override void OnReset() {
 		conf = baseConf;
+		chamber = null;
 	}
 	public override void OnAssemble(Receiver receiver) {
 		chamber = receiver.Find<Chamber>();

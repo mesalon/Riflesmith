@@ -289,6 +289,12 @@ public static class Ext {
 		transform.localRotation = Quaternion.identity;
 		transform.localScale = Vector3.one;
 	}
+
+	public static void SetMatrix(this Transform t, Matrix4x4 matrix) {
+		t.localPosition = matrix.GetPosition();
+		t.localRotation = matrix.rotation;
+		t.localScale = matrix.lossyScale;
+	}
 }
 
 public class LabelRequest {

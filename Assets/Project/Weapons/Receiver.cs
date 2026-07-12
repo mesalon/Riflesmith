@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using UnityEngine;
 
-public class Receiver : GrabInteractable {
+public class Receiver : MonoBehaviour {
 	public List<Part> parts = new();
 
 	public void Reassemble() {
-		foreach (Part part in parts) { part.Reset(); }
+		foreach (Part part in parts) { part.OnReset(); }
 		foreach (Part part in parts) { part.OnAssemble(this); }
 	}
 
@@ -14,4 +15,5 @@ public class Receiver : GrabInteractable {
 		}
 		return default;
 	}
+
 }

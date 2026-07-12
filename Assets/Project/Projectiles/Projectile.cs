@@ -1,16 +1,15 @@
 using UnityEngine;
 
 public class Projectile {
+	public ProjectileData data;
 	private Vector3 position;
 	private Vector3 lastPosition;
-	Vector3 velocity;
+	private Vector3 velocity;
 
-	public ProjectileData data;
-
-	public Projectile(ProjectileData data, Vector3 position, Vector3 direction) {
+	public Projectile(ProjectileData data, Vector3 position, Vector3 direction, float speed) {
 		this.data = data;
 		this.position = position;
-		velocity = direction.normalized * data.maxSpeed;
+		velocity = direction.normalized * speed;
 	}
 
 	public void Tick(ProjectileManager pm, out bool destroyProjectile) {

@@ -8,7 +8,6 @@ public class Hand : MonoBehaviour {
 	private Vector3 HeadOffset => VRPlayer.Input.head.position.FlattenY();
 
 	[SerializeField] HandPoseObject neutralPose, gripPose, triggerPose;
-	public GrabInteractable held;
 	public Transform palm;
 	public Rigidbody rb;
 	public Hand other;
@@ -44,10 +43,6 @@ public class Hand : MonoBehaviour {
 		if (VRPlayer.Input.head.gotFirstInput && !Input.gotFirstInput) { pos += VRPlayer.Input.head.position.FlattenY(); }
 		transform.SetPose(Input.position, Input.rotation, Space.Self);
 		controllerVisual.SetPose(pos, Input.rotation, Space.Self);
-
-		if (held) held.OnHold();
-
-		//neutralPose.data.Apply(bones);
 	}
 
 
@@ -72,8 +67,6 @@ public class Hand : MonoBehaviour {
 								grabJoint.xDrive = grabJoint.yDrive = grabJoint.zDrive = heldDrive;
 								grabJoint.rotationDriveMode = RotationDriveMode.Slerp;
 								grabJoint.slerpDrive = heldDrive;
-
-								if (col.transform.root.TryGetComponent(out GrabInteractable gi)) { Pick(gi); } 
 								break;
 							}
 						}
@@ -81,29 +74,10 @@ public class Hand : MonoBehaviour {
 				}
 			} 		
 		} else if (grabJoint && !lockit) {
-			Drop();
 			Ext.IgnoreCollisionsBetween(associatedColliders, grabJoint.transform.GetComponentsInChildren<Collider>(), false); // todo: this fucking sucks
 			Destroy(grabJoint);
 		} else { 
 			gripTime = 0;
-		}
-
-		if (held) held.OnHoldFixed();
-	}
-
-	public void Pick(GrabInteractable gi) {
-		if (gi.enabled) {
-			held = gi;
-			held.Interactor = this;
-			held.OnPicked();
-		}
-	}
-
-	public void Drop() {
-		if (held != null) {
-			held.OnDropped();
-			held.Interactor = null;
-			held = null;
 		}
 	}
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public class Bolt : Part {
+public class Bolt : FixedPart {
 	[Serializable] public struct Config {
 		public float cyclicRate;
 		public bool hasSpring;
@@ -17,8 +17,11 @@ public class Bolt : Part {
 	private IAmmoSource ammo;
 	private bool boltLocked;
 	
-	public override void Reset() {
+	public override void OnReset() {
 		conf = baseConf;
+		ammo = null;
+		fcg = null;
+		chamber = null;
 	}
 	public override void OnAssemble(Receiver receiver) {
 		ammo = receiver.Find<IAmmoSource>();
