@@ -295,6 +295,65 @@ public static class Ext {
 		t.localRotation = matrix.rotation;
 		t.localScale = matrix.lossyScale;
 	}
+	public static Vector3 WeighedAverage(this List<(Vector3 v, float w)> vecs) {
+		Vector3 result = Vector3.zero;
+		float total = 0;
+		foreach (var (v, w) in vecs) {
+			result += v * w;
+			total += w;
+		}
+		return result / total;
+	}
+	public static Quaternion WeighedAverage(this List<(Quaternion q, float weight)> quats) => QuaternionExt.WeighedAverage(quats);
+	
+	public static class QuaternionExt {
+		public static Quaternion WeighedAverage(List<(Quaternion q, float weight)> quats) {
+			if(quats.Count == 0) { return Quaternion.identity; }
+			Vector4 cumulative = new(0, 0, 0, 0);
+			foreach(var (q, w) in quats) { AverageQuaternion_Internal(ref cumulative, q, quats[0].q, w); }
+			return Normalize(new Quaternion(cumulative.x, cumulative.y, cumulative.z, cumulative.w));
+		}
+
+		//Get an average (mean) from more then two quaternions (with two, slerp would be used).
+		//Note: this only works if all the quaternions are relatively close together.
+		//Usage:
+		//-Cumulative is an external Vector4 which holds all the added x y z and w components.
+		//-newRotation is the next rotation to be added to the average pool
+		//-firstRotation is the first quaternion of the array to be averaged
+		//-addAmount holds the total amount of quaternions which are currently added
+		private static void AverageQuaternion_Internal(ref Vector4 cumulative, Quaternion newRotation, Quaternion firstRotation, float w) {
+			//Before we add the new rotation to the average (mean), we have to check whether the quaternion has to be inverted. Because
+			//q and -q are the same rotation, but cannot be averaged, we have to make sure they are all the same.
+			if (!AreClose(newRotation, firstRotation)) { newRotation = InverseSign(newRotation); }
+
+			//Average the values
+			cumulative.w += newRotation.w * w;
+			cumulative.x += newRotation.x * w;
+			cumulative.y += newRotation.y * w;
+			cumulative.z += newRotation.z * w;
+		}
+
+		private static Quaternion Normalize(Quaternion quat) {
+			float lengthD = 1.0f / Mathf.Sqrt(quat.w * quat.w + quat.x * quat.x + quat.y * quat.y + quat.z * quat.z);
+			quat.x *= lengthD;
+			quat.y *= lengthD;
+			quat.z *= lengthD;
+			quat.w *= lengthD;
+			return quat;
+		}
+
+		//Changes the sign of the quaternion components. This is not the same as the inverse.
+		private static Quaternion InverseSign(Quaternion q) => new(-q.x, -q.y, -q.z, -q.w);
+
+		//Returns true if the two input quaternions are close to each other. This can
+		//be used to check whether or not one of two quaternions which are supposed to
+		//be very similar but has its component signs reversed (q has the same rotation as
+		//-q)
+		private static bool AreClose(Quaternion q1, Quaternion q2) => !(Quaternion.Dot(q1, q2) < 0.0f);
+	}
+
+	public static bool IsInside(this Vector3 v, Collider col) => col.ClosestPoint(v) == v;
+	
 }
 
 public class LabelRequest {
@@ -378,3 +437,4 @@ public class EdgeComparer : IEqualityComparer<(Vector3 a, Vector3 b)> {
 			(a, b) : (b, a);
 	}
 }
+

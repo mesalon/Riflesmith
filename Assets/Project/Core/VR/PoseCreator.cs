@@ -48,7 +48,7 @@ using UnityEditor.UIElements;
 		}
 
 		reference = hp;
-		reference.Apply(bones);
+		HandPose.Apply(reference, bones);
 		Update();
 	}
 
@@ -62,7 +62,7 @@ using UnityEditor.UIElements;
 			previewField.RegisterValueChangeCallback(evt => {
 				var hpo = (HandPoseObject)evt.changedProperty.objectReferenceValue;
 					if (hpo) {
-						hpo.data.Apply(p.bones);
+						HandPose.Apply(hpo.data, p.bones);
 						p.init = p.CopyFromBones();
 					}
 			});
@@ -86,13 +86,22 @@ using UnityEditor.UIElements;
 				root.Add(new Label("Not initialized"));
 			}
 			root.Add(new Button(() => {
-						p.reference.poses = p.modified.poses;
-						p.reference.mask = p.modified.mask;
-						print($"Saving: Reference is {p.reference}. Modified poses is {p.modified} with {p.modified.poses.Length}");
-						Selection.activeObject = p.returnTo;
-						DestroyImmediate(p.gameObject);
-						}) { text = "Save", });
+				for (int i = 0; i < p.bones.Length; i++) {
+					p.modified.mask[i] = true;
+					p.modified.poses[i] = new(p.bones[i].localPosition, p.bones[i].localRotation);
+				}
+				Save(p);
+			}) { text = "Capture all" });
+			root.Add(new Button(() => Save(p)) { text = "Save" });
 			return root;
+		}
+
+		private void Save(PoseCreator p) {
+			p.reference.poses = p.modified.poses;
+			p.reference.mask = p.modified.mask;
+			print($"Saving: Reference is {p.reference}. Modified poses is {p.modified} with {p.modified.poses.Length}");
+			Selection.activeObject = p.returnTo;
+			DestroyImmediate(p.gameObject);
 		}
 	}
 #endif
