@@ -15,7 +15,6 @@ public struct VRInput {
 
 
 public struct DeviceInput {
-	public readonly bool IsValid => position != Vector3.zero;
 	public Vector3 position;
 	public Quaternion rotation;
 	public Vector2 stick;

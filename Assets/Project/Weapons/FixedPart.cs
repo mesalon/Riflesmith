@@ -7,20 +7,38 @@ using UnityEngine.UIElements;
 
 [DisallowMultipleComponent]
 public class FixedPart : Part { // ADD BACK IINTERACTABLE YOU STUPID NIGGER
-	protected override Vector3 Center => transform.position;
 	[SerializeField] Transform mountPoint;
+	private FixedMount mount;
 
-	void OnHoldFixed() {
-		foreach (PointQuery p in PointQuery.overlap) {
-			if (CanAttach(mount)) {
-				if (dist < GameManager.I.config.attachmentRange.Sqr()) {
-					onDrop = m;
-				}
+	private void Attach(FixedMount m) {
+		if (!m.attached && m.mountType.Equals(mountType)) {
+			mount = m;
+			mount.attached = this;
+			mount.Register();
+			if (mount.receiver) mount.receiver.Reassemble();
+			transform.SetParent(mount.transform);
+			Vector3 pos = Vector3.zero;
+			Quaternion rot = Quaternion.identity;
+			if (mountPoint) {
+				rot = Quaternion.Inverse(mountPoint.localRotation);
+				pos = rot * -mountPoint.localPosition;
 			}
+			transform.localPosition = pos;
+			transform.localRotation = rot;
 		}
 	}
+	private void Detach() {
+		if (mount) {
+			mount.Deregister();
+			if (mount.receiver) mount.receiver.Reassemble();
+			transform.SetParent(null);
+			mount.attached = null;
+			mount = null;
+		}
+	}
+
 #if UNITY_EDITOR
-	[CustomEditor(typeof(FixedPart)), CanEditMultipleObjects]
+	[CustomEditor(typeof(FixedPart), true), CanEditMultipleObjects]
 	public class FixedMountEditor : Editor {
 		public override VisualElement CreateInspectorGUI() {
 			VisualElement root = new();

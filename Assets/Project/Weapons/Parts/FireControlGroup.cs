@@ -27,6 +27,7 @@ public class FireControlGroup : FixedPart {
 	}
 
 	private void Update() {
+		triggerState = input.trigger;
 		if (triggerState > conf.triggerThreshold && hammerState && !hammerLocked && !disconnectorState) {
 			disconnectorState = !conf.isFullAuto;
 			chamber.Strike();

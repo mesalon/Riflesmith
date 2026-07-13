@@ -10,34 +10,31 @@ using UnityEngine.UIElements;
 
 public class RailPart : Part {
 	[SerializeField] Transform start, end;
-	protected override Vector3 Center => (start.position + end.position) / 2;
-	public List<Mount> children = new();
 	private RailMount mount;
 
 	private void Attach(RailMount m) {
-		if (m.TryAttach(this, out Vector3 pos)) {
-			m.attached.Add(this);
+		if (m.mountType.Equals(mountType)) {
 			mount = m;
-			transform.SetParent(m.transform);
-			transform.position = pos;
-			Register();
-			Receiver.Reassemble();
+			mount.attached.Add(this);
+			mount.Register();
+			if (mount.receiver) mount.receiver.Reassemble();
+			transform.SetParent(mount.transform);
+			transform.localPosition = m.GetAttachPoint((start.position + end.position) / 2);
 		}
 	}
-	protected void Detach() {
+
+	private void Detach() {
 		if (mount) {
-			Deregister();
-			Receiver.Reassemble();
+			mount.Deregister();
+			if (mount.receiver) mount.receiver.Reassemble();
 			transform.SetParent(null);
 			mount.attached.Remove(this);
 			mount = null;
 		}
 	}
 
-}
-
 #if UNITY_EDITOR
-	[CustomEditor(typeof(RailPart)), CanEditMultipleObjects]
+	[CustomEditor(typeof(RailPart), true), CanEditMultipleObjects]
 	public class RailMountEditor : Editor {
 		public override VisualElement CreateInspectorGUI() {
 			VisualElement root = new();

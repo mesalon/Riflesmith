@@ -14,30 +14,40 @@ public class RailMount : Mount {
 		return false;
 	}
 
-	public override void Register() {
-		print($"Registering {this} to {mount}, receiver is {Receiver}");
-		if (!Receiver.parts.Contains(this)) Receiver.parts.Add(this);
-		foreach (Mount m in children) {
-			m.receiver = Receiver;
+	public Vector3 GetAttachPoint(Vector3 center) {
+		Vector3 a = start.localPosition;
+		Vector3 b = end.localPosition;
+		Vector3 c = transform.InverseTransformPoint(center);
 
-			if (m.attached) { m.attached.Register(); }
-		}
+		Vector3 ab = b - a;
+		float len = ab.magnitude;
+		Vector3 dir = ab / len;
+		float t = Vector3.Dot(c - a, dir);
+		t = Mathf.Clamp(t, 0f, len);
+		return a + dir * t;
 	}
 
-	private void Deregister() {
-		print($"Deregistering {this} from {mount}, receiver is {Receiver}");
-		if (mount) {
-			Receiver.parts.Remove(this);
-			foreach (Mount m in children) {
-				if (m.attached) { m.attached.Deregister(); }
-				m.receiver = null;
+	public override void Register() {
+		if (receiver) {
+			foreach (RailPart part in attached) {
+				if (!receiver.parts.Contains(part)) receiver.parts.Add(part);
+				foreach (Mount m in part.children) {
+					m.receiver = receiver;
+					m.Register();
+				}
 			}
 		}
 	}
 
-	public override Vector3 GetAttachPoint(Vector3 center) {
-		Vector3 a = end.position - center;
-		Vector3 b = end.position - start.position;
-		return Vector3.Lerp(start.position, end.position, Vector3.Dot(b, a));
+	public override void Deregister() {
+		if (receiver) {
+			foreach (RailPart part in attached) {
+				receiver.parts.Remove(part);
+				foreach (Mount m in part.children) {
+					m.Deregister();
+					m.receiver = null;
+				}
+			}
+		}
 	}
 }
