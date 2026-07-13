@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VRProbe")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+734c1bb17c302e36d64c641b28d35c4b224c0cf8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d40ce5611cdaa5e128a6cc27f7ce8ac428ad11f4")]
 [assembly: System.Reflection.AssemblyProductAttribute("VRProbe")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VRProbe")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

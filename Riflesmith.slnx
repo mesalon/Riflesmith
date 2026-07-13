@@ -15,6 +15,7 @@
   <Project Path="Editor.csproj" />
   <Project Path="Weapons.csproj" />
   <Project Path="Worlds.csproj" />
+  <Project Path="Utilities.csproj" />
   <Project Path="FMODUnityResonance.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
   <Project Path="Player.csproj" />
