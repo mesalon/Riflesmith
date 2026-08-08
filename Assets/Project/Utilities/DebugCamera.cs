@@ -1,7 +1,6 @@
 using UnityEngine;
 
 public class DebugCamera : MonoBehaviour {
-	[SerializeField] ProjectileData projectile;
 	[SerializeField] float sensitivity = 1, speed = 5, shiftMult = 2, smoothing = 0.15f;
 	[SerializeField] bool inTouchMode;
 	private Vector3 movement, velocity;
@@ -26,8 +25,8 @@ public class DebugCamera : MonoBehaviour {
 			float flySpeed = Input.GetKey(KeyCode.LeftShift) ? speed * shiftMult : speed;
 			transform.position += transform.rotation * movement * flySpeed * Time.deltaTime;
 
-			if (projectile && Input.GetKeyDown(KeyCode.Space)) 
-				ProjectileManager.CreateProjectile(new(projectile, transform.position - transform.rotation * new Vector3(0, 0, -0.01f), transform.forward, projectile.maxSpeed));
+			if (Input.GetKeyDown(KeyCode.Space)) 
+				ProjectileManager.CreateGenericProjectile(transform.position - transform.rotation * new Vector3(0, 0, -0.01f), transform.forward);
 		}
 
 		if (Input.GetKeyDown(KeyCode.X)) {

@@ -3,31 +3,27 @@ using UnityEngine;
 
 public class Chamber : FixedPart {
 	public Cartridge cartridge;
-	private Barrel barrel;
 	private GasBlock gas;
-
-	public override void OnReset() {
-		gas = null;
-		barrel = null;
-	}
+	[SerializeField] float energyConversion;
+	[SerializeField] Transform roundT;
 	public override void OnAssemble(Receiver receiver) {
 		gas = receiver.Find<GasBlock>();
-		barrel = receiver.Find<Barrel>();
 	}
 
 	public void Strike() {
-		//muzzleFlash.Emit(1);
-		//muzzleLight.enabled = true;
-		float speed = barrel ? Mathf.Lerp(cartridge.data.minSpeed, cartridge.data.maxSpeed, barrel.length) : 5;
-		Projectile p = new(cartridge.data, transform.position, transform.forward, speed);
-		ProjectileManager.CreateProjectile(p);
-		RuntimeManager.PlayOneShot(cartridge.data.shotSound, transform.position);
-		cartridge.isFired = true;
-		gas?.Receive();
+		if (cartridge.data) {
+			CartridgeData data = cartridge.data;
+			float energy = data.energy * energyConversion;
+			float speed = Mathf.Sqrt(2 * energy / data.bulletMass);
+			if (gas) gas.Receive(energy);
+			ProjectileManager.CreateProjectile(new() { data = data, position = transform.position, velocity = transform.forward * speed });
+			RuntimeManager.PlayOneShot(cartridge.data.shotSound, transform.position);
+			cartridge.isFired = true;
+		}
 	}
 
-	public void Eject(Vector3 at) {
-		// todo
-		cartridge = default;
+	void Update() {
+		Ext.Label(transform.position, cartridge.data ? $"Chamber: {cartridge.data}" : "");
+		if (cartridge.data) cartridge.Render(roundT.localToWorldMatrix);
 	}
 }

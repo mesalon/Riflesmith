@@ -11,22 +11,23 @@ public class Hand : MonoBehaviour {
 	public Transform palm;
 	public Rigidbody rb;
 	public Hand other;
-	public bool lockit;
+	public bool doToggleGrab;
 	public float grabPosSpeed, grabRotSpeed;
+	public JointDriveData heldDrive;
 	[HideInInspector] public ConfigurableJoint grabJoint;
-	[SerializeField] Side side;
-	[SerializeField] Transform forward;
+	public Transform grabPoint;
+	public Side side;
+	[SerializeField] bool drawGizmos;
 	[SerializeField] Transform controllerVisual;
 	[SerializeField] JointDriveData normalDrive, climbDrive, grabDrive;
 	[SerializeField] LayerMask grabLayer;
-	[SerializeField] Transform[] bones;
 	[SerializeField] Collider[] associatedColliders;
-	[SerializeField] JointDriveData heldDrive;
 	[SerializeField] Muscle upperMuscle, lowerMuscle, handMuscle;
 	[SerializeField] float reach;
-	[SerializeField] float gripPoint, gripLeniency;
-	private float gripTime;
+	[SerializeField] float gripPoint;
 	private JointDriveData currentDrive;
+	public Interactable held;
+	private bool gripState;
 
 	void Awake() {
 		currentDrive = normalDrive;
@@ -36,49 +37,73 @@ public class Hand : MonoBehaviour {
 	}
 
 	void Update() {
-		Ext.DrawSkeleton(upperMuscle.joint.transform, Color.cyan);
-		VRGizmos.Axis(transform.position, transform.rotation, 0.05f);
+		if (drawGizmos) {
+			Ext.DrawSkeleton(upperMuscle.joint.transform, Color.cyan);
+			VRGizmos.Axis(transform.position, transform.rotation, 0.05f);
+		}
 
 		Vector3 pos = Input.position; // Keep the hand positions relative to the head until they have a real input
 		if (VRPlayer.Input.head.gotFirstInput && !Input.gotFirstInput) { pos += VRPlayer.Input.head.position.FlattenY(); }
 		transform.SetPose(Input.position, Input.rotation, Space.Self);
 		controllerVisual.SetPose(pos, Input.rotation, Space.Self);
+
+		if (held) held.OnHold();
 	}
 
+
+	private void Drop() {
+		if (grabJoint) {
+			Destroy(grabJoint);
+			Ext.IgnoreCollisionsBetween(associatedColliders, grabJoint.transform.GetComponentsInChildren<Collider>(), false); // todo: this fucking sucks
+			if (held) {
+				held.OnDropped();
+				held.hand = null;
+				held = null;
+			}
+		}
+	}
 
 	void FixedUpdate() {
 		upperMuscle.Drive(true);
 		lowerMuscle.Drive();
 		handMuscle.Drive();
-		
-		if (Input.grip >= gripPoint) {
+		if (doToggleGrab) {
+			if (Input.grip.DidPass(gripPoint, LastInput.grip)) { gripState = !gripState; }
+		} else { gripState = Input.grip >= gripPoint; }
+		if (gripState) {
 			if (!grabJoint) {
-				gripTime += Time.deltaTime;
-				if (gripTime < gripLeniency) { 
-					Collider[] overlap = Physics.OverlapSphere(palm.position, reach, grabLayer);
-					if (overlap.Length > 0) {
-						foreach (Collider col in overlap) {
-							if (col.transform.root.TryGetComponent(out Rigidbody objectRb)) {
-								Ext.IgnoreCollisionsBetween(associatedColliders, objectRb.GetComponentsInChildren<Collider>(), true);
-								grabJoint = objectRb.gameObject.AddComponent<ConfigurableJoint>();
-								grabJoint.connectedBody = rb;
-								grabJoint.autoConfigureConnectedAnchor = false;
-								grabJoint.anchor = objectRb.transform.InverseTransformPoint(rb.position);
-								grabJoint.xDrive = grabJoint.yDrive = grabJoint.zDrive = heldDrive;
-								grabJoint.rotationDriveMode = RotationDriveMode.Slerp;
-								grabJoint.slerpDrive = heldDrive;
-								break;
-							}
-						}
+				Collider[] overlap = Physics.OverlapSphere(palm.position, reach, grabLayer);
+
+				Interactable interactable = null;
+				Rigidbody objectRb = null;
+				foreach (Collider col in overlap) {
+					if (col.TryGetComponent(out interactable)) { 
+						objectRb = interactable.rb; 
+						break;
 					}
+					if (!objectRb && col.attachedRigidbody) { objectRb = col.attachedRigidbody; }
 				}
-			} 		
-		} else if (grabJoint && !lockit) {
-			Ext.IgnoreCollisionsBetween(associatedColliders, grabJoint.transform.GetComponentsInChildren<Collider>(), false); // todo: this fucking sucks
-			Destroy(grabJoint);
-		} else { 
-			gripTime = 0;
+				if (objectRb) {
+					Ext.IgnoreCollisionsBetween(associatedColliders, objectRb.GetComponentsInChildren<Collider>(), true);
+					grabJoint = objectRb.gameObject.AddComponent<ConfigurableJoint>();
+					grabJoint.connectedBody = rb;
+					grabJoint.autoConfigureConnectedAnchor = false;
+					grabJoint.anchor = objectRb.transform.InverseTransformPoint(rb.position);
+					grabJoint.xDrive = grabJoint.yDrive = grabJoint.zDrive = heldDrive;
+					grabJoint.rotationDriveMode = RotationDriveMode.Slerp;
+					grabJoint.slerpDrive = heldDrive;
+				}
+				if (interactable && !interactable.hand) {
+					//if (interactable.hand) { interactable.hand.Drop(); } todo: fix
+					held = interactable;
+					held.hand = this;
+					held.OnPicked();
+				}
+			}
+		} else {
+			Drop();
 		}
+		if (held) held.OnHoldFixed();
 	}
 }
 
@@ -87,10 +112,14 @@ public enum Side { Left, Right }
 	public ConfigurableJoint joint;
 	[SerializeField] Transform target;
 	[SerializeField] Transform bone;
+	[SerializeField] float dampingRatio;
 	private Quaternion initRot;
 
 	public void Init() => initRot = Quaternion.Inverse(joint.transform.localRotation);
 	public void Drive(bool positionToo = false) {
+		JointDrive drive = joint.slerpDrive;
+		drive.positionDamper = Mathf.Sqrt(joint.slerpDrive.positionSpring) * dampingRatio;
+		joint.slerpDrive = drive;
 		if (positionToo) {
 			joint.targetPosition = initRot * target.root.InverseTransformPoint(target.position);
 			joint.targetRotation = initRot * Quaternion.Inverse(target.root.rotation) * target.rotation;

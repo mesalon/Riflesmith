@@ -26,7 +26,7 @@ public static class ConfigurableJointExtensions {
 	static void SetTargetRotationInternal (ConfigurableJoint joint, Quaternion targetRotation, Quaternion startRotation, Space space) {
 		// Calculate the rotation expressed by the joint's axis and secondary axis
 		Vector3 right = joint.axis;
-		Vector3 forward = Vector3.Cross (joint.axis, joint.secondaryAxis).normalized;
+		Vector3 forward = Vector3.Cross (right, joint.secondaryAxis).normalized;
 		Vector3 up = Vector3.Cross (forward, right).normalized;
 		Quaternion worldToJointSpace = Quaternion.LookRotation (forward, up);
 		

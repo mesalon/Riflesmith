@@ -18,9 +18,10 @@ public static class Ext {
 
 	// todo: combine all these into one somehow
 	public static bool DidPass(this float current, float amount, float previous) => current > amount && previous <= amount;
-	public static bool DidFail(this float current, float amount, float previous) => current < amount && previous >= amount;
+	public static bool DidPassBack(this float current, float amount, float previous) => current < amount && previous >= amount;
 	public static bool DidReach(this float current, float amount, float previous) => current >= amount && previous < amount;
-	public static bool DidRecede(this float current, float amount, float previous) => current <= amount && previous > amount;
+	public static bool DidReachBack(this float current, float amount, float previous) => current <= amount && previous > amount;
+	public static bool DidCross(this float current, float amount, float previous) => current.DidPass(amount, previous) || current.DidPassBack(amount, previous);
 
 	public static T? TryIndex<T>(this T[] array, int index) {
 		return (index >= 0 && index < array.Length) ? array[index] : default;
@@ -353,7 +354,12 @@ public static class Ext {
 	}
 
 	public static bool IsInside(this Vector3 v, Collider col) => col.ClosestPoint(v) == v;
-	
+
+	public static float InverseLerp(Vector3 a, Vector3 b, Vector3 value) {
+		Vector3 AB = b - a;
+		Vector3 AV = value - a;
+		return Vector3.Dot(AV, AB) / Vector3.Dot(AB, AB);
+	}
 }
 
 public class LabelRequest {

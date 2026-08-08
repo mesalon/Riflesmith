@@ -1,3 +1,3 @@
-public interface IAmmoSource {
-	public Cartridge Strip();
+public abstract class AmmoSource : FixedPart{
+	public abstract Cartridge Strip();
 }

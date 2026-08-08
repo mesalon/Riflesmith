@@ -1,37 +1,25 @@
 using UnityEngine;
-using System;
 
 public class FireControlGroup : FixedPart {
-	[Serializable] public struct Config {
-		public float triggerThreshold;
-		public bool isFullAuto;
-	}
-	public Config conf;
-	[SerializeField] Config baseConf;
-	private float triggerState;
-	private bool hammerState;
-	private bool hammerLocked;
+	public DeviceInput input;
+	[SerializeField] Chamber chamber;
+	[SerializeField] float triggerThreshold;
+	[SerializeField] bool isFullAuto;
+	public bool hammerState;
+	public bool hammerLocked;
 	private bool disconnectorState;
-	private Chamber chamber;
 
-	public override void OnReset() {
-		conf = baseConf;
-		chamber = null;
-	}
 	public override void OnAssemble(Receiver receiver) {
 		chamber = receiver.Find<Chamber>();
 	}
 
-	public void ResetHammer() {
-		hammerState = true;
-	}
-
 	private void Update() {
-		triggerState = input.trigger;
-		if (triggerState > conf.triggerThreshold && hammerState && !hammerLocked && !disconnectorState) {
-			disconnectorState = !conf.isFullAuto;
+		print($"FCG: Trigger: {input.trigger}. Hammer: {hammerState}. Lock: {hammerLocked}. Disconnector: {disconnectorState}");
+		if (input.trigger > triggerThreshold && hammerState && !hammerLocked && !disconnectorState) {
+			disconnectorState = !isFullAuto;
 			chamber.Strike();
 			hammerState = false;
 		}
+		if (input.trigger <= triggerThreshold) { disconnectorState = false; }
 	}
 }

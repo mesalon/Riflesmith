@@ -5,6 +5,7 @@ using Valve.VR;
 
 [CreateAssetMenu()]
 public class HardwareInputProvider : VRInputProvider {
+	[SerializeField] Vector3 globalHandOffsetL, globalHandOffsetR;
 	private static readonly uint size = (uint)Marshal.SizeOf<VRControllerState_t>();
 
 	public override void GetInput(ref VRInput LastInput, ref VRInput Input) {
@@ -24,6 +25,9 @@ public class HardwareInputProvider : VRInputProvider {
 			input.position = position;
 			input.rotation = rotation;
 			input.gotFirstInput = true;
+			if (node != XRNode.CenterEye) { 
+				input.position += input.rotation * (node == XRNode.LeftHand ? globalHandOffsetL : globalHandOffsetR);
+			}
 			if (!lastInput.gotFirstInput) { lastInput = input; }
 		}
 	}

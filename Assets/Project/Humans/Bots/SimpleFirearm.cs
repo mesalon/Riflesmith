@@ -8,7 +8,6 @@ public class SimpleFirearm : MonoBehaviour {
 	[SerializeField] float cyclicRate;
 	[SerializeField] int capacity;
 	[SerializeField] EventReference shot;
-	[SerializeField] ProjectileData projectile;
 	public Transform grip, foregrip;
 	private float fireTime;
 
@@ -19,7 +18,7 @@ public class SimpleFirearm : MonoBehaviour {
 	private void Update() {
 		if (triggerState && fireTime > 1 / (cyclicRate / 60) && rounds > 0) {
 			RuntimeManager.PlayOneShot(shot, muzzle.position);
-			ProjectileManager.CreateProjectile(new(projectile, muzzle.position, muzzle.forward, projectile.maxSpeed));
+			ProjectileManager.CreateGenericProjectile(muzzle.position, muzzle.forward);
 			fireTime = 0;
 			rounds--;
 		}

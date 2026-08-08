@@ -18,14 +18,14 @@ TagManager:
   - Interactable
   - Firearm
   - Attachment
-  - 
+  - FirearmInternal
   - Backpack
   - Screwdriver
   - 
   - Walkable
   - Obstacle
   - Ragdoll
-  - 
+  - Arm
   - 
   - 
   - Light

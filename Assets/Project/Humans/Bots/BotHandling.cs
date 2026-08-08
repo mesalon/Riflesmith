@@ -40,7 +40,7 @@ public class BotHandling {
 			this.target = target;
 			aimDir = (TargetDir + Random.insideUnitSphere * cfg.aimError).normalized;
 		}
-		if (Vector3.Angle(weapon.transform.forward, aimDir) < 5 && !Physics.Raycast(weapon.muzzle.position, weapon.muzzle.forward, out var _, ProjectileManager.I.mask)) {
+		if (Vector3.Angle(weapon.transform.forward, aimDir) < 5) {
 			if (t > rest) {
 				weapon.triggerState = true;
 				aimDir = (TargetDir + Random.insideUnitSphere * cfg.aimError).normalized;

@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: Game Config
   m_EditorClassIdentifier: Core::GameConfig
   outlinePreviewMat: {fileID: 2100000, guid: 0781fb17778b0ef1690b32a28838275c, type: 2}
+  attachmentRange: 0.2
+  attachmentMountRange: 0.05

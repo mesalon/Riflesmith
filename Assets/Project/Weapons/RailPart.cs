@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
-
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -10,7 +8,7 @@ using UnityEngine.UIElements;
 
 public class RailPart : Part {
 	[SerializeField] Transform start, end;
-	private RailMount mount;
+	[SerializeField] RailMount mount;
 
 	private void Attach(RailMount m) {
 		if (m.mountType.Equals(mountType)) {

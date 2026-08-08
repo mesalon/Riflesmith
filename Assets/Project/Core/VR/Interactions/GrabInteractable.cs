@@ -1,108 +1,80 @@
-using UnityEditor;
-using System.Collections.Generic;
+// hey. So basically, instead of doing this UTTER FUYCKING NOSNENSE. THIS RETARDEDD FUCKING SHIT. YOU NEED TO fucking oh my god you need to simply steer the hardware so that the two hand grab agrees with itself. Thats the issue, isn't it? You just need to steer is to it agrees. Not literally flop it.
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
-public class GrabInteractable : MonoBehaviour {
-	[SerializeField] List<GrabPoint> grabPoints;
-	private List<Interaction> interactions = new();
-	private Rigidbody rb;
+public class GrabInteractable : Interactable {
+	public DeviceInput Input => hand.Input;
+	private Hand Other => hand ? hand.other : null;
+	private bool IsTwoHanded => Other.grabJoint && Other.grabJoint.GetComponent<Rigidbody>() == rb;
+	[SerializeField] HandPoseObject pose;
+	[SerializeField] Transform grabPoint;
+	private Quaternion initRot, targetRot, currentRot;
+	private Vector3 targetAnchor, targetConAnchor;
 
-	private void Awake() {
-		rb = GetComponent<Rigidbody>(); 
+	public override void OnPicked() {
+		if (grabPoint) {
+			initRot = currentRot = Quaternion.Inverse(hand.grabPoint.rotation) * rb.transform.rotation;
+			targetRot = Quaternion.Inverse(rb.transform.rotation) * grabPoint.rotation;
+			targetAnchor = rb.transform.InverseTransformPoint(grabPoint.position);
+			targetConAnchor = hand.grabPoint.localPosition;
+		}
+		base.OnPicked();
 	}
 
-	public void OnPicked(Hand hand) {
-		foreach (GrabPoint grab in grabPoints) {
-			if (hand.palm.position.IsInside(grab.test)) {
-				print($"Passed test and grabbed {grab.test.transform.parent.name}");
-				interactions.Add(new() {
-					hand = hand,
-					point = grab,
-					initRot = rb.rotation,
-					actualRot = rb.rotation, 
-					targetRot = hand.palm.rotation,
-					targetPos = grab.pose.localPosition,
-					});
-				ConfigurableJoint joint = hand.grabJoint;
-				joint.SetTargetRotationLocal(hand.palm.rotation, rb.rotation);
-				joint.targetPosition = grab.pose.localPosition;
-				return;
-			}
-		}
-		foreach (Interaction i in interactions) {
-		}
-	}
-
-	public void OnHold() { 
-		if (TryGetTwoHand(out Interaction primary, out Interaction secondary)) {
-			// Lock the SHand to the exact distance at grab time
-			VRGizmos.Sphere(secondary.hand.transform.position, 0.02f, Color.yellow);
-			Vector3 a = transform.TransformPoint(primary.hand.grabJoint.targetPosition);
-			Vector3 b = transform.TransformPoint(secondary.hand.grabJoint.targetPosition);
+	public override void OnHold() {
+		// Lock the SHand to the exact distance at grab time
+		if (IsTwoHanded) {
+			Vector3 a = rb.transform.TransformPoint(hand.grabJoint.anchor);
+			Vector3 b = rb.transform.TransformPoint(Other.grabJoint.anchor);
 			float r = (b - a).magnitude;
-			Vector3 c = primary.hand.transform.position;
-			Vector3 dir = (secondary.hand.transform.position - c).normalized * r;
+			Vector3 c = grabPoint.position;
+			Vector3 dir = (Other.transform.position - c).normalized * r;
 			Vector3 pos = c + dir;
-			VRGizmos.Sphere(c, 0.02f, Color.blue);
-			VRGizmos.Ray(c, dir, Color.blue);
-			VRGizmos.Sphere(pos, 0.02f, Color.green);
-			secondary.hand.transform.position = pos;
+			Other.transform.position = pos;
 		}
+		base.OnHold();
 	}
 
-	public bool TryGetTwoHand(out Interaction a, out Interaction b) {
-		a = null;
-		b = null;
-		foreach (Interaction i in interactions) {
-			if (a == null && i.point.isTwoHandPrimary) {
-				a = i; 
-			} else if (b == null) {
-				b = i;
+	public override void OnHoldFixed() {
+		if (grabPoint) {
+			ConfigurableJoint joint = hand.grabJoint;
+			joint.anchor = Vector3.Lerp(joint.anchor, targetAnchor, Time.fixedDeltaTime * hand.grabPosSpeed);
+			joint.connectedAnchor = Vector3.Lerp(joint.connectedAnchor, targetConAnchor, Time.fixedDeltaTime * hand.grabPosSpeed);
+			currentRot = Quaternion.Slerp(currentRot, targetRot, hand.grabRotSpeed * Time.fixedDeltaTime);
+			joint.SetTargetRotationLocal(currentRot, initRot);
+		}
+
+		if (IsTwoHanded) {
+			float dot = Vector3.Dot(hand.grabPoint.forward, Other.grabPoint.position - hand.grabPoint.position);
+			if (dot > 0) {
+				Flop(true);
+				Vector3 right = Vector3.ProjectOnPlane(hand.transform.right, rb.transform.forward);
+				float diff = Vector3.SignedAngle(right, grabPoint.right, rb.transform.forward);
+				rb.AddRelativeTorque(new(0, 0, -diff));
 			}
-		}
-		return a != null && b != null;
-	}
-
-	public void OnHoldFixed() {
-		foreach (Interaction i in interactions) {
-			print($"Interaction: {i.point.test.transform.parent.name}, {i.hand.name}");
-			ConfigurableJoint joint = i.hand.grabJoint;
-			i.actualRot = Quaternion.Slerp(i.actualRot, i.targetRot, i.hand.grabRotSpeed * Time.fixedDeltaTime);
-			//joint.SetTargetRotationLocal(i.actualRot, i.initRot);
-			//joint.targetPosition = Vector3.Lerp(joint.targetPosition, i.targetPos, Time.fixedDeltaTime * i.hand.grabPosSpeed);
-		}
-		if (TryGetTwoHand(out Interaction primary, out Interaction secondary)) {
-			Flop(true);
-			Vector3 right = Vector3.ProjectOnPlane(primary.hand.transform.right, transform.forward);
-			float diff = Vector3.SignedAngle(right, transform.right, transform.forward);
-			rb.AddRelativeTorque(new(0, 0, -diff));
-			print(diff);
 		} else {
 			Flop(false);
 		}
+		base.OnHoldFixed();
+	}
 
+	public override void OnDropped() {
+		Flop(false);
+		base.OnDropped();
 	}
 
 	private void Flop(bool state) {
-		foreach (Interaction i in interactions) { i.hand.grabJoint.slerpDrive = state ? default : i.hand.heldDrive; }
+		hand.joint.slerpDrive = state ? default : hand.heldDrive; 
+		Other.joint.slerpDrive = state ? default : hand.heldDrive; 
 	}
-	public void OnDropped(Hand hand) { 
-		Flop(false);
-		interactions.RemoveAll(x => x.hand == hand);
+
+	public void SetDormant(bool state) {
+		if (state) {
+			rb.isKinematic = true;
+			if (Application.isPlaying) { Destroy(rb); }
+			else { DestroyImmediate(rb); }
+			rb = null;
+		} else {
+			rb = gameObject.AddComponent<Rigidbody>();
+		}
 	}
-}
-
-public class Interaction {
-	public GrabPoint point;
-	public Hand hand;
-	public Quaternion initRot, targetRot, actualRot;
-	public Vector3 targetPos;
-}
-
-[System.Serializable] public class GrabPoint {
-	public HandPoseObject handPose;
-	public Transform pose;
-	public Collider test;
-	public bool isTwoHandPrimary;
 }

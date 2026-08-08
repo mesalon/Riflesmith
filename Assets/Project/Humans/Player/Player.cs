@@ -20,6 +20,7 @@ public class Player : Human, IVRAnchorProvider {
 	[SerializeField] float bodyOffset;
 	[SerializeField] float maxLegLength, legForce, legDamper, legResistance;
 	[SerializeField] float jumpForce, sprintJumpForce, jumpSpeed, jumpBrace, jumpInputMin, jumpInputMax, jumpHeightMin, sprintJumpSpeed, sprintJumpRecovery;
+	[SerializeField] bool drawGizmos;
 	[SerializeField] float footRadius;
 	[SerializeField] List<Transform> targetBones;
 	[SerializeField] List<Transform> actualBones;
@@ -46,7 +47,7 @@ public class Player : Human, IVRAnchorProvider {
 	}
 
 	void Update() {
-		Ext.DrawSkeleton(debugSkeleton, Color.white);
+		if (drawGizmos) Ext.DrawSkeleton(debugSkeleton, Color.white);
 
 		Quaternion rot = Input.rotation * Quaternion.Inverse(eyesForward.localRotation);
 		eyes.SetPose(new(0, Input.position.y, 0), rot, Space.Self);
