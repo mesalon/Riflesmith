@@ -7,21 +7,23 @@ using UnityEngine.UIElements;
 
 [DisallowMultipleComponent]
 public class FixedPart : Part {
-	private Pose attachPose = Pose.identity;
+	private Pose AttachPose {
+		get {
+			Quaternion rot = Quaternion.Inverse(mountPoint.localRotation);
+			Vector3 pos = rot * -mountPoint.localPosition;
+			return new(pos, rot);
+		}
+	}
 	[SerializeField] Transform mountPoint;
 	[SerializeField] FixedMount mount;
 	[SerializeField] FixedMount detectedMount;
 
 	new void Awake() {
-		if (mountPoint) {
-			Quaternion rot = Quaternion.Inverse(mountPoint.localRotation);
-			Vector3 pos = rot * -mountPoint.localPosition;
-			attachPose = new(pos, rot);
-		}
 		base.Awake();
-		if (TryGetComponent(out grab)) { grab.OnHoldFixedE += OnHoldFixed; grab.OnDroppedE += OnDropped; } 
+		Grab.OnHoldFixedE += OnHoldFixed; Grab.OnDroppedE += OnDropped;
+		if (mount) Grab.SetDormant(true);
 	}
-	void OnDestroy() { if (grab) { grab.OnHoldFixedE -= OnHoldFixed; grab.OnDroppedE -= OnDropped; } }
+	void OnDestroy() { Grab.OnHoldFixedE -= OnHoldFixed; Grab.OnDroppedE -= OnDropped; }
 
 	private void OnHoldFixed() {
 		detectedMount = null;
@@ -56,19 +58,19 @@ public class FixedPart : Part {
 
 	private void Attach(FixedMount m) {
 		if (CanAttach(m)) {
-			grab.SetDormant(true);
+			if (Application.isPlaying) Grab.SetDormant(true);
 			mount = m;
 			mount.attached = this;
 			mount.Register();
 			if (mount.receiver) mount.receiver.Reassemble();
 			transform.SetParent(mount.transform);
-			transform.SetPose(attachPose, Space.Self);
+			transform.SetPose(AttachPose, Space.Self);
 		}
 	}
 
 	private void Detach() {
 		if (mount) {
-			grab.SetDormant(false);
+			if (Application.isPlaying) Grab.SetDormant(false);
 			mount.Deregister();
 			if (mount.receiver) mount.receiver.Reassemble();
 			transform.SetParent(null);

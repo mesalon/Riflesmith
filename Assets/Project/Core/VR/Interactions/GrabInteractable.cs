@@ -1,4 +1,4 @@
-// hey. So basically, instead of doing this UTTER FUYCKING NOSNENSE. THIS RETARDEDD FUCKING SHIT. YOU NEED TO fucking oh my god you need to simply steer the hardware so that the two hand grab agrees with itself. Thats the issue, isn't it? You just need to steer is to it agrees. Not literally flop it.
+// hey. So basically, instead of doing this UTTER FUYCKING NOSNENSE. THIS RETARDEDD FUCKING SHIT. YOU NEED TO fucking oh my god you need to simply steer the hardware so that the two hand grab agrees with itself. Thats the issue, isn't it? You just need to steer is to it agrees. Not literally flop it. <- this guy is retarded geg
 using UnityEngine;
 
 public class GrabInteractable : Interactable {
@@ -6,9 +6,13 @@ public class GrabInteractable : Interactable {
 	private Hand Other => hand ? hand.other : null;
 	private bool IsTwoHanded => Other.grabJoint && Other.grabJoint.GetComponent<Rigidbody>() == rb;
 	[SerializeField] HandPoseObject pose;
-	[SerializeField] Transform grabPoint;
+	public Transform grabPoint;
 	private Quaternion initRot, targetRot, currentRot;
 	private Vector3 targetAnchor, targetConAnchor;
+
+	void OnValidate() {
+		if (!rb) TryGetComponent(out rb);
+	}
 
 	public override void OnPicked() {
 		if (grabPoint) {
@@ -68,6 +72,7 @@ public class GrabInteractable : Interactable {
 	}
 
 	public void SetDormant(bool state) {
+		print($"Setting {name} dormant {Application.isPlaying}, {Time.frameCount}");
 		if (state) {
 			rb.isKinematic = true;
 			if (Application.isPlaying) { Destroy(rb); }

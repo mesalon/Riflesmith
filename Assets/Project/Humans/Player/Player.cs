@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine;
 // todo: add easing to the player's leg springs
 // todo: reverse order so that springing a jump prevents you from running, and not the other way around
+// todo: don't make jump min a binary floor. Just smoothly affect the jump ability based on your head height
 
 public class Player : Human, IVRAnchorProvider {
 	private DeviceInput Input => VRPlayer.Input.head;

@@ -1,3 +1,3 @@
-public class Barrel : FixedPart {
+public class Barrel : BasicPart {
 	public float length;
 }

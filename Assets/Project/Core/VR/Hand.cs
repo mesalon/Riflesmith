@@ -1,4 +1,3 @@
-// todo: hand stretching
 using UnityEngine;
 
 public class Hand : MonoBehaviour {

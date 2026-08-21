@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Bolt : FixedPart {
+public class Bolt : BasicPart {
 	[SerializeField] Chamber chamber;
 	[SerializeField] FireControlGroup fcg;
 	[SerializeField] AmmoSource ammo;

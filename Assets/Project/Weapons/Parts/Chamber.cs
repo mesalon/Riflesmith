@@ -1,7 +1,7 @@
 using FMODUnity;
 using UnityEngine;
 
-public class Chamber : FixedPart {
+public class Chamber : BasicPart {
 	public Cartridge cartridge;
 	private GasBlock gas;
 	[SerializeField] float energyConversion;

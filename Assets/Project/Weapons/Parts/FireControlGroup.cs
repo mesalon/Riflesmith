@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FireControlGroup : FixedPart {
+public class FireControlGroup : BasicPart {
 	public DeviceInput input;
 	[SerializeField] Chamber chamber;
 	[SerializeField] float triggerThreshold;
