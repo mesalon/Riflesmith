@@ -4,12 +4,11 @@ public class Bolt : BasicPart {
 	[SerializeField] Chamber chamber;
 	[SerializeField] FireControlGroup fcg;
 	[SerializeField] AmmoSource ammo;
-	[SerializeField] ConfigurableJoint joint;
+	[SerializeField] ArticulationBody joint;
 	[SerializeField] Transform roundT;
 	[SerializeField] Transform rearT, stripPointT, ejectPointT;
 	[SerializeField] Vector3 ejectorDirection;
 	[SerializeField] float ejectorForce;
-	private Rigidbody rb;
 	private Cartridge cartridge;
 	private float stripPoint, ejectPoint, rearPoint, forePoint;
 	private float state;
@@ -19,8 +18,7 @@ public class Bolt : BasicPart {
 		ammo = receiver.Find<AmmoSource>();
 		chamber = receiver.Find<Chamber>();
 		fcg = receiver.Find<FireControlGroup>();
-		joint = GetComponent<ConfigurableJoint>();
-		joint.connectedBody = receiver.GetComponent<Rigidbody>();
+		joint = GetComponent<ArticulationBody>();
 	}
 
 	new void Awake() {
@@ -29,13 +27,11 @@ public class Bolt : BasicPart {
 		rearPoint = rearT.localPosition.z;
 		stripPoint = stripPointT.localPosition.z;
 		ejectPoint = ejectPointT.localPosition.z;
-		rb = GetComponent<Rigidbody>();
 	}
 
 	void FixedUpdate() {
 		if (isManaged) {
 			// state sets the physics todo
-			joint.zMotion = ConfigurableJointMotion.Locked;
 		} else {
 			// physics sets the state
 			SetInternal(transform.localPosition.z);
@@ -80,8 +76,8 @@ public class Bolt : BasicPart {
 			if (cartridge.data) {
 				CartridgeObject cartridgeObject = Instantiate(cartridge.data.visual, roundT.position, roundT.rotation);
 				cartridgeObject.data = cartridge;
-				float speed = rb.linearVelocity.magnitude;
-				cartridgeObject.rb.AddForce(rb.rotation * ejectorDirection.normalized * ejectorForce * speed);
+				float speed = joint.linearVelocity.magnitude;
+				cartridgeObject.rb.AddForce(joint.transform.rotation * ejectorDirection.normalized * ejectorForce * speed);
 				cartridge = default;
 			}
 		}

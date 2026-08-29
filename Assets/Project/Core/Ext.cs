@@ -16,7 +16,6 @@ public static class Ext {
 	public static int FixedFrameCount => Mathf.RoundToInt(Time.fixedTime / Time.fixedDeltaTime);
 	public static long Timestamp => Stopwatch.GetTimestamp();
 
-	// todo: combine all these into one somehow
 	public static bool DidPass(this float current, float amount, float previous) => current > amount && previous <= amount;
 	public static bool DidPassBack(this float current, float amount, float previous) => current < amount && previous >= amount;
 	public static bool DidReach(this float current, float amount, float previous) => current >= amount && previous < amount;

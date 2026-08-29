@@ -10,7 +10,7 @@ public class VRPlayer : MonoBehaviour, IVRAnchorProvider {
 	public Pose Anchor { get; set; }
 	private bool UseMockHMD => inputProvider is MockInputProvider;
 
-	public static VRInput Input, LastInput;
+	public static VRInput Input;
 	public static IVRAnchorProvider anchorProvider;
 	public static new Camera camera;
 	[SerializeField] VRInputProvider inputProvider;
@@ -24,7 +24,7 @@ public class VRPlayer : MonoBehaviour, IVRAnchorProvider {
 		} else {
 			Application.onBeforeRender += UpdateInput;
 		}
-		LastInput = Input = VRInput.TPose;
+		Input = VRInput.TPose;
 	}
 
 	void OnDisable() { Application.onBeforeRender -= UpdateInput; }
@@ -83,8 +83,7 @@ public class VRPlayer : MonoBehaviour, IVRAnchorProvider {
 
 	[BeforeRenderOrder(-30000)]
 	public void UpdateInput() {
-		LastInput = Input;
-		inputProvider.GetInput(ref LastInput, ref Input);
+		inputProvider.GetInput(ref Input);
 		// You are an anchor provider of last resort.
 		if (anchorProvider as UnityEngine.Object == null) { anchorProvider = this; }
 		transform.position = anchorProvider.Anchor.position;

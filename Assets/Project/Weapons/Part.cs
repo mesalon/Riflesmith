@@ -5,13 +5,6 @@ public abstract class Part : MonoBehaviour {
 	public string mountType = "";
 	public List<Mount> children = new();
 	[SerializeField] protected Transform meshSource;
-	protected GrabInteractable Grab {
-		get {
-			if (!grab) { TryGetComponent(out grab); }
-			return grab;
-		}
-	}
-	[SerializeField] GrabInteractable grab;
 	protected Mesh mesh;
 	public string config;
 

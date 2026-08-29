@@ -54,8 +54,8 @@ public class Player : Human, IVRAnchorProvider {
 	}
 
 	void FixedUpdate() {
-		Vector3 headDelta = transform.rotation * (Input.position - VRPlayer.LastInput.head.position);
-		rb.MovePosition(rb.position + headDelta.FlattenY());
+		//Vector3 headDelta = transform.rotation * (Input.position - VRPlayer.LastInput.head.position);
+		//rb.MovePosition(rb.position + headDelta.FlattenY());
 		rb.MoveRotation(Quaternion.Euler(0, VRPlayer.Input.RHand.stick.x.Deadzone(turnDeadzone) * turnSpeed, 0) * rb.rotation);
 
 		bodyCollider.height = eyes.localPosition.y - bodyOffset;

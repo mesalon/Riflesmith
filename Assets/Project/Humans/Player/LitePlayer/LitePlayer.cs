@@ -10,8 +10,8 @@ public class LitePlayer : MonoBehaviour, IVRAnchorProvider {
 	void Awake() => VRPlayer.anchorProvider = this;
 
 	void Update() {
-		Vector3 headDelta = transform.rotation * (headinput.position - VRPlayer.LastInput.head.position);
-		transform.position += headDelta.FlattenY();
+		//Vector3 headDelta = transform.rotation * (headinput.position - VRPlayer.LastInput.head.position);
+		//transform.position += headDelta.FlattenY();
 		transform.rotation *= Quaternion.Euler(0, VRPlayer.Input.RHand.stick.x.Deadzone(0.1f) * turnSpeed, 0);
 		head.localPosition = new(0, headinput.position.y, 0);
 

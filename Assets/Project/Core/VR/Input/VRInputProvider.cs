@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public abstract class VRInputProvider : MonoBehaviour {
-	public abstract void GetInput(ref VRInput LastInput, ref VRInput Input);
+	public abstract void GetInput(ref VRInput Input);
 }
 
 public struct VRInput {
@@ -23,7 +23,6 @@ public struct DeviceInput {
 	public bool stickButton;
 	public bool nearButton;
 	public bool farButton;
-	public bool gotFirstInput;
 
 	public readonly override string ToString() {
 		return $"Pose: {position:f2} - {rotation:f2}" +

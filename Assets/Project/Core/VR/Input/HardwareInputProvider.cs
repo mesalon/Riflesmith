@@ -8,15 +8,15 @@ public class HardwareInputProvider : VRInputProvider {
 	[SerializeField] Vector3 globalHandOffsetL, globalHandOffsetR;
 	private static readonly uint size = (uint)Marshal.SizeOf<VRControllerState_t>();
 
-	public override void GetInput(ref VRInput LastInput, ref VRInput Input) {
-		ApplyPoseInput(XRNode.CenterEye, ref LastInput.head, ref Input.head);
-		ApplyPoseInput(XRNode.LeftHand, ref LastInput.LHand, ref Input.LHand);
-		ApplyPoseInput(XRNode.RightHand, ref LastInput.RHand, ref Input.RHand);
+	public override void GetInput(ref VRInput Input) {
+		ApplyPoseInput(XRNode.CenterEye, ref Input.head);
+		ApplyPoseInput(XRNode.LeftHand, ref Input.LHand);
+		ApplyPoseInput(XRNode.RightHand, ref Input.RHand);
 		ApplyControllerInput(1, ref Input.LHand);
 		ApplyControllerInput(2, ref Input.RHand);
 	}
 
-	private void ApplyPoseInput(XRNode node, ref DeviceInput lastInput, ref DeviceInput input) {
+	private void ApplyPoseInput(XRNode node, ref DeviceInput input) {
 		InputDevice device = InputDevices.GetDeviceAtXRNode(node);
 		device.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 position);
 		device.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rotation);
@@ -24,11 +24,9 @@ public class HardwareInputProvider : VRInputProvider {
 		if (position != Vector3.zero) {
 			input.position = position;
 			input.rotation = rotation;
-			input.gotFirstInput = true;
 			if (node != XRNode.CenterEye) { 
 				input.position += input.rotation * (node == XRNode.LeftHand ? globalHandOffsetL : globalHandOffsetR);
 			}
-			if (!lastInput.gotFirstInput) { lastInput = input; }
 		}
 	}
 

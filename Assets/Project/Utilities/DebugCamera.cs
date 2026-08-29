@@ -1,10 +1,10 @@
 using UnityEngine;
 
 public class DebugCamera : MonoBehaviour {
-	[SerializeField] float sensitivity = 1, speed = 5, shiftMult = 2, smoothing = 0.15f;
+	[SerializeField] float sensitivity = 1, speed = 5, shiftMult = 2, smoothing = 0.15f, strength = 100;
 	[SerializeField] bool inTouchMode;
 	private Vector3 movement, velocity;
-	private Rigidbody dragBody;
+	private Body dragBody;
 	private Vector3 dragOffset;
 	private float dragDepth;
 	private float pitch;
@@ -36,8 +36,8 @@ public class DebugCamera : MonoBehaviour {
 
 		if (Input.GetMouseButtonDown(0)) {
 			var ray = GameManager.Camera.ScreenPointToRay(Input.mousePosition);
-			if (Physics.Raycast(ray, out var hit) && hit.rigidbody) {
-				dragBody = hit.rigidbody;
+			if (Physics.Raycast(ray, out var hit) && hit.GetBody()) {
+				dragBody = hit.GetBody();
 				dragDepth = Vector3.Distance(GameManager.Camera.transform.position, hit.point);
 				dragOffset = dragBody.transform.InverseTransformPoint(hit.point);
 			}
@@ -48,12 +48,11 @@ public class DebugCamera : MonoBehaviour {
 
 	void FixedUpdate() {
 		if (dragBody) {
-			var mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, dragDepth);
-			var targetPos = GameManager.Camera.ScreenToWorldPoint(mousePos);
-			var currentPos = dragBody.transform.TransformPoint(dragOffset);
-			var targetVel = (targetPos - currentPos) * 15f;
-			var force = targetVel - dragBody.GetPointVelocity(currentPos);
-			dragBody.AddForceAtPosition(force, currentPos, ForceMode.VelocityChange);
+			Vector3 targetPos = GameManager.Camera.ScreenToWorldPoint(new(Input.mousePosition.x, Input.mousePosition.y, dragDepth));
+			Vector3 currentPos = dragBody.transform.TransformPoint(dragOffset);
+			Vector3 targetVel = (targetPos - currentPos) * strength;
+			Vector3 force = targetVel - dragBody.GetPointVelocity(currentPos);
+			dragBody.AddForceAtPosition(force, currentPos);
 		}
 	}
 

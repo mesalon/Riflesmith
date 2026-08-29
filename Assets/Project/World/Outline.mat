@@ -126,7 +126,7 @@ Material:
     - _Surface: 0
     - _Thickness: 1
     - _Threshold: 0.05
-    - _UseAlt: 1
+    - _UseAlt: 0
     - _WorkflowMode: 1
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1

@@ -17,16 +17,14 @@ public class LiteHand : MonoBehaviour {
 			held.angularVelocity = angle * Mathf.Deg2Rad / Time.fixedDeltaTime * axis;
 		} else if (Input.grip > 0.5f) {
 			foreach (Collider col in Physics.OverlapSphere(transform.position, 0.1f)) {
-				if (col.TryGetComponent(out GrabInteractable grab)) {
-					print($"grab: {grab.name}");
-					held = grab.rb;
-					grabPose = new(grab.grabPoint.localPosition, grab.grabPoint.localRotation);
-					break;
-				}
 				if (col.attachedRigidbody) {
 					held = col.attachedRigidbody;
 					Transform t = held.transform;
-					grabPose = new(t.InverseTransformPoint(transform.position), transform.rotation * Quaternion.Inverse(t.rotation));
+					if (col.TryGetComponent(out GrabInteractable grab)) {
+						grabPose = new(grab.grabPoint.localPosition, grab.grabPoint.localRotation);
+					} else {
+						grabPose = new(t.InverseTransformPoint(transform.position), transform.rotation * Quaternion.Inverse(t.rotation));
+					}
 					break;
 				}
 			}

@@ -6,6 +6,8 @@ using Animancer;
 using UnityEditor;
 using System.Linq;
 #endif
+// HEY!
+// SPLIT HIGH LEVEL ACTIONS AND LOW LEVEL ACTIONS? YOUR BRAIN SAYS WHAT YOU KIND OF NEED TO DO, AND THE LOWER LEVEL SYSTEMS CARRY IT OUT!
 
 /* AI Todo
 	 Change the reaction of shootaction based on alertness

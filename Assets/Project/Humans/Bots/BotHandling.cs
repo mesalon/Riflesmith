@@ -20,9 +20,7 @@ public class BotHandling {
 
 	public BotHandling(Bot ctx) {
 		this.ctx = ctx;
-		ctx.equipWeapon.Events.SetCallback(0, () => {
-				AttachToHand();
-				});
+		ctx.equipWeapon.Events.SetCallback(0, () => { AttachToHand(); });
 		ctx.equipWeapon.Events.OnEnd = () => { // Todo: make these transitions nicer
 			weapon.transform.SetParent(ctx.weaponContainer); 
 			ctx.upperLayer.StartFade(0);
@@ -62,7 +60,7 @@ public class BotHandling {
 			foreach (Collider col in overlap) {
 				if (col.TryGetComponent(out SimpleFirearm gun)) { 
 					weapon = gun; 
-					//weapon.SetDormant(true);
+					weapon.rb.isKinematic = true;
 					ctx.ik.solver.leftHandEffector.target = weapon.foregrip;
 					ctx.ik.solver.rightHandEffector.target = weapon.grip;
 					ctx.brain.isArmed = true;

@@ -49,7 +49,7 @@ public class MockInputProvider : VRInputProvider {
 	}
 
 	int t;
-	public override void GetInput(ref VRInput LastInput, ref VRInput _Input) {
+	public override void GetInput(ref VRInput _Input) {
 		if (t > 0) _Input = this._Input;
 		else this._Input = _Input;
 		t++;

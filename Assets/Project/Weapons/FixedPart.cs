@@ -5,7 +5,7 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 #endif
 
-[DisallowMultipleComponent]
+[DisallowMultipleComponent, RequireComponent(typeof(GrabInteractable))]
 public class FixedPart : Part {
 	private Pose AttachPose {
 		get {
@@ -17,13 +17,17 @@ public class FixedPart : Part {
 	[SerializeField] Transform mountPoint;
 	[SerializeField] FixedMount mount;
 	[SerializeField] FixedMount detectedMount;
+	private GrabInteractable gi;
 
 	new void Awake() {
 		base.Awake();
-		Grab.OnHoldFixedE += OnHoldFixed; Grab.OnDroppedE += OnDropped;
-		if (mount) Grab.SetDormant(true);
+		gi = GetComponent<GrabInteractable>();
+		gi.OnHoldFixed += OnHoldFixed; gi.OnDropped += OnDropped;
+		if (mount) KillRb();
 	}
-	void OnDestroy() { Grab.OnHoldFixedE -= OnHoldFixed; Grab.OnDroppedE -= OnDropped; }
+	void OnDestroy() { gi.OnHoldFixed -= OnHoldFixed; gi.OnDropped -= OnDropped; }
+
+	void KillRb() => Destroy(GetComponent<Rigidbody>());
 
 	private void OnHoldFixed() {
 		detectedMount = null;
@@ -58,11 +62,11 @@ public class FixedPart : Part {
 
 	private void Attach(FixedMount m) {
 		if (CanAttach(m)) {
-			if (Application.isPlaying) Grab.SetDormant(true);
 			mount = m;
 			mount.attached = this;
 			mount.Register();
 			if (mount.receiver) mount.receiver.Reassemble();
+			KillRb();
 			transform.SetParent(mount.transform);
 			transform.SetPose(AttachPose, Space.Self);
 		}
@@ -70,7 +74,6 @@ public class FixedPart : Part {
 
 	private void Detach() {
 		if (mount) {
-			if (Application.isPlaying) Grab.SetDormant(false);
 			mount.Deregister();
 			if (mount.receiver) mount.receiver.Reassemble();
 			transform.SetParent(null);

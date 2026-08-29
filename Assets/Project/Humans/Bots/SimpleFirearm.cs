@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class SimpleFirearm : MonoBehaviour {
 	public Transform muzzle;
+	public Rigidbody rb;
 	[HideInInspector] public int rounds;
 	[HideInInspector] public bool triggerState;
 	[SerializeField] float cyclicRate;
@@ -13,6 +14,7 @@ public class SimpleFirearm : MonoBehaviour {
 
 	private void Awake() {
 		rounds = capacity;
+		rb = GetComponent<Rigidbody>();
 	}
 
 	private void Update() {

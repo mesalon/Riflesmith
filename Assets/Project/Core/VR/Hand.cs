@@ -1,6 +1,7 @@
 using UnityEngine;
 
 public class Hand : MonoBehaviour {
+	/*
 	public ConfigurableJoint joint => handMuscle.joint;
 	public DeviceInput Input => (side == Side.Left ? VRPlayer.Input.LHand : VRPlayer.Input.RHand).RelativeTo(HeadOffset);
 	public DeviceInput LastInput => (side == Side.Left ? VRPlayer.LastInput.LHand : VRPlayer.LastInput.RHand).RelativeTo(HeadOffset);
@@ -104,6 +105,7 @@ public class Hand : MonoBehaviour {
 		}
 		if (held) held.OnHoldFixed();
 	}
+	*/
 }
 
 public enum Side { Left, Right }

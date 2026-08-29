@@ -6,7 +6,7 @@ public class Grip : FixedPart {
 
 	void Awake() {
 		gi = GetComponent<GrabInteractable>();
-		gi.OnHoldE += OnHold;
+		gi.OnHold += OnHold;
 	}
 
 	public override void OnAssemble(Receiver receiver) {
@@ -14,6 +14,6 @@ public class Grip : FixedPart {
 	}
 
 	private void OnHold() {
-		fcg.input = gi.Input;
+		//fcg.input = gi.Input;
 	}
 }
