@@ -1,28 +1,60 @@
-using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.Rendering;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// Runtime debug drawing for VR using Graphics.DrawMesh.
 /// Call methods every frame you want shapes to appear (immediate mode).
 /// </summary>
+public class WorldLabel { public Transform transform; public Label label; public float expiry; }
 public static class VRGizmos {
-	static Mesh cubeMesh;
-	static Mesh sphereMesh;
-	static Mesh lineMesh;
-	static Material material;
+	private static Mesh cubeMesh;
+	private static Mesh sphereMesh;
+	private static Mesh lineMesh;
+	private static Material material;
 
-	static Mesh CubeMesh => cubeMesh = cubeMesh == null ? CreateCubeMesh() : cubeMesh;
-	static Mesh SphereMesh => sphereMesh = sphereMesh == null ? CreateSphereMesh() : sphereMesh;
-	static Mesh LineMesh => lineMesh = lineMesh == null ? CreateLineMesh() : lineMesh;
-	static Material Material => material = material == null ? CreateMaterial() : material;
+	private static Mesh CubeMesh => cubeMesh ??= CreateCubeMesh();
+	private static Mesh SphereMesh => sphereMesh ??= CreateSphereMesh();
+	private static Mesh LineMesh => lineMesh ??= CreateLineMesh();
+	private static Material Material => material ??= CreateMaterial();
+
+	private static List<WorldLabel> labels;
+	public static void Label(Vector3 position, string text, float lifespan = 0) {
+		WorldLabel worldLabel = null;
+		foreach (WorldLabel existing in labels) {
+			if (!existing.label.visible) { 
+				worldLabel = existing; 
+				break; 
+			}
+		}
+		if (worldLabel == null) {
+			UIDocument doc = new GameObject().AddComponent<UIDocument>();
+			doc.gameObject.layer = LayerMask.NameToLayer("DebugLabel");
+			doc.worldSpaceSizeMode = UIDocument.WorldSpaceSizeMode.Dynamic;
+			doc.panelSettings = GameManager.I.UI;
+
+			Label label = new();
+			label.style.color = Color.white;
+			label.style.fontSize = 8;
+			label.style.unityTextAlign = TextAnchor.MiddleCenter;
+			doc.rootVisualElement.Add(label);
+
+			worldLabel = new() { transform = doc.transform, label = label, };
+			labels.Add(worldLabel);
+		}
+		worldLabel.label.text = text;
+		worldLabel.transform.position = position;
+		worldLabel.expiry = Time.unscaledTime + lifespan;
+	}
 
 	static Material CreateMaterial() {
 		Shader shader = Shader.Find("Custom/Gizmo");
-        Material mat = new(shader) {
-            hideFlags = HideFlags.HideAndDontSave,
-            renderQueue = (int)RenderQueue.Transparent
-        };
-        return mat;
+		Material mat = new(shader) {
+			hideFlags = HideFlags.HideAndDontSave,
+			renderQueue = (int)RenderQueue.Transparent
+		};
+		return mat;
 	}
 
 	static Mesh CreateCubeMesh() {
@@ -120,14 +152,6 @@ public static class VRGizmos {
 		return mesh;
 	}
 
-	static MaterialPropertyBlock propertyBlock;
-	static MaterialPropertyBlock PropertyBlock => propertyBlock ??= new MaterialPropertyBlock();
-	static readonly int colorID = Shader.PropertyToID("_Color");
-
-	static void DrawMesh(Mesh mesh, Matrix4x4 matrix, Color color) {
-		PropertyBlock.SetColor(colorID, color);
-		Graphics.DrawMesh(mesh, matrix, Material, 0, null, 0, PropertyBlock);
-	}
 
 	// === Public API ===
 
@@ -180,5 +204,129 @@ public static class VRGizmos {
 		Ray(position, rotation * Vector3.right * size, Color.red);
 		Ray(position, rotation * Vector3.up * size, Color.green);
 		Ray(position, rotation * Vector3.forward * size, Color.blue);
+	}
+
+	readonly struct TimedDraw {
+		public readonly Mesh mesh;
+		public readonly Matrix4x4 matrix;
+		public readonly Color color;
+		public readonly float expiry;
+
+		public TimedDraw(Mesh mesh, Matrix4x4 matrix, Color color, float expiry) {
+			this.mesh = mesh;
+			this.matrix = matrix;
+			this.color = color;
+			this.expiry = expiry;
+		}
+	}
+
+	static readonly List<TimedDraw> timedDraws = new();
+
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+	static void Init() {
+		// Reset statics explicitly so this survives disabled domain reload.
+		timedDraws.Clear();
+		cubeMesh = null;
+		sphereMesh = null;
+		lineMesh = null;
+		material = null;
+		propertyBlock = null;
+
+		Application.onBeforeRender -= OnBeforeRender;
+		Application.onBeforeRender += OnBeforeRender;
+
+		labels = new();
+	}
+
+	static void OnBeforeRender() {
+		float now = Time.unscaledTime;
+
+		foreach (WorldLabel label in labels) {
+			if (now > label.expiry) { label.label.visible = false; } 
+			else { 
+				label.transform.rotation = Quaternion.LookRotation(GameManager.Camera.transform.forward, Vector3.up);;
+				label.label.visible = true; 
+			}
+		}
+
+		for (int i = timedDraws.Count - 1; i >= 0; i--) {
+			TimedDraw d = timedDraws[i];
+			DrawMesh(d.mesh, d.matrix, d.color);
+			if (now >= d.expiry) {
+				timedDraws[i] = timedDraws[^1];
+				timedDraws.RemoveAt(timedDraws.Count - 1);
+			}
+		}
+	}
+
+	public static void Clear() => timedDraws.Clear();
+
+	static MaterialPropertyBlock propertyBlock;
+	static MaterialPropertyBlock PropertyBlock => propertyBlock ??= new MaterialPropertyBlock();
+	static readonly int colorID = Shader.PropertyToID("_Color");
+
+	static void DrawMesh(Mesh mesh, Matrix4x4 matrix, Color color) {
+		PropertyBlock.SetColor(colorID, color);
+		Graphics.DrawMesh(mesh, matrix, Material, 0, null, 0, PropertyBlock);
+	}
+
+	/// <summary>Immediate if duration &lt;= 0, otherwise buffered until it expires.</summary>
+	static void Submit(Mesh mesh, Matrix4x4 matrix, Color color, float duration) {
+		if (duration <= 0f) {
+			DrawMesh(mesh, matrix, color);
+			return;
+		}
+		timedDraws.Add(new TimedDraw(mesh, matrix, color, Time.unscaledTime + duration));
+	}
+
+	// === Public API ===
+
+	public static void Line(Vector3 start, Vector3 end, Color color, float duration = 0f) {
+		Vector3 dir = end - start;
+		float length = dir.magnitude;
+		if (length < 0.0001f) return;
+
+		Matrix4x4 matrix = Matrix4x4.TRS(
+				(start + end) * 0.5f,
+				Quaternion.LookRotation(dir),
+				new Vector3(1f, 1f, length));
+		Submit(LineMesh, matrix, color, duration);
+	}
+
+	public static void Ray(Vector3 origin, Vector3 direction, Color color, float duration = 0f)
+		=> Line(origin, origin + direction, color, duration);
+
+	public static void Cube(Vector3 center, Vector3 size, Color color, float duration = 0f)
+		=> Cube(center, Quaternion.identity, size, color, duration);
+
+	public static void Cube(Vector3 center, Quaternion rotation, Vector3 size, Color color, float duration = 0f)
+		=> Submit(CubeMesh, Matrix4x4.TRS(center, rotation, size), color, duration);
+
+	public static void Sphere(Vector3 center, float radius, Color color, float duration = 0f)
+		=> Submit(SphereMesh, Matrix4x4.TRS(center, Quaternion.identity, Vector3.one * radius * 2f), color, duration);
+
+	// Convenience overloads with default colors
+	public static void Line(Vector3 start, Vector3 end, float duration = 0f)
+		=> Line(start, end, Color.green, duration);
+	public static void Ray(Vector3 origin, Vector3 direction, float duration = 0f)
+		=> Ray(origin, direction, Color.green, duration);
+	public static void Cube(Vector3 center, Vector3 size, float duration = 0f)
+		=> Cube(center, size, Color.green, duration);
+	public static void Cube(Vector3 center, Quaternion rotation, Vector3 size, float duration = 0f)
+		=> Cube(center, rotation, size, Color.green, duration);
+	public static void Sphere(Vector3 center, float radius, float duration = 0f)
+		=> Sphere(center, radius, Color.green, duration);
+
+	// Axis helper
+	public static void Axis(Vector3 position, float size = 0.1f, float duration = 0f) {
+		Ray(position, Vector3.right * size, Color.red, duration);
+		Ray(position, Vector3.up * size, Color.green, duration);
+		Ray(position, Vector3.forward * size, Color.blue, duration);
+	}
+
+	public static void Axis(Vector3 position, Quaternion rotation, float size = 0.1f, float duration = 0f) {
+		Ray(position, rotation * Vector3.right * size, Color.red, duration);
+		Ray(position, rotation * Vector3.up * size, Color.green, duration);
+		Ray(position, rotation * Vector3.forward * size, Color.blue, duration);
 	}
 }

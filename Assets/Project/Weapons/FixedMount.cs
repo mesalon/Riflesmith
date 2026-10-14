@@ -1,5 +1,6 @@
 public class FixedMount : Mount {
-	public FixedPart attached;
+	 public FixedPart attached;
+
 
 	public override void Register() {
 		if (receiver) {

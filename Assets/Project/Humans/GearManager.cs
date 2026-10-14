@@ -24,7 +24,7 @@ public class GearManager : MonoBehaviour {
 		Traverse(root);
 		foreach (GearItem entry in items) {
 			GearItem item = Instantiate(entry, container);
-			item.Init(); // todo: Fuck this for release <- what did he mean by this
+			item.Init(); // todo: Fuck this for release <- what did he mean by this <- prolly cause it's expensive and should be preprocessed
 			if (item.skins.Count > 0) { item.smr.material = item.skins.GetRandom(); }
 			Attach(item);
 		}

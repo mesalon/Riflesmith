@@ -25,5 +25,5 @@ MonoBehaviour:
   caliber: 7.62x39
   penetration: 20
   damage: 60
-  bulletMass: 0
+  bulletMass: 0.008
   energy: 6500

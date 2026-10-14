@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3252412521441403337
 Transform:
   m_ObjectHideFlags: 0
@@ -46,11 +46,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a858001581390a698372fcaf87d0324, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  projectile: {fileID: 11400000, guid: 53cb1d85addb491769a86286e445ab80, type: 2}
   sensitivity: 3
   speed: 4
   shiftMult: 2
   smoothing: 0.15
+  strength: 100
   inTouchMode: 1
 --- !u!20 &4415522812881533586
 Camera:

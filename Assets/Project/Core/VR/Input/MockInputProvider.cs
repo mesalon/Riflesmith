@@ -18,11 +18,7 @@ public class MockInputProvider : VRInputProvider {
 			case Mode.Head:
 				pitch = Mathf.Clamp(pitch - Input.GetAxis("Mouse Y") * sensitivity, -90, 90);
 				_Input.head.rotation = Quaternion.Euler(pitch, _Input.head.rotation.eulerAngles.y + Input.GetAxis("Mouse X") * sensitivity, 0);
-				Vector3 moveDir = new Vector3(
-						-(Input.GetKey(KeyCode.A) ? 1 : 0) + (Input.GetKey(KeyCode.D) ? 1 : 0),
-						-(Input.GetKey(KeyCode.Q) ? 1 : 0) + (Input.GetKey(KeyCode.E) ? 1 : 0),
-						-(Input.GetKey(KeyCode.S) ? 1 : 0) + (Input.GetKey(KeyCode.W) ? 1 : 0)).normalized;
-				movement = Vector3.SmoothDamp(movement, moveDir, ref velocity, smoothing);
+				movement = Vector3.SmoothDamp(movement, Ext.moveDir3D, ref velocity, smoothing);
 				float moveSpeed = Input.GetKey(KeyCode.LeftShift) ? speed * shiftMult : speed;
 				_Input.head.position += _Input.head.rotation * movement * moveSpeed * Time.deltaTime;
 
@@ -39,11 +35,7 @@ public class MockInputProvider : VRInputProvider {
 	private void DoHandInput(ref DeviceInput input) {
 		Vector3 pos = new(Input.mousePositionDelta.x, Input.mousePositionDelta.y, Input.mouseScrollDelta.y);
 		input.position += _Input.head.rotation * pos * handSensitivity;
-		Vector3 rot = new Vector3(
-				-(Input.GetKey(KeyCode.A) ? 1 : 0) + (Input.GetKey(KeyCode.D) ? 1 : 0),
-				-(Input.GetKey(KeyCode.Q) ? 1 : 0) + (Input.GetKey(KeyCode.E) ? 1 : 0),
-				-(Input.GetKey(KeyCode.S) ? 1 : 0) + (Input.GetKey(KeyCode.W) ? 1 : 0)).normalized;
-		input.rotation *= Quaternion.Euler(rot);
+		input.rotation *= Quaternion.Euler(Ext.moveDir3D);
 		input.grip = Input.GetKey(KeyCode.G) ? 1 : 0;
 		input.trigger = Input.GetKey(KeyCode.T) ? 1 : 0;
 	}

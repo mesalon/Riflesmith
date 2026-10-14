@@ -17,16 +17,12 @@ public class DebugCamera : MonoBehaviour {
 		if (!inTouchMode) {
 			pitch = Mathf.Clamp(pitch - Input.GetAxis("Mouse Y") * sensitivity, -90, 90);
 			transform.rotation = Quaternion.Euler(pitch, transform.eulerAngles.y + Input.GetAxis("Mouse X") * sensitivity, 0);
-			Vector3 moveDir = new Vector3(
-					-(Input.GetKey(KeyCode.A) ? 1 : 0) + (Input.GetKey(KeyCode.D) ? 1 : 0),
-					-(Input.GetKey(KeyCode.Q) ? 1 : 0) + (Input.GetKey(KeyCode.E) ? 1 : 0),
-					-(Input.GetKey(KeyCode.S) ? 1 : 0) + (Input.GetKey(KeyCode.W) ? 1 : 0)).normalized;
-			movement = Vector3.SmoothDamp(movement, moveDir, ref velocity, smoothing);
+			movement = Vector3.SmoothDamp(movement, Ext.moveDir3D, ref velocity, smoothing);
 			float flySpeed = Input.GetKey(KeyCode.LeftShift) ? speed * shiftMult : speed;
 			transform.position += transform.rotation * movement * flySpeed * Time.deltaTime;
 
 			if (Input.GetKeyDown(KeyCode.Space)) 
-				ProjectileManager.CreateGenericProjectile(transform.position - transform.rotation * new Vector3(0, 0, -0.01f), transform.forward);
+				ProjectileManager.CreateGenericProjectile(transform.position - new Vector3(0, 0, -0.02f), transform.forward * 600);
 		}
 
 		if (Input.GetKeyDown(KeyCode.X)) {

@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Linq;
 using UnityEditor;
+using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour {
 	public static Camera Camera => Camera.allCameras
@@ -13,6 +14,7 @@ public class GameManager : MonoBehaviour {
 	public GameConfig config;
 	private Scene loading;
 	private bool isLoading;
+	public PanelSettings UI;
 
 	void Awake() {
 		if (I == null) {

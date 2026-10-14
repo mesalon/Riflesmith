@@ -1,9 +1,4 @@
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-using UnityEditor.UIElements;
-using UnityEngine.UIElements;
-#endif
 
 [DisallowMultipleComponent, RequireComponent(typeof(GrabInteractable))]
 public class FixedPart : Part {
@@ -15,7 +10,7 @@ public class FixedPart : Part {
 		}
 	}
 	[SerializeField] Transform mountPoint;
-	[SerializeField] FixedMount mount;
+	[SerializeField, OnObjectChanged(nameof(OnAttachedChanged))] FixedMount mount;
 	[SerializeField] FixedMount detectedMount;
 	private GrabInteractable gi;
 
@@ -36,7 +31,6 @@ public class FixedPart : Part {
 				if (p.TryGetComponent(out FixedMount m) && CanAttach(m)) {
 					float dist = (m.transform.position - mountPoint.position).sqrMagnitude;
 					if (dist < GameManager.I.config.attachmentRange.Sqr()) {
-						print("Rendering");
 						RenderGhost(m.transform.localToWorldMatrix * mountPoint.worldToLocalMatrix);
 						if (dist < GameManager.I.config.attachmentMountRange.Sqr()) {
 							SetGhostColor(true);
@@ -60,50 +54,26 @@ public class FixedPart : Part {
 
 	private bool CanAttach(FixedMount m) => !m.attached && m.mountType.Equals(mountType);
 
+	private void OnAttachedChanged(FixedMount oldValue, FixedMount newValue) {
+		if (oldValue) { Detach(oldValue); }
+		if (newValue) { Attach(newValue); }
+	}
+
 	private void Attach(FixedMount m) {
-		if (CanAttach(m)) {
-			mount = m;
-			mount.attached = this;
-			mount.Register();
-			if (mount.receiver) mount.receiver.Reassemble();
-			KillRb();
-			transform.SetParent(mount.transform);
-			transform.SetPose(AttachPose, Space.Self);
-		}
+		print($"Attaching"); 
+		mount = m;
+		mount.attached = this;
+		mount.Register();
+		if (mount.receiver) mount.receiver.Reassemble();
+		transform.SetParent(mount.transform);
+		transform.SetPose(AttachPose, Space.Self);
 	}
 
-	private void Detach() {
-		if (mount) {
-			mount.Deregister();
-			if (mount.receiver) mount.receiver.Reassemble();
-			transform.SetParent(null);
-			mount.attached = null;
-			mount = null;
-		}
+	private void Detach(FixedMount m) {
+		print($"Detaching"); 
+		m.Deregister();
+		if (m.receiver) m.receiver.Reassemble();
+		transform.SetParent(null);
+		m.attached = null;
 	}
-
-#if UNITY_EDITOR
-	[CustomEditor(typeof(FixedPart), true), CanEditMultipleObjects]
-	public class FixedPartEditor : Editor {
-		public sealed override VisualElement CreateInspectorGUI() {
-			VisualElement root = new();
-			InspectorElement.FillDefaultInspector(root, serializedObject, this);
-			BuildInspector(root);
-			return root;
-		}
-
-		public virtual void BuildInspector(VisualElement root) {
-			var t = (FixedPart)target;
-			ObjectField field = new("Drop to attach") { objectType = typeof(FixedMount), };
-			field.RegisterValueChangedCallback(e => {
-					t.Attach((FixedMount)e.newValue);
-					field.SetValueWithoutNotify(null);
-					});
-			root.Add(field);
-			root.Add(new Button(() => {
-						t.Detach();
-						}) { text = "Detach" });
-		}
-	}
-#endif
 }

@@ -51,9 +51,8 @@ public class Magazine : AmmoSource {
 
 #if UNITY_EDITOR
 	[CustomEditor(typeof(Magazine), true), CanEditMultipleObjects]
-	public class MagazineEditor : FixedPartEditor {
-		public override void BuildInspector(VisualElement root) {
-			base.BuildInspector(root);
+	public class MagazineEditor : Editor {
+		public virtual void BuildInspector(VisualElement root) {
 			var t = (Magazine)target;
 			ObjectField data = new("Round") { objectType = typeof(CartridgeData) };
 			root.Add(data);

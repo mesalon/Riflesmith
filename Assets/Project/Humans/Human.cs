@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Human : MonoBehaviour {
@@ -8,11 +9,10 @@ public class Human : MonoBehaviour {
 			return all / positionPoints.Length;
 		}
 	}
-	public float health = 100;
 	public int IFF;
 	[SerializeField] Transform[] positionPoints;
 
-	public void Damage(float amount) {
-		health = Mathf.Max(0, health - amount);
-	}
+	public static List<Human> All = new();
+	void OnEnable() => All.Add(this);
+	void OnDisable() => All.Remove(this);
 }

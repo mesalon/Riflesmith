@@ -9,12 +9,22 @@ using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using System.Diagnostics.Contracts;
+using UnityEngine.UIElements;
 
 public static class Ext {
 	public static List<LabelRequest> labelQueue = new();
 	public static List<DrawRequest> drawQueue = new();
 	public static int FixedFrameCount => Mathf.RoundToInt(Time.fixedTime / Time.fixedDeltaTime);
 	public static long Timestamp => Stopwatch.GetTimestamp();
+
+	public static Vector2 moveDir2D => new Vector2(
+			-(Input.GetKey(KeyCode.A) ? 1 : 0) + (Input.GetKey(KeyCode.D) ? 1 : 0),
+			-(Input.GetKey(KeyCode.S) ? 1 : 0) + (Input.GetKey(KeyCode.W) ? 1 : 0)).normalized;
+	public static Vector3 moveDir3D => new Vector3(
+			-(Input.GetKey(KeyCode.A) ? 1 : 0) + (Input.GetKey(KeyCode.D) ? 1 : 0),
+			-(Input.GetKey(KeyCode.Q) ? 1 : 0) + (Input.GetKey(KeyCode.E) ? 1 : 0),
+			-(Input.GetKey(KeyCode.S) ? 1 : 0) + (Input.GetKey(KeyCode.W) ? 1 : 0)).normalized;
 
 	public static bool DidPass(this float current, float amount, float previous) => current > amount && previous <= amount;
 	public static bool DidPassBack(this float current, float amount, float previous) => current < amount && previous >= amount;
@@ -86,6 +96,48 @@ public static class Ext {
 		return 0f;
 	}
 
+	public static Vector3 TransformPoint(this Rigidbody rb, Vector3 position) {
+		Vector3 result = Vector3.Scale(position, rb.transform.lossyScale);
+		result = rb.rotation * result;
+		result += rb.position;
+		return result;
+	}
+	public static Vector3 InverseTransformPoint(this Rigidbody rb, Vector3 position) {
+		Vector3 result = position - rb.position;
+		result = Quaternion.Inverse(rb.rotation) * result;
+		Vector3 scale = rb.transform.lossyScale;
+		result.x /= scale.x;
+		result.y /= scale.y;
+		result.z /= scale.z;
+		return result;
+	}
+	public static Vector3 TransformVector(this Rigidbody rb, Vector3 vector) {
+		Vector3 result = Vector3.Scale(vector, rb.transform.lossyScale);
+		result = rb.rotation * result;
+		return result;
+	}
+	public static Vector3 InverseTransformVector(this Rigidbody rb, Vector3 vector) {
+		Vector3 result = Quaternion.Inverse(rb.rotation) * vector;
+		Vector3 scale = rb.transform.lossyScale;
+		result.x /= scale.x;
+		result.y /= scale.y;
+		result.z /= scale.z;
+		return result;
+	}
+	public static Vector3 TransformDirection(this Rigidbody rb, Vector3 direction) {
+		return rb.rotation * direction;
+	}
+	public static Vector3 InverseTransformDirection(this Rigidbody rb, Vector3 direction) {
+		return Quaternion.Inverse(rb.rotation) * direction;
+	}
+	
+	public static Quaternion TransformRotation(this Transform t, Quaternion rotation) => t.rotation * rotation;
+	public static Quaternion InverseTransformRotation(this Transform t, Quaternion rotation) => Quaternion.Inverse(t.rotation) * rotation;
+	public static Quaternion TransformRotation(this Rigidbody rb, Quaternion rotation) => rb.rotation * rotation;
+	public static Quaternion InverseTransformRotation(this Rigidbody rb, Quaternion rotation) => Quaternion.Inverse(rb.rotation) * rotation;
+
+		
+	public static Pose GetPose(this Transform transform) => new Pose(transform.position, transform.rotation);
 	public static void SetPose(this Transform transform, Vector3 pos, Quaternion rot, Space space = Space.World) {
 		if (space == Space.Self) { transform.SetLocalPositionAndRotation(pos, rot); }
 		else { transform.SetPositionAndRotation(pos, rot); }
@@ -107,6 +159,7 @@ public static class Ext {
 	}
 
 	public static float Sqr(this float f) => f * f;
+	public static float CritDamp(float f, float ratio = 1) => 2 * Mathf.Sqrt(f) * ratio;
 
 	public static void IgnoreCollisionsBetween(IEnumerable<Collider> first, IEnumerable<Collider> second, bool ignore) {
 		foreach (Collider col in first) {
@@ -121,19 +174,9 @@ public static class Ext {
 	}
 #endif
 
-	public static T Label<T>(Vector3 position, T obj, float lifespan = 0, GUIStyle style = null, Color color = default) { 
-		Label(position, obj.ToString(), lifespan, style, color);
-		return obj;
-	}
-	public static void Label(Vector3 position, string text, float lifespan = 0, GUIStyle style = null, Color color = default) {
-		style ??= new() {
-			alignment = TextAnchor.MiddleCenter, 
-			normal = new() { textColor = DefaultWhite(color) },
-			fontSize = 12,
-		};
-		labelQueue.Add(new() { position = position, text = text, lifespan = lifespan, style = style, color = color });
-	}
 
+	public static void Label(Vector3 v, object s, float time = 0) { return; }
+	public static void Label(Vector3 v, string s, float time = 0) { return; }
 	public static float NormalizeAngle(this float angle) => angle % 360 <= 180 ? angle % 360 : angle % 360 - 360;
 
 	public static Vector3 Midpoint(this IEnumerable<Vector3> points) {
@@ -305,7 +348,7 @@ public static class Ext {
 		return result / total;
 	}
 	public static Quaternion WeighedAverage(this List<(Quaternion q, float weight)> quats) => QuaternionExt.WeighedAverage(quats);
-	
+
 	public static class QuaternionExt {
 		public static Quaternion WeighedAverage(List<(Quaternion q, float weight)> quats) {
 			if(quats.Count == 0) { return Quaternion.identity; }

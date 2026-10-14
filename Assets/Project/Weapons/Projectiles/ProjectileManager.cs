@@ -7,6 +7,7 @@ public class ProjectileManager : MonoBehaviour {
 	public LayerMask mask;
 	public GameObject genericFx;
 	public CartridgeData genericCartridge;
+	public float cartoonFactor = 1;
 	private static CartridgeData generic;
 
 	[Header("Debug Tracers")]
@@ -17,13 +18,11 @@ public class ProjectileManager : MonoBehaviour {
 	void Awake() { generic = genericCartridge; }
 
 	void Update() {
-		for(int i = projectiles.Count - 1; i >= 0; i--) {
+		for (int i = projectiles.Count - 1; i >= 0; i--) {
 			Projectile p = projectiles[i];
 			p.Tick(this, out bool destroyProjectile);
 			projectiles[i] = p;
-			if(destroyProjectile) {
-				projectiles.RemoveAt(i);
-			}
+			if (destroyProjectile) { projectiles.RemoveAt(i); }
 		}
 	}
 

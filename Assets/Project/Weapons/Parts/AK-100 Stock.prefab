@@ -70,6 +70,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 7525066964156453729}
   - {fileID: 4464900885769778869}
   - {fileID: 4669549878170575935}
   m_Father: {fileID: 0}
@@ -90,7 +91,7 @@ MonoBehaviour:
   children: []
   meshSource: {fileID: 770912099303775936}
   config: 
-  mountPoint: {fileID: 1483696465644981292}
+  mountPoint: {fileID: 7525066964156453729}
   mount: {fileID: 0}
   detectedMount: {fileID: 0}
 --- !u!114 &5026282748340864043
@@ -452,6 +453,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.026, y: 0.042644076, z: 0.14268288}
   m_Center: {x: 0.0013, y: -0.0073350696, z: -0.03590846}
+--- !u!1 &5342127564200053582
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7525066964156453729}
+  m_Layer: 0
+  m_Name: Stock Mount
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7525066964156453729
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5342127564200053582}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0.019661238, z: 0.12899305}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7948611245436466079}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8541388421270165781
 GameObject:
   m_ObjectHideFlags: 0
@@ -591,12 +623,6 @@ PrefabInstance:
 --- !u!4 &770912099303775936 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5617677424195230996, guid: b71f8ee3855893c70808dcd3cfe2ef3b,
-    type: 3}
-  m_PrefabInstance: {fileID: 5136121878245409748}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1483696465644981292 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6039342157899993080, guid: b71f8ee3855893c70808dcd3cfe2ef3b,
     type: 3}
   m_PrefabInstance: {fileID: 5136121878245409748}
   m_PrefabAsset: {fileID: 0}

@@ -17,26 +17,25 @@ public struct Projectile {
 		velocity += Physics.gravity * Time.deltaTime;
 		position += velocity * Time.deltaTime;
 
-		if (pm.showDebugTracers) {
-			float time = pm.debugTracerTime == 0 ? Time.deltaTime : pm.debugTracerTime;
-			Color col = Physics.Linecast(lastPosition, position, out _) ? Color.red : pm.debugTracerColor;
-			Debug.DrawLine(lastPosition, position, col, time);
-		}
-
+		Color col = pm.debugTracerColor;
 		Vector3 end = position - lastPosition;
 		RaycastHit[] hits = Physics.RaycastAll(lastPosition, end, end.magnitude, pm.mask);
-
+		System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 		foreach (RaycastHit hit in hits) {
 			if (hit.transform.TryGetComponent(out IDamageable dmg)) { dmg.Damage(data.damage); }
-			if (hit.transform.TryGetComponent(out Rigidbody rb)) { rb.AddForceAtPosition(velocity * data.bulletMass, hit.point); }
+			if (hit.rigidbody) { hit.rigidbody.AddForceAtPosition(velocity * data.bulletMass * pm.cartoonFactor, hit.point); }
 			if (hit.collider.sharedMaterial) {
 				pm.CreateFX(hit.collider.sharedMaterial.name switch {
 						_ => pm.genericFx,
 						}, hit.point, hit.normal);
 			}
+			col = Color.red;
+			if (pm.showDebugTracers) { Ext.Label(hit.point, hit.collider, pm.debugTracerTime); }
 			doTerminate = true;
 			break;
 		}
+
+		if (pm.showDebugTracers) { VRGizmos.Line(lastPosition, position, col, pm.debugTracerTime); }
 
 		Quaternion lookRot = Quaternion.LookRotation(velocity);
 		Vector3 scale = data.tailMat.GetVector("_Scale");
