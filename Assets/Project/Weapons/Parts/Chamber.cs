@@ -23,7 +23,7 @@ public class Chamber : BasicPart {
 	}
 
 	void Update() {
-		Ext.Label(transform.position, cartridge.data ? $"Chamber: {cartridge.data}" : "");
+		MyGizmos.Label(transform.position, cartridge.data ? $"Chamber: {cartridge.data}" : "");
 		if (cartridge.data) cartridge.Render(roundT.localToWorldMatrix);
 	}
 }

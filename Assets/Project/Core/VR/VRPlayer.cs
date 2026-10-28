@@ -40,6 +40,7 @@ public class VRPlayer : MonoBehaviour, IVRAnchorProvider {
 		if (VRProbe != null && VRProbe.HasExited) {
 			if (VRProbe.ExitCode == 0) {
 				VRProbe = null;
+				Debug.Log($"hi");
 				StartVR();
 			}
 		}

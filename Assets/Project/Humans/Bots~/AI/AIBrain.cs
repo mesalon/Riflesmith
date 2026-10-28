@@ -48,7 +48,7 @@ public class AIBrain {
 		if (coverDebug) { cover.ShowDebug(coverDebugFull); }
 
 		var msg = string.Join("\n", actions.OrderByDescending(a => a.GetScore()).Take(3).Select((a, i) => $"{i+1}: {a} ({a.GetScore()})"));
-		Ext.Label(ctx.transform.position + Vector3.up * 2, msg);
+		MyGizmos.Label(ctx.transform.position + Vector3.up * 2, msg);
 
 		float highest = 0;
 		AIAction action = null;

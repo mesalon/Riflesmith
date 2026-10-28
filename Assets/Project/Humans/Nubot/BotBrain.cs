@@ -26,7 +26,7 @@ using UnityEngine;
 			current = action;
 			current?.Enter();
 		}
-		Ext.Label(ctx.Center + Vector3.up, $"Action: {current}");
+		MyGizmos.Label(ctx.Center + Vector3.up, $"Action: {current}");
 		current?.Tick();
 	}
 }

@@ -43,9 +43,8 @@ using Animancer;
 		if (Input.GetKeyDown(KeyCode.C)) { Equip(); }
 		if (Input.GetMouseButtonDown(1)) { isAiming = !isAiming; }
 		if (isWeaponEquipped) {
-			Ext.DrawSkeleton(ctx.transform, Color.white);
 			Vector3 targetPos = isAiming ? weaponAimPose.localPosition : weaponRestPose.localPosition;
-			Quaternion targetRot = isAiming ? weaponAimPose.localRotation : weaponRestPose.localRotation;
+			Quaternion targetRot = isAiming ? weaponContainer.transform.InverseTransformRotation(Quaternion.LookRotation(look)) : weaponRestPose.localRotation;
 			weapon.transform.localPosition = Vector3.Lerp(weapon.transform.localPosition, targetPos, aimSpeed * Time.deltaTime);
 			weapon.transform.localRotation = Quaternion.Slerp(weapon.transform.localRotation, targetRot, aimSpeed * Time.deltaTime);
 
@@ -65,6 +64,7 @@ using Animancer;
 		lookIK.solver.Update();
 		IK.solver.Update();
 	}
+
 	public void Look(Vector3 direction) {
 		look = direction;
 	}

@@ -2,8 +2,6 @@
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Linq;
-using UnityEditor;
-using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour {
 	public static Camera Camera => Camera.allCameras
@@ -14,7 +12,6 @@ public class GameManager : MonoBehaviour {
 	public GameConfig config;
 	private Scene loading;
 	private bool isLoading;
-	public PanelSettings UI;
 
 	void Awake() {
 		if (I == null) {
@@ -25,7 +22,6 @@ public class GameManager : MonoBehaviour {
 		}
 		SceneManager.sceneLoaded += (s, mode) => {
 			foreach (Rigidbody rb in FindObjectsByType<Rigidbody>()) {
-				break;
 				rb.interpolation = RigidbodyInterpolation.Interpolate;
 				rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 			}
@@ -41,12 +37,8 @@ public class GameManager : MonoBehaviour {
 		};
 	}
 
-	void LateUpdate() {
-		float dt = Time.deltaTime;
-		Ext.labelQueue.RemoveAll(r => r.lifespan < 0);
-		for (int i = Ext.labelQueue.Count - 1; i >= 0; i--) { Ext.labelQueue[i].lifespan -= dt; }
-		Ext.drawQueue.RemoveAll(r => r.lifespan < 0);
-		for (int i = Ext.drawQueue.Count - 1; i >= 0; i--) { Ext.drawQueue[i].lifespan -= dt; }
+	void Update() {
+		MyGizmos.DrawSphere(Vector3.zero, Vector3.one);
 	}
 
 	public async void TransitionScene(string scene) {
@@ -61,16 +53,4 @@ public class GameManager : MonoBehaviour {
 		loading.SetActive(false);
 		isLoading = false;
 	}
-
-
-#if UNITY_EDITOR
-	void OnDrawGizmos() {
-		if (!Application.isPlaying) {
-			Ext.labelQueue.Clear();
-			Ext.drawQueue.Clear();
-		}
-		foreach (var label in Ext.labelQueue) { Handles.Label(label.position, label.text, label.style); }
-		foreach (var draw in Ext.drawQueue) { draw.action(); }
-	}
-#endif
 }

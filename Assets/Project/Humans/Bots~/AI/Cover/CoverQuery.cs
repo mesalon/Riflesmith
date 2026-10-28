@@ -135,7 +135,7 @@ public class CoverQuery {
 				if (cfg.posBias != null) { bias = 1 - Mathf.InverseLerp(0, cfg.navRange * cfg.navRange, (cfg.posBias.Value - task.point.position).sqrMagnitude); }
 				float distScore = 1 - Mathf.InverseLerp(0, cfg.navRange, task.distance);
 				float score = task.Safety + task.Offense * cfg.aggression + distScore * cfg.urgency + bias;
-				Ext.Label(task.point.position, @$"
+				MyGizmos.Label(task.point.position, @$"
 						Safety: {task.Safety:F2}
 						Offense: {task.Offense * cfg.aggression:f2}
 						Distance: {distScore * cfg.urgency:f2}

@@ -82,7 +82,7 @@ public class LiteJointHand : MonoBehaviour {
 				VRGizmos.Ray(grabbedBody.position, rot * forward, Color.blue);
 				VRGizmos.Ray(grabbedBody.position, rb.rotation * Vector3.up, Color.yellow);
 				VRGizmos.Ray(grabbedBody.position, projected, Color.white);
-				VRGizmos.Label(rb.position, $"{spring:f2} - {damper:f2}\n{spring-damper:f2}", Time.fixedDeltaTime);
+				MyGizmos.Label(rb.position, $"{spring:f2} - {damper:f2}\n{spring-damper:f2}", Time.fixedDeltaTime);
 			}
 		} else {
 			Body foundBody = null;

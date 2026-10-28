@@ -30,7 +30,7 @@ public struct Projectile {
 						}, hit.point, hit.normal);
 			}
 			col = Color.red;
-			if (pm.showDebugTracers) { Ext.Label(hit.point, hit.collider, pm.debugTracerTime); }
+			if (pm.showDebugTracers) { MyGizmos.Label(hit.point, hit.collider, pm.debugTracerTime); }
 			doTerminate = true;
 			break;
 		}

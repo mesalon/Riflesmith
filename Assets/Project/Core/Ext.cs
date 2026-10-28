@@ -13,7 +13,6 @@ using System.Diagnostics.Contracts;
 using UnityEngine.UIElements;
 
 public static class Ext {
-	public static List<LabelRequest> labelQueue = new();
 	public static List<DrawRequest> drawQueue = new();
 	public static int FixedFrameCount => Mathf.RoundToInt(Time.fixedTime / Time.fixedDeltaTime);
 	public static long Timestamp => Stopwatch.GetTimestamp();
@@ -175,8 +174,6 @@ public static class Ext {
 #endif
 
 
-	public static void Label(Vector3 v, object s, float time = 0) { return; }
-	public static void Label(Vector3 v, string s, float time = 0) { return; }
 	public static float NormalizeAngle(this float angle) => angle % 360 <= 180 ? angle % 360 : angle % 360 - 360;
 
 	public static Vector3 Midpoint(this IEnumerable<Vector3> points) {
@@ -404,13 +401,6 @@ public static class Ext {
 	}
 }
 
-public class LabelRequest {
-	public Vector3 position;
-	public string text;
-	public GUIStyle style;
-	public Color color;
-	public float lifespan;
-}
 public class DrawRequest {
 	public Action action;
 	public float lifespan;

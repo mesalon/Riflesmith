@@ -106,7 +106,7 @@ public class BotLocomotion {
 		ctx.ikLookTarget.position = ctx.eyes.position + lookDirection * 5;
 		if (!isStrafing) {
 			ctx.transform.rotation = Quaternion.RotateTowards(ctx.transform.rotation, Quaternion.LookRotation(lookDirection), cfg.turnSpeed);
-			Ext.Label(ctx.eyes.position, $"spinning? {state}");
+			MyGizmos.Label(ctx.eyes.position, $"spinning? {state}");
 		}
 		isStrafing = false;
 	}

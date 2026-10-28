@@ -31,7 +31,7 @@ public class Magazine : AmmoSource {
 				Quaternion rot = Quaternion.LookRotation(tan, up) * Quaternion.Euler(ammoRotation);
 				ammo[i].Render(Matrix4x4.TRS(transform.TransformPoint(lPos), rot, transform.lossyScale));
 			}
-			Ext.Label(ammoPath.EvaluatePosition(0), $"Ammo: {ammo.Count}");
+			MyGizmos.Label(ammoPath.EvaluatePosition(0), $"Ammo: {ammo.Count}");
 		}
 	}
 

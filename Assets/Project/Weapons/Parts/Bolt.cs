@@ -40,7 +40,7 @@ public class Bolt : BasicPart {
 
 	void Update() {
 		if (cartridge.data) cartridge.Render(roundT.localToWorldMatrix);
-		Ext.Label(roundT.position, cartridge.data ? $"Bolt: {cartridge.data}" : "");
+		MyGizmos.Label(roundT.position, cartridge.data ? $"Bolt: {cartridge.data}" : "");
 	}
 
 	public void Set(float value) {

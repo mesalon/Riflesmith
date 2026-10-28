@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine.Rendering;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 /// <summary>
 /// Runtime debug drawing for VR using Graphics.DrawMesh.
 /// Call methods every frame you want shapes to appear (immediate mode).
 /// </summary>
-public class WorldLabel { public Transform transform; public Label label; public float expiry; }
 public static class VRGizmos {
 	private static Mesh cubeMesh;
 	private static Mesh sphereMesh;
@@ -18,35 +16,6 @@ public static class VRGizmos {
 	private static Mesh SphereMesh => sphereMesh ??= CreateSphereMesh();
 	private static Mesh LineMesh => lineMesh ??= CreateLineMesh();
 	private static Material Material => material ??= CreateMaterial();
-
-	private static List<WorldLabel> labels;
-	public static void Label(Vector3 position, string text, float lifespan = 0) {
-		WorldLabel worldLabel = null;
-		foreach (WorldLabel existing in labels) {
-			if (!existing.label.visible) { 
-				worldLabel = existing; 
-				break; 
-			}
-		}
-		if (worldLabel == null) {
-			UIDocument doc = new GameObject().AddComponent<UIDocument>();
-			doc.gameObject.layer = LayerMask.NameToLayer("DebugLabel");
-			doc.worldSpaceSizeMode = UIDocument.WorldSpaceSizeMode.Dynamic;
-			doc.panelSettings = GameManager.I.UI;
-
-			Label label = new();
-			label.style.color = Color.white;
-			label.style.fontSize = 8;
-			label.style.unityTextAlign = TextAnchor.MiddleCenter;
-			doc.rootVisualElement.Add(label);
-
-			worldLabel = new() { transform = doc.transform, label = label, };
-			labels.Add(worldLabel);
-		}
-		worldLabel.label.text = text;
-		worldLabel.transform.position = position;
-		worldLabel.expiry = Time.unscaledTime + lifespan;
-	}
 
 	static Material CreateMaterial() {
 		Shader shader = Shader.Find("Custom/Gizmo");
@@ -61,18 +30,12 @@ public static class VRGizmos {
 		Mesh mesh = new() { name = "VRGizmos_Cube" };
 
 		Vector3[] verts = {
-			// Front
-			new(-0.5f, -0.5f, 0.5f), new(0.5f, -0.5f, 0.5f), new(0.5f, 0.5f, 0.5f), new(-0.5f, 0.5f, 0.5f),
-			// Back
-			new(0.5f, -0.5f, -0.5f), new(-0.5f, -0.5f, -0.5f), new(-0.5f, 0.5f, -0.5f), new(0.5f, 0.5f, -0.5f),
-			// Top
-			new(-0.5f, 0.5f, 0.5f), new(0.5f, 0.5f, 0.5f), new(0.5f, 0.5f, -0.5f), new(-0.5f, 0.5f, -0.5f),
-			// Bottom
-			new(-0.5f, -0.5f, -0.5f), new(0.5f, -0.5f, -0.5f), new(0.5f, -0.5f, 0.5f), new(-0.5f, -0.5f, 0.5f),
-			// Right
-			new(0.5f, -0.5f, 0.5f), new(0.5f, -0.5f, -0.5f), new(0.5f, 0.5f, -0.5f), new(0.5f, 0.5f, 0.5f),
-			// Left
-			new(-0.5f, -0.5f, -0.5f), new(-0.5f, -0.5f, 0.5f), new(-0.5f, 0.5f, 0.5f), new(-0.5f, 0.5f, -0.5f)
+			new(-0.5f, -0.5f, 0.5f), new(0.5f, -0.5f, 0.5f), new(0.5f, 0.5f, 0.5f), new(-0.5f, 0.5f, 0.5f), // Front
+			new(0.5f, -0.5f, -0.5f), new(-0.5f, -0.5f, -0.5f), new(-0.5f, 0.5f, -0.5f), new(0.5f, 0.5f, -0.5f), // Back
+			new(-0.5f, 0.5f, 0.5f), new(0.5f, 0.5f, 0.5f), new(0.5f, 0.5f, -0.5f), new(-0.5f, 0.5f, -0.5f), // Top
+			new(-0.5f, -0.5f, -0.5f), new(0.5f, -0.5f, -0.5f), new(0.5f, -0.5f, 0.5f), new(-0.5f, -0.5f, 0.5f), // Bottom
+			new(0.5f, -0.5f, 0.5f), new(0.5f, -0.5f, -0.5f), new(0.5f, 0.5f, -0.5f), new(0.5f, 0.5f, 0.5f), // Right
+			new(-0.5f, -0.5f, -0.5f), new(-0.5f, -0.5f, 0.5f), new(-0.5f, 0.5f, 0.5f), new(-0.5f, 0.5f, -0.5f) // Left
 		};
 
 		int[] tris = {
@@ -234,20 +197,10 @@ public static class VRGizmos {
 
 		Application.onBeforeRender -= OnBeforeRender;
 		Application.onBeforeRender += OnBeforeRender;
-
-		labels = new();
 	}
 
 	static void OnBeforeRender() {
 		float now = Time.unscaledTime;
-
-		foreach (WorldLabel label in labels) {
-			if (now > label.expiry) { label.label.visible = false; } 
-			else { 
-				label.transform.rotation = Quaternion.LookRotation(GameManager.Camera.transform.forward, Vector3.up);;
-				label.label.visible = true; 
-			}
-		}
 
 		for (int i = timedDraws.Count - 1; i >= 0; i--) {
 			TimedDraw d = timedDraws[i];
