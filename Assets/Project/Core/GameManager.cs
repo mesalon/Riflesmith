@@ -2,8 +2,11 @@
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Linq;
+using TMPro;
 
 public class GameManager : MonoBehaviour {
+	public static TMP_FontAsset FONT => I.theFont;
+	[SerializeField] TMP_FontAsset theFont;
 	public static Camera Camera => Camera.allCameras
 		.Where(c => c.targetTexture == null)
 		.OrderByDescending(c => c.depth)
@@ -38,7 +41,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Update() {
-		MyGizmos.DrawSphere(Vector3.zero, Vector3.one);
+		MyGizmos.Label(Vector3.zero, "Please commit suicide immediately");
 	}
 
 	public async void TransitionScene(string scene) {
