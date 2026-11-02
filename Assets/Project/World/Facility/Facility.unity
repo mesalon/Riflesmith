@@ -619491,6 +619491,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: f4a3a44f175c134b5893e51fec77b230,
         type: 2}
+    - target: {fileID: 9066665591223099134, guid: 74a6dcb732d85368d804a741565ff0c0,
+        type: 3}
+      propertyPath: theFont
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

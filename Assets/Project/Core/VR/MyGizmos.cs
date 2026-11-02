@@ -6,6 +6,7 @@ using UnityEngine.TextCore;
 
 public static class MyGizmos {
 	private static List<Gizmo> gizmos;
+	private static List<Gizmo> labels;
 	private static Shader shader;
 	private static Mesh quad;
 	private static Mesh cube;
@@ -16,7 +17,10 @@ public static class MyGizmos {
 	public static void Init() {
 		RenderPipelineManager.beginContextRendering -= OnBeforeRender;
 		RenderPipelineManager.beginContextRendering += OnBeforeRender;
+		RenderPipelineManager.beginCameraRendering -= OnCameraRender;
+		RenderPipelineManager.beginCameraRendering += OnCameraRender;
 		gizmos = new();
+		labels = new();
 		shader = Shader.Find("Custom/MyGizmo");
 		quad = new() {
 			vertices = new Vector3[] {
@@ -116,37 +120,48 @@ public static class MyGizmos {
 		icosphere = new() { vertices = icoVertices.ToArray(), triangles = icoTriangles.ToArray(), };
 	}
 
-	static void OnBeforeRender(ScriptableRenderContext ctx, List<Camera> cams) {
-		for (int i = gizmos.Count - 1; i >= 0; i--) {
-			Gizmo gizmo = gizmos[i];
-			Graphics.DrawMesh(gizmo.mesh, gizmo.matrix, gizmo.mat, 0);
-			if (Time.unscaledTime >= gizmo.expiry) {
-				gizmos.RemoveAt(i);
-			}
+	private static void OnCameraRender(ScriptableRenderContext context, Camera camera) {
+		for (int i = labels.Count - 1; i >= 0; i--) {
+			Gizmo label = labels[i];
+			Vector3 screenPos = camera.WorldToScreenPoint(label.position);
+			Vector3 worldPos = camera.ScreenToWorldPoint(screenPos);
+			float unitsPerPixel = Vector3.Distance(camera.ScreenToWorldPoint(screenPos + Vector3.right), worldPos);
+			Matrix4x4 matrix = Matrix4x4.TRS(worldPos, camera.transform.rotation, new Vector3(300, 300, 1) * unitsPerPixel);
+			Graphics.DrawMesh(label.mesh, matrix, label.mat, 0, camera);
+			if (Time.unscaledTime >= label.expiry) { labels.RemoveAt(i); }
 		}
 	}
 
-	static void Draw(Mesh mesh, Matrix4x4 matrix, Color color, float lifespan) {
+	static void OnBeforeRender(ScriptableRenderContext ctx, List<Camera> cams) {
+		for (int i = gizmos.Count - 1; i >= 0; i--) {
+			Gizmo gizmo = gizmos[i];
+			Debug.Log($"Gizmos: {gizmos.Count}, Labels: {labels.Count}");
+			Graphics.DrawMesh(gizmo.mesh, Matrix4x4.TRS(gizmo.position, gizmo.rotation, gizmo.scale), gizmo.mat, 0);
+			if (Time.unscaledTime >= gizmo.expiry) { gizmos.RemoveAt(i); }
+		}
+	}
+
+	static void Draw(Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Color color, float lifespan) {
 		Material mat = new(shader);
 		mat.SetColor(Shader.PropertyToID("_Color"), color);
 		gizmos.Add(new Gizmo() { 
 				mesh = mesh,
 				mat = mat,
-				matrix = matrix,
+				position = position,
+				rotation = rotation,
+				scale = scale,
 				expiry = Time.unscaledTime + lifespan
 				});
 	}
 	public static void DrawQuad(Vector3 position, Quaternion rotation, Vector3 scale, Color color = default, float lifespan = 0) =>
-		Draw(quad, Matrix4x4.TRS(position, rotation, scale), Ext.DefaultWhite(color), lifespan);
+		Draw(quad, position, rotation, scale, Ext.DefaultWhite(color), lifespan);
 	public static void DrawCube(Vector3 position, Quaternion rotation, Vector3 scale, Color color = default, float lifespan = 0) =>
-		Draw(cube, Matrix4x4.TRS(position, rotation, scale), Ext.DefaultWhite(color), lifespan);
+		Draw(cube, position, rotation, scale, Ext.DefaultWhite(color), lifespan);
 	public static void DrawSphere(Vector3 position, Vector3 scale, Color color = default, float lifespan = 0) =>
-		Draw(icosphere, Matrix4x4.TRS(position, Quaternion.identity, scale), Ext.DefaultWhite(color), lifespan);
+		Draw(icosphere, position, Quaternion.identity, scale, Ext.DefaultWhite(color), lifespan);
 
 	public static void Label(Vector3 position, string s, float lifespan = 0) {
-		Debug.Log(string.Join(", ", Font.GetOSInstalledFontNames()));
-		
-		TMP_FontAsset font = GameManager.FONT;
+		TMP_FontAsset font = TMP_Settings.defaultFontAsset;
 		font.TryAddCharacters(s, true);
 
 		var vertices = new Vector3[s.Length * 4];
@@ -157,15 +172,19 @@ public static class MyGizmos {
 			font.characterLookupTable.TryGetValue(s[i], out TMP_Character ch);
 
 			GlyphMetrics gl = ch.glyph.metrics;
-			vertices[4 * i + 0] = pos + new Vector3(gl.horizontalBearingX, gl.horizontalBearingY, 0);
-			vertices[4 * i + 1] = pos + new Vector3(gl.horizontalBearingX + gl.width, gl.horizontalBearingY, 0);
-			vertices[4 * i + 2] = pos + new Vector3(gl.horizontalBearingX + gl.width, gl.horizontalBearingY - gl.height, 0);
-			vertices[4 * i + 3] = pos + new Vector3(gl.horizontalBearingX, gl.horizontalBearingY - gl.height, 0);
+			float scale = 1024;
+			vertices[4 * i + 0] = pos + new Vector3(gl.horizontalBearingX, gl.horizontalBearingY, 0) / scale;
+			vertices[4 * i + 1] = pos + new Vector3(gl.horizontalBearingX + gl.width, gl.horizontalBearingY, 0) / scale;
+			vertices[4 * i + 2] = pos + new Vector3(gl.horizontalBearingX + gl.width, gl.horizontalBearingY - gl.height, 0) / scale;
+			vertices[4 * i + 3] = pos + new Vector3(gl.horizontalBearingX, gl.horizontalBearingY - gl.height, 0) / scale;
 
-			uv[4 * i + 0] = ch.uvTopLeft;
-			uv[4 * i + 1] = ch.uvTopRight;
-			uv[4 * i + 2] = ch.uvBottomRight;
-			uv[4 * i + 3] = ch.uvBottomLeft;
+			float width = font.atlasTexture.width;
+			float height = font.atlasTexture.height;
+			GlyphRect rect = ch.glyph.glyphRect;
+			uv[4 * i + 0] = new(rect.x / width, (rect.y + rect.height) / height);
+			uv[4 * i + 1] = new((rect.x + rect.width) / width, (rect.y + rect.height) / height);
+			uv[4 * i + 2] = new((rect.x + rect.width) / width, rect.y / height);
+			uv[4 * i + 3] = new(rect.x / width, rect.y / height);
 
 			triangles[6 * i + 0] = 4 * i + 0;
 			triangles[6 * i + 1] = 4 * i + 1;
@@ -175,23 +194,25 @@ public static class MyGizmos {
 			triangles[6 * i + 4] = 4 * i + 2;
 			triangles[6 * i + 5] = 4 * i + 3;
 
-			pos += new Vector3(ch.advance, 0, 0);
+			pos += new Vector3(gl.horizontalAdvance / scale, 0, 0);
 		}
 		Mesh mesh = new() { vertices = vertices, triangles = triangles, uv = uv };
 		Material mat = new(shader);
 		mat.SetColor(Shader.PropertyToID("_Color"), Color.white);
-		gizmos.Add(new Gizmo() { 
+		labels.Add(new Gizmo() { 
 				mesh = mesh,
 				mat = font.material,
-				matrix = Matrix4x4.TRS(position, Quaternion.identity, Vector3.one),
+				position = position,
 				expiry = Time.unscaledTime + lifespan
 				});
-    }
+	}
 }
 
 public struct Gizmo {
 	public Mesh mesh;
 	public Material mat;
-	public Matrix4x4 matrix;
+	public Vector3 position;
+	public Quaternion rotation;
+	public Vector3 scale;
 	public float expiry;
 }
